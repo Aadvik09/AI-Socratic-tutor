@@ -1,0 +1,2 @@
+/* Give display headings more air while preserving their editorial weight. */
+.hero h1{line-height:.91;letter-spacing:-.04em}.question-panel h2{line-height:.96;letter-spacing:-.025em}.resource-page h2{line-height:.96;letter-spacing:-.025em}.section-head h2{letter-spacing:-.035em}.principle-grid h3,.tutor-panel h3,.resource-grid h3{letter-spacing:-.025em}
