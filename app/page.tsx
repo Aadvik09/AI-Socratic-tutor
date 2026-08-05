@@ -17,9 +17,9 @@ const moduleOneLessons = [
 ];
 
 const diagnostic = [
-  "A length-of-stay dataset has a mean of 4 days and a median of 2 days. What does that suggest about the distribution?",
-  "A patient record has a creatinine value of 14.0. Before changing it, what would you want to know?",
-  "Which of these is categorical: heart-failure stage, serum sodium, or length of stay? Why?",
+  { question: "A length-of-stay dataset has a mean of 4 days and a median of 2 days. What does that most likely suggest?", choices: ["The distribution is perfectly symmetric.", "A few longer stays may be pulling the mean upward.", "Every patient stayed exactly 2 days.", "The median must be an error."], correct: 1, explanation: "Correct. A mean higher than the median often signals a right-skewed distribution: a smaller number of high values pull the average upward." },
+  { question: "A patient record has a creatinine value of 14.0. What is the best first action?", choices: ["Automatically remove it as an outlier.", "Replace it with the average creatinine.", "Check clinical context and related fields before deciding whether it is an error.", "Round it down because it is unusually high."], correct: 2, explanation: "Correct. Unusual values are not automatically mistakes. A creatinine of 14.0 may be clinically plausible and important." },
+  { question: "Which variable is categorical rather than continuous?", choices: ["Serum sodium concentration", "Length of stay", "Heart-failure stage", "Body temperature"], correct: 2, explanation: "Correct. Heart-failure stage is a category with meaningful order; the other choices are numerical measurements." },
 ];
 
 const diagnosticHints = [
@@ -39,26 +39,22 @@ export default function Home() {
   const [lessonFeedback, setLessonFeedback] = useState(false);
   const [diagnosticFeedback, setDiagnosticFeedback] = useState("");
   const [tutorBusy, setTutorBusy] = useState(false);
-  const question = diagnostic[diagnosticStep];
-  const progress = useMemo(() => Math.round(((diagnosticStep + (response ? 0.5 : 0)) / diagnostic.length) * 100), [diagnosticStep, response]);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [choiceChecked, setChoiceChecked] = useState(false);
+  const activeDiagnostic = diagnostic[diagnosticStep];
+  const question = activeDiagnostic.question;
+  const progress = useMemo(() => Math.round(((diagnosticStep + (choiceChecked ? 1 : 0)) / diagnostic.length) * 100), [diagnosticStep, choiceChecked]);
 
   async function continueDiagnostic() {
-    if (!response.trim()) return;
-    if (!diagnosticFeedback) {
-      setTutorBusy(true);
-      try {
-        const result = await fetch("/api/tutor", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question, learnerAnswer: response, hintLevel: 0 }) });
-        const data = (await result.json()) as { reply?: string };
-        setDiagnosticFeedback(data.reply || "Let’s take one more look at the evidence in your answer.");
-      } catch { setDiagnosticFeedback("Your response is a useful start. What evidence in the data would strengthen it?"); }
-      finally { setTutorBusy(false); }
-      return;
-    }
+    if (selectedChoice === null) return;
+    if (!choiceChecked) { setChoiceChecked(true); return; }
     if (diagnosticStep < diagnostic.length - 1) {
       setDiagnosticStep((step) => step + 1);
       setResponse("");
       setHint(0);
       setDiagnosticFeedback("");
+      setSelectedChoice(null);
+      setChoiceChecked(false);
       setStreak((value) => value + 1);
     } else {
       setView("lesson");
@@ -74,6 +70,7 @@ export default function Home() {
         <div className="nav-links"><button className={view === "overview" || view === "diagnostic" || view === "lesson" ? "selected" : ""} onClick={() => setView("overview")}>Course</button><button className={view === "library" ? "selected" : ""} onClick={() => setView("library")}>Library</button><button className={view === "notes" ? "selected" : ""} onClick={() => setView("notes")}>Notes</button></div>
         <div className="profile"><span className="streak">✦ {streak} day streak</span><span className="avatar">AK</span></div>
       </nav>
+      {view === "diagnostic" && <section className="mc-panel" aria-label="Multiple choice question"><p className="mc-instruction">Choose the best answer, then explain the reasoning.</p><div className="mc-choices">{activeDiagnostic.choices.map((choice, index) => <button key={choice} className={`mc-choice ${selectedChoice === index ? "selected" : ""} ${choiceChecked && index === activeDiagnostic.correct ? "correct" : ""} ${choiceChecked && selectedChoice === index && index !== activeDiagnostic.correct ? "incorrect" : ""}`} disabled={choiceChecked} onClick={() => setSelectedChoice(index)}><span>{String.fromCharCode(65 + index)}</span>{choice}</button>)}</div>{choiceChecked && <div className={`mc-result ${selectedChoice === activeDiagnostic.correct ? "right" : "wrong"}`}><b>{selectedChoice === activeDiagnostic.correct ? "Correct" : "Not quite"}</b><p>{selectedChoice === activeDiagnostic.correct ? activeDiagnostic.explanation : `The best answer is ${String.fromCharCode(65 + activeDiagnostic.correct)}. ${activeDiagnostic.explanation}`}</p></div>}<div className="mc-actions"><button className="hint" onClick={() => setHint(Math.min(3, hint + 1))}>Need a hint?</button><button className="primary" disabled={selectedChoice === null} onClick={continueDiagnostic}>{choiceChecked ? (diagnosticStep === diagnostic.length - 1 ? "Begin Module 1" : "Continue") : "Check answer"}<b>→</b></button></div></section>}
 
       {(view === "diagnostic" || view === "lesson") && <aside className="learning-rail" aria-label="Module 1 lessons"><div className="rail-course"><span className="rail-icon">◫</span><div><b>Data Literacy</b><small>MODULE 1 · 4 LESSONS</small></div></div><div className="rail-label">PREPARE & EXPLORE</div><button className={view === "diagnostic" ? "rail-item active" : "rail-item"} onClick={() => setView("diagnostic")}><span>01</span><p>Quick diagnostic<small>Find your starting point</small></p></button><button className={view === "lesson" ? "rail-item active" : "rail-item"} onClick={() => setView("lesson")}><span>02</span><p>Identify data types<small>Socratic lesson</small></p></button><button className="rail-item" onClick={() => setView("lesson")}><span>03</span><p>Read distributions<small>Up next</small></p></button><button className="rail-item locked"><span>04</span><p>Inspect missingness<small>Complete previous lesson</small></p></button><div className="rail-master"><span>MODULE MASTERY</span><b>36%</b><div><i></i></div></div></aside>}
       {view === "overview" && <>
