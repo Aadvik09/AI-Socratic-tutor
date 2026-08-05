@@ -9,6 +9,13 @@ const modules = [
   { number: "04", title: "Communicate Clearly", label: "LOCKED", progress: 0 },
 ];
 
+const moduleOneLessons = [
+  { id: "1.1", title: "Start with the shape of the data", type: "Learn", detail: "A short visual introduction", state: "complete" },
+  { id: "1.2", title: "Identify the data type", type: "Socratic lesson", detail: "Labels, rank, and measurement", state: "current" },
+  { id: "1.3", title: "Read a distribution", type: "Socratic lesson", detail: "Center, spread, and skew", state: "next" },
+  { id: "1.4", title: "Inspect missingness", type: "Practice", detail: "What absence may be telling you", state: "locked" },
+];
+
 const diagnostic = [
   "A length-of-stay dataset has a mean of 4 days and a median of 2 days. What does that suggest about the distribution?",
   "A patient record has a creatinine value of 14.0. Before changing it, what would you want to know?",
@@ -76,8 +83,9 @@ export default function Home() {
             <aside className="hero-card"><div className="card-top"><span>YOUR PATH</span><span>MODULE 01 / 04</span></div><div className="radar"><div className="radar-ring ring-1"></div><div className="radar-ring ring-2"></div><div className="radar-ring ring-3"></div><div className="radar-dot"></div><div className="radar-label">DATA<br/>LITERACY</div></div><p>We’ll adapt the questions<br/>to your current understanding.</p></aside>
           </div>
         </section>
-        <section className="course-section"><div className="section-head"><div><p className="kicker">THE COURSE</p><h2>Four modules. One sharper way of thinking.</h2></div><p>Your tutor does not hand you answers. It helps you build defensible reasoning — one question at a time.</p></div>
-          <div className="module-list">{modules.map((module, index) => <button className={`module ${index === 0 ? "active" : ""}`} key={module.number} onClick={() => index === 0 && setView("diagnostic")}><span className="module-no">{module.number}</span><span className="module-title">{module.title}<small>{index === 0 ? "Data types · distributions · missingness" : "Available after Module 01"}</small></span><span className="module-status">{module.label}{module.progress > 0 && <span className="mini-progress"><i style={{width: `${module.progress}%`}}></i></span>}</span><span className="arrow">{index === 0 ? "→" : "↗"}</span></button>)}</div>
+        <section className="course-section learning-path"><div className="section-head"><div><p className="kicker">YOUR LEARNING PATH</p><h2>Module 1: Prepare & Explore</h2></div><p>Work through each lesson in order. Your mastery grows when you explain your thinking, not when you click through.</p></div>
+          <div className="path-layout"><div className="unit-card"><div className="unit-heading"><div><span className="unit-label">UNIT 01</span><h3>Prepare & Explore</h3><p>Learn to see what a dataset is saying before you ask it a question.</p></div><span className="unit-score">36%<small>mastery</small></span></div><div className="lesson-stack">{moduleOneLessons.map((lesson) => <button key={lesson.id} className={`lesson-row ${lesson.state}`} onClick={() => lesson.state !== "locked" && setView(lesson.state === "current" ? "lesson" : "diagnostic")}><span className="lesson-state">{lesson.state === "complete" ? "✓" : lesson.state === "current" ? "→" : "•"}</span><span className="lesson-copy"><b>{lesson.id} · {lesson.title}</b><small>{lesson.type} · {lesson.detail}</small></span><span className="lesson-action">{lesson.state === "current" ? "Continue" : lesson.state === "complete" ? "Review" : lesson.state === "locked" ? "Locked" : "Start"}</span></button>)}</div></div><aside className="path-sidebar"><p className="kicker">UP NEXT</p><h3>Diagnostic<br/><em>check-in</em></h3><p>Three questions that place you at the right starting point.</p><button className="primary" onClick={() => setView("diagnostic")}>Resume <b>→</b></button><div className="course-progress"><span>COURSE PROGRESS</span><b>1 / 4 modules</b><div><i style={{width:"25%"}}></i></div></div></aside></div>
+          <div className="more-modules"><span>COMING UP</span>{modules.slice(1).map((module) => <div key={module.number}><b>{module.number}</b><p>{module.title}<small>Unlock after Module 01</small></p><em>Locked</em></div>)}</div>
         </section>
         <section className="principles"><p className="kicker">HOW YOU’LL LEARN</p><div className="principle-grid"><article><b>01</b><h3>Commit</h3><p>Make a judgment before seeing an explanation.</p></article><article><b>02</b><h3>Defend</h3><p>Use evidence and clinical context to support it.</p></article><article><b>03</b><h3>Transfer</h3><p>Apply the idea in a new, unfamiliar case.</p></article></div></section>
       </>}
