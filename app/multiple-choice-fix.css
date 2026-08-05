@@ -1,0 +1,2 @@
+/* Keep the diagnostic question and its choices in a clear vertical sequence. */
+.workspace:has(textarea[aria-label="Your response"]) .question-panel{display:block}.mc-panel{top:415px}.lesson-mc{top:154px}.workspace:has(textarea[aria-label="Lesson response"]) .question-panel{display:none}@media(max-width:900px){.workspace:has(textarea[aria-label="Your response"]) .question-panel{display:block}.mc-panel,.lesson-mc{position:static;width:auto;margin:0 7vw 25px;padding:35px 0}}
