@@ -75,6 +75,7 @@ export default function Home() {
         <div className="profile"><span className="streak">✦ {streak} day streak</span><span className="avatar">AK</span></div>
       </nav>
 
+      {(view === "diagnostic" || view === "lesson") && <aside className="learning-rail" aria-label="Module 1 lessons"><div className="rail-course"><span className="rail-icon">◫</span><div><b>Data Literacy</b><small>MODULE 1 · 4 LESSONS</small></div></div><div className="rail-label">PREPARE & EXPLORE</div><button className={view === "diagnostic" ? "rail-item active" : "rail-item"} onClick={() => setView("diagnostic")}><span>01</span><p>Quick diagnostic<small>Find your starting point</small></p></button><button className={view === "lesson" ? "rail-item active" : "rail-item"} onClick={() => setView("lesson")}><span>02</span><p>Identify data types<small>Socratic lesson</small></p></button><button className="rail-item" onClick={() => setView("lesson")}><span>03</span><p>Read distributions<small>Up next</small></p></button><button className="rail-item locked"><span>04</span><p>Inspect missingness<small>Complete previous lesson</small></p></button><div className="rail-master"><span>MODULE MASTERY</span><b>36%</b><div><i></i></div></div></aside>}
       {view === "overview" && <>
         <section className="hero">
           <div className="eyebrow"><span></span> BASIC DATA LITERACY FOR CLINICIANS</div>
