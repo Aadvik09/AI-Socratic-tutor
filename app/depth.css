@@ -68,3 +68,88 @@
   .learning-depth-dock { display: block; margin-left: 0; padding: 32px 25px 45px; }
   .learning-depth-dock > div + div { margin-top: 30px; }
 }
+
+/* Signature display type and a calmer, more intentional course path. */
+.course-app .course-main h1,
+.course-app .teaching-card h1,
+.course-app .question-card h1,
+.course-app .complete-card h1,
+.course-app .notes-screen h1,
+.course-app .diagnostic-aside h1,
+.course-app .result-screen h1,
+.course-app .course-sidebar h2,
+.course-app .rail-title h2 {
+  font-family: Fraunces, Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 560;
+  letter-spacing: -0.065em;
+}
+
+.course-app .course-sidebar {
+  background: radial-gradient(circle at 21% 12%, rgba(200, 255, 35, .13), transparent 24%), #151916;
+  padding: 58px 43px 42px;
+}
+
+.course-app .course-sidebar .course-kicker { margin-bottom: 42px; }
+.course-app .course-sidebar h2 { font-size: clamp(42px, 4vw, 60px); line-height: .89; margin: 0 0 24px; }
+.course-app .course-sidebar > p { line-height: 1.65; margin-bottom: 44px; max-width: 240px; }
+.course-app .course-sidebar .mastery-block { border-top-color: rgba(222, 230, 214, .22); margin-top: 0; padding-top: 24px; }
+.course-app .course-sidebar .path-legend { border-top-color: rgba(222, 230, 214, .18); margin-top: 36px; padding-top: 24px; }
+.course-app .course-sidebar footer { border-top-color: rgba(222, 230, 214, .16); margin-top: 36px; padding-top: 20px; }
+
+.course-app .skill-list { margin-top: 42px; }
+.course-app .skill-list button {
+  border-left: 3px solid transparent;
+  overflow: hidden;
+  position: relative;
+  transition: background .24s ease, border-color .24s ease, box-shadow .24s ease, transform .24s ease;
+}
+
+.course-app .skill-list button::after {
+  background: linear-gradient(90deg, rgba(196, 255, 36, .20), transparent 75%);
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity .24s ease;
+}
+
+.course-app .skill-list button > * { position: relative; z-index: 1; }
+.course-app .skill-list button:not(:disabled):hover { background: #f2f4e9; border-left-color: #c8ff24; box-shadow: 0 13px 24px rgba(31, 39, 27, .08); transform: translateX(7px); }
+.course-app .skill-list button:not(:disabled):hover::after { opacity: 1; }
+.course-app .skill-list button:not(:disabled):hover em span { display: inline-block; transform: translateX(4px); }
+.course-app .skill-list button em span { transition: transform .2s ease; }
+.course-app .skill-number { border-radius: 50%; transition: background .24s ease, border-color .24s ease, color .24s ease, transform .24s ease; }
+.course-app .skill-list button:not(:disabled):hover .skill-number { background: #1a211c; border-color: #1a211c; color: #d0ff31; transform: rotate(-8deg) scale(1.08); }
+.course-app .skill-list button:focus-visible { outline: 3px solid #c8ff24; outline-offset: 4px; }
+
+.notebook-capture { bottom: 28px; display: grid; justify-items: end; position: fixed; right: 30px; z-index: 80; }
+.notebook-fab { align-items: center; background: #171c18; border: 1px solid rgba(201, 255, 40, .58); box-shadow: 0 14px 30px rgba(15, 20, 16, .2); color: #f7f9ed; display: inline-flex; font: 600 12px 'DM Mono', monospace; gap: 10px; letter-spacing: .02em; padding: 13px 17px; transition: box-shadow .22s ease, transform .22s ease, background .22s ease; }
+.notebook-fab > span { align-items: center; background: #c8ff24; border-radius: 50%; color: #111711; display: inline-flex; font-size: 12px; height: 21px; justify-content: center; width: 21px; }
+.notebook-fab:hover { background: #242b25; box-shadow: 0 18px 36px rgba(15, 20, 16, .3); transform: translateY(-3px); }
+.notebook-popover { background: #171c18; border: 1px solid rgba(220, 229, 207, .24); box-shadow: 0 22px 54px rgba(7, 10, 7, .28); color: #edf2e5; margin-bottom: 12px; padding: 23px; width: min(348px, calc(100vw - 36px)); }
+.notebook-popover > div { align-items: center; display: flex; justify-content: space-between; }
+.notebook-popover > div p { color: #c8ff24; font: 10px 'DM Mono', monospace; letter-spacing: .1em; margin: 0; }
+.notebook-popover > div button { background: transparent; color: #d9e1d1; font-size: 24px; line-height: 1; padding: 0 0 4px 12px; }
+.notebook-popover h2 { font-family: Fraunces, Georgia, serif; font-size: 30px; font-weight: 560; letter-spacing: -.055em; margin: 17px 0 7px; }
+.notebook-popover > p { color: #b7c0b4; font-size: 13px; line-height: 1.55; margin: 0 0 16px; }
+.notebook-popover textarea { background: #101511; border: 1px solid rgba(220, 229, 207, .28); color: #f4f8ed; display: block; font: 13px/1.5 Inter, sans-serif; min-height: 96px; padding: 12px; resize: vertical; width: 100%; }
+.notebook-popover textarea:focus { border-color: #c8ff24; outline: none; }
+.notebook-popover .capture-save { background: #c8ff24; color: #121812; font-weight: 800; margin-top: 12px; padding: 12px 14px; text-align: left; width: 100%; }
+.notebook-popover .capture-save:disabled { cursor: not-allowed; opacity: .42; }
+.notebook-popover .capture-save span { float: right; }
+.saved-notes { border-top: 1px solid #cbd0c2; margin: -26px auto 66px; max-width: 600px; padding-top: 26px; }
+.saved-notes > span { color: #586056; font: 10px 'DM Mono', monospace; letter-spacing: .1em; }
+.saved-notes p { background: #eef2df; border-left: 3px solid #c8ff24; font-size: 14px; line-height: 1.55; margin: 12px 0; padding: 13px 15px; }
+
+@media (max-width: 860px) {
+  .course-app .course-sidebar { padding: 42px 30px; }
+  .course-app .course-sidebar h2 { font-size: 46px; }
+}
+
+@media (max-width: 640px) {
+  .notebook-capture { bottom: 18px; right: 18px; }
+  .notebook-fab { padding: 12px 14px; }
+  .course-app .skill-list button:not(:disabled):hover { transform: none; }
+}

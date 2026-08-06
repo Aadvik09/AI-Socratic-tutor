@@ -63,6 +63,9 @@ export default function Home() {
   const [diagChoice, setDiagChoice] = useState<number | null>(null);
   const [diagScore, setDiagScore] = useState(0);
   const [level, setLevel] = useState<"Foundation" | "Standard" | "Accelerated">("Foundation");
+  const [notebookOpen, setNotebookOpen] = useState(false);
+  const [quickNote, setQuickNote] = useState("");
+  const [savedNotes, setSavedNotes] = useState<string[]>([]);
   const lesson = lessons[lessonIndex];
   const questions = lesson.questions.map(q => level === "Accelerated" && q.challenge ? { ...q, prompt: q.challenge } : q);
   const question = questions[questionIndex];
@@ -74,6 +77,7 @@ export default function Home() {
   function checkAnswer() { if (choice !== null) setFeedback(choice === question.correct ? "correct" : "incorrect"); }
   function nextQuestion() { if (feedback !== "correct") return; if (questionIndex < 3) { setQuestionIndex(questionIndex + 1); setChoice(null); setFeedback("idle"); setHint(false); return; } if (!completed.includes(lessonIndex)) setCompleted([...completed, lessonIndex]); if (lessonIndex < 3) setUnlocked(lessonIndex + 1); setStage("complete"); }
   function retry() { setChoice(null); setFeedback("idle"); setHint(false); }
+  function saveQuickNote() { const note = quickNote.trim(); if (!note) return; setSavedNotes([note, ...savedNotes]); setQuickNote(""); setNotebookOpen(false); }
   function beginDiagnostic() { setDiagIndex(0); setDiagChoice(null); setDiagScore(0); setScreen("diagnostic"); }
   function submitDiagnostic() { if (diagChoice === null) return; const score = diagScore + (diagChoice === diagnostic[diagIndex].correct ? 1 : 0); if (diagIndex < 4) { setDiagScore(score); setDiagIndex(diagIndex + 1); setDiagChoice(null); } else { setDiagScore(score); setLevel(score >= 4 ? "Accelerated" : score >= 2 ? "Standard" : "Foundation"); setScreen("result"); } }
   async function askTutor() { setTutorLoading(true); try { const r = await fetch("/api/tutor", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: stage === "practice" ? question.prompt : lesson.concept, learnerAnswer: choice === null ? "I am reviewing this lesson." : question.options[choice], hintLevel: hint ? 1 : 0 }) }); const data = await r.json() as { reply?: string }; setTutorReply(data.reply || "Start by naming the evidence you would use."); } catch { setTutorReply("The tutor is unavailable. Use the lesson and hint to continue."); } finally { setTutorLoading(false); } }
@@ -93,5 +97,7 @@ export default function Home() {
 
     {screen === "notes" && <section className="notes-screen"><p className="eyebrow"><i /> YOUR WORKING NOTEBOOK</p><h1>Make the ideas<br/><em>your own.</em></h1><p>Capture questions, clinical examples, and patterns you want to remember.</p><textarea placeholder="Write the thought you want to keep..." /><span className="notes-tip">TIP — Write one thing you noticed before one thing you learned.</span></section>}
     {screen === "lesson" && stage === "learn" && <section className="learning-depth-dock"><div><span>USE THIS IN PRACTICE</span>{extra.steps.map((step, index) => <p key={step}><b>0{index + 1}</b>{step}</p>)}</div><div><span>GO DEEPER</span>{extra.sources.map(source => <a key={source.href} href={source.href} target="_blank" rel="noreferrer">{source.label}<b>↗</b></a>)}</div></section>}
+    {screen === "notes" && savedNotes.length > 0 && <section className="saved-notes"><span>CAPTURED FROM YOUR LESSONS</span>{savedNotes.map((note, index) => <p key={`${note}-${index}`}>{note}</p>)}</section>}
+    {screen !== "notes" && <aside className={`notebook-capture ${notebookOpen ? "open" : ""}`}>{notebookOpen && <div className="notebook-popover"><div><p>QUICK CAPTURE</p><button aria-label="Close notebook capture" onClick={() => setNotebookOpen(false)}>×</button></div><h2>Keep the thought.</h2><p>Save a question, observation, or clinical connection for your notebook.</p><textarea value={quickNote} onChange={event => setQuickNote(event.target.value)} placeholder="What do you want to remember?" /><button className="capture-save" disabled={!quickNote.trim()} onClick={saveQuickNote}>Save to notebook <span>&rarr;</span></button></div>}<button className="notebook-fab" aria-expanded={notebookOpen} onClick={() => setNotebookOpen(!notebookOpen)}><span>✦</span>{notebookOpen ? "Close" : "Quick note"}</button></aside>}
   </main>;
 }
