@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,0..100&display=swap');
+
+.course-app .tutor-card h2 {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+}
+
+.learning-depth-dock {
+  background: #eef0e7;
+  border-top: 1px solid #d5d7cd;
+  display: grid;
+  gap: 42px;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, .7fr);
+  margin-left: 265px;
+  padding: 40px clamp(28px, 6vw, 108px) 55px;
+}
+
+.learning-depth-dock > div > span {
+  color: #586056;
+  display: block;
+  font: 500 10px 'DM Mono', monospace;
+  letter-spacing: .1em;
+  margin-bottom: 15px;
+}
+
+.learning-depth-dock p {
+  align-items: flex-start;
+  color: #293029;
+  display: flex;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 11px 0;
+}
+
+.learning-depth-dock p b {
+  color: #73806c;
+  font: 10px 'DM Mono', monospace;
+  margin: 4px 13px 0 0;
+}
+
+.learning-depth-dock a {
+  border-bottom: 1px solid #cbd0c2;
+  color: #182018;
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 12px 0;
+  text-decoration: none;
+}
+
+.learning-depth-dock a:hover { color: #58700d; }
+.learning-depth-dock a b { float: right; font-size: 14px; }
+
+@media (max-width: 760px) {
+  .learning-depth-dock { display: block; margin-left: 0; padding: 32px 25px 45px; }
+  .learning-depth-dock > div + div { margin-top: 30px; }
+}

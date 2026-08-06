@@ -8,6 +8,7 @@ import "./multiple-choice.css";
 import "./multiple-choice-fix.css";
 import "./multiple-choice-layout.css";
 import "./course.css";
+import "./depth.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
