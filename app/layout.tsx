@@ -7,6 +7,8 @@ import "./khan-learning.css";
 import "./multiple-choice.css";
 import "./multiple-choice-fix.css";
 import "./multiple-choice-layout.css";
+import "./course.css";
+import "./tutor.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

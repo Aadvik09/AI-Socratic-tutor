@@ -1,0 +1,23 @@
+.tutor-ask {
+  align-self: flex-start;
+  background: #1e64d8;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font: 700 13px/1 Arial, sans-serif;
+  margin-top: 18px;
+  padding: 10px 13px;
+}
+.tutor-ask:hover { background: #1754bb; }
+.tutor-ask:disabled { cursor: wait; opacity: .7; }
+.tutor-reply {
+  background: #fff;
+  border: 1px solid #d8e2f0;
+  border-radius: 8px;
+  color: #34465b !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 14px !important;
+  padding: 11px 12px;
+}
