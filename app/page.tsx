@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 type Question = {
   prompt: string;
   options: string[];
@@ -618,6 +618,7 @@ export default function Home() {
   const [tutorInput, setTutorInput] = useState("");
   const [tutorTurns, setTutorTurns] = useState<string[]>([]);
   const [isReading, setIsReading] = useState(false);
+  const narrationAudio = useRef<HTMLAudioElement | null>(null);
   const [mediaPlayed, setMediaPlayed] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [diagIndex, setDiagIndex] = useState(0);
@@ -693,21 +694,68 @@ export default function Home() {
     setTutorInput("");
     setTutorTurns([]);
   }
-  function toggleLessonAudio() {
-    if (!("speechSynthesis" in window)) return;
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
+  function stopNarration() {
+    if (narrationAudio.current) {
+      narrationAudio.current.pause();
+      narrationAudio.current = null;
+    }
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setIsReading(false);
+  }
+  function playBrowserFallback(text: string) {
+    if (!("speechSynthesis" in window)) {
       setIsReading(false);
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(
-      `${lesson.title}. ${lesson.concept}. ${lesson.teaching}. Clinical example: ${lesson.example}. Why it matters: ${lesson.why}`,
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find((voice) =>
+      /marin|jenny|aria|samantha|google us english|ava|zira/i.test(voice.name),
     );
-    utterance.rate = 0.95;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = preferredVoice ?? null;
+    utterance.rate = 0.92;
+    utterance.pitch = 1;
     utterance.onend = () => setIsReading(false);
     utterance.onerror = () => setIsReading(false);
-    setIsReading(true);
     window.speechSynthesis.speak(utterance);
+  }
+  async function toggleLessonAudio() {
+    if (isReading) {
+      stopNarration();
+      return;
+    }
+    const narration = [
+      lesson.title,
+      lesson.concept,
+      lesson.teaching,
+      "Clinical example. " + lesson.example,
+      "Why it matters. " + lesson.why,
+    ].join(". ");
+    setIsReading(true);
+    try {
+      const response = await fetch("/api/narration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: narration }),
+      });
+      if (!response.ok) throw new Error("Natural narration unavailable.");
+      const url = URL.createObjectURL(await response.blob());
+      const audio = new Audio(url);
+      narrationAudio.current = audio;
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        narrationAudio.current = null;
+        setIsReading(false);
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        narrationAudio.current = null;
+        playBrowserFallback(narration);
+      };
+      await audio.play();
+    } catch {
+      playBrowserFallback(narration);
+    }
   }
   function saveQuickNote() {
     const note = quickNote.trim();
@@ -1019,9 +1067,8 @@ export default function Home() {
             </h1>
             <p className="course-intro">
               Each skill moves from a detailed teaching lesson and clinical
-              examples, through a visual + spoken briefing and required
-              Socratic case, then into an independent four-question mastery
-              check.
+              examples, through a visual + spoken briefing and required Socratic
+              case, then into an independent four-question mastery check.
             </p>
             <div className="module-meta">
               <span>4 teaching lessons</span>
@@ -1072,7 +1119,9 @@ export default function Home() {
 
       {screen === "lesson" && (
         <section
-          className={"lesson-screen " + (railOpen ? "rail-open" : "rail-closed")}
+          className={
+            "lesson-screen " + (railOpen ? "rail-open" : "rail-closed")
+          }
         >
           <aside className="lesson-rail">
             <button className="rail-back" onClick={() => setScreen("course")}>
@@ -1131,7 +1180,9 @@ export default function Home() {
           <button
             className="rail-toggle"
             aria-label={
-              railOpen ? "Minimize lesson navigation" : "Expand lesson navigation"
+              railOpen
+                ? "Minimize lesson navigation"
+                : "Expand lesson navigation"
             }
             onClick={() => setRailOpen(!railOpen)}
           >
@@ -1247,9 +1298,9 @@ export default function Home() {
                         : "Play spoken briefing"}
                     </button>
                     <p className="media-note">
-                      The narration reads the core idea, clinical example, and
-                      why it matters. Use the image as you listen, then move
-                      into the required dialogue.
+                      A warm, measured narrator connects the core idea, clinical
+                      example, and why it matters. Use the image as you listen,
+                      then move into the required dialogue.
                     </p>
                     {lessonIndex === 0 && (
                       <a
@@ -1374,7 +1425,8 @@ export default function Home() {
                       <div className={`answer-feedback ${feedback}`}>
                         <b>
                           {feedback === "correct"
-                            ? "Correct answer: " + String.fromCharCode(65 + question.correct)
+                            ? "Correct answer: " +
+                              String.fromCharCode(65 + question.correct)
                             : "Try again."}
                         </b>
                         <p>
