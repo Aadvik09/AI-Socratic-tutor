@@ -154,6 +154,141 @@
   .course-app .skill-list button:not(:disabled):hover { transform: none; }
 }
 
+/* Richer teaching cards make the explanation feel like a compact lesson,
+   rather than a preface to a quiz. */
+.course-app .deep-dive {
+  border-top: 1px solid #d6d7ce;
+  margin: 34px 0 29px;
+  padding-top: 23px;
+}
+.course-app .deep-dive > .question-type { margin-bottom: 14px; }
+.course-app .deep-dive article {
+  align-items: flex-start;
+  border-top: 1px solid #e0e1d8;
+  display: grid;
+  gap: 15px;
+  grid-template-columns: 31px 1fr;
+  padding: 19px 0;
+}
+.course-app .deep-dive article > span {
+  color: #718849;
+  font: 500 10px 'DM Mono', monospace;
+  padding-top: 5px;
+}
+.course-app .deep-dive h2 {
+  color: #202720;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 25px;
+  font-weight: 560;
+  letter-spacing: -.045em;
+  line-height: 1;
+  margin: 0 0 8px;
+}
+.course-app .deep-dive p {
+  color: #525b51;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+}
+.course-app .deep-dive aside {
+  background: #f0f3e5;
+  border-left: 2px solid #c8ff24;
+  color: #4b554a;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 13px;
+  padding: 10px 12px;
+}
+.course-app .deep-dive aside b {
+  color: #263124;
+  display: block;
+  font: 600 9px 'DM Mono', monospace;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+/* The path is available on demand, rather than occupying the learner's
+   attention during the lesson. */
+.course-app .lesson-screen { position: relative; transition: grid-template-columns .28s ease; }
+.course-app .lesson-screen.rail-closed { grid-template-columns: 0 1fr; }
+.course-app .lesson-screen.rail-closed .lesson-rail {
+  opacity: 0;
+  overflow: hidden;
+  padding-left: 0;
+  padding-right: 0;
+  pointer-events: none;
+}
+.course-app .lesson-rail { transition: opacity .2s ease, padding .28s ease; }
+.course-app .rail-toggle {
+  align-items: center;
+  background: #171c18;
+  border: 1px solid rgba(200,255,36,.65);
+  color: #f5f8ee;
+  display: inline-flex;
+  font: 600 10px 'DM Mono', monospace;
+  gap: 9px;
+  left: 18px;
+  letter-spacing: .02em;
+  padding: 10px 12px;
+  position: absolute;
+  top: 19px;
+  z-index: 5;
+}
+.course-app .rail-toggle:hover { background: #293129; }
+.course-app .rail-toggle > :first-child { color: #c8ff24; font-size: 15px; line-height: 1; }
+.course-app .rail-open .rail-toggle { left: 282px; }
+.course-app .rail-closed .lesson-workspace { padding-left: clamp(50px, 8vw, 122px); }
+
+/* The tutor card now reads as a purposeful part of the learning flow. */
+.course-app .tutor-card {
+  background: radial-gradient(circle at 80% 11%, rgba(200,255,36,.14), transparent 26%), #151a16;
+  border: 1px solid #2d362d;
+  box-shadow: 0 18px 42px rgba(10, 15, 10, .15);
+  overflow: hidden;
+  padding: 28px;
+  position: relative;
+}
+.course-app .tutor-card::after {
+  border: 1px solid rgba(200,255,36,.20);
+  border-radius: 50%;
+  content: "";
+  height: 136px;
+  position: absolute;
+  right: -77px;
+  top: -73px;
+  width: 136px;
+}
+.course-app .tutor-card h2 { font-size: 38px; margin: 28px 0 18px; position: relative; z-index: 1; }
+.course-app .tutor-card > p { color: #c2cbc0; font-size: 13px; line-height: 1.7; position: relative; z-index: 1; }
+.course-app .tutor-card .tutor-badge span {
+  box-shadow: 0 0 0 7px rgba(200,255,36,.11);
+  height: 31px;
+  width: 31px;
+}
+.course-app .tutor-card .tutor-loop { margin-top: 29px; position: relative; z-index: 1; }
+.course-app .tutor-card .tutor-loop p { color: #edf3e7; letter-spacing: .01em; }
+.course-app .tutor-card .tutor-status { color: #d7ff57 !important; }
+
+.course-app .answer-feedback.correct {
+  background: #ecf9ec;
+  border: 1px solid #a8dbaf;
+  border-left: 4px solid #38814a;
+  color: #164d26;
+  padding: 20px 22px;
+}
+.course-app .answer-feedback.correct b { color: #086128; font-size: 14px; }
+.course-app .answer-feedback.correct p { color: #175729; font-size: 14px; line-height: 1.7; margin-top: 10px; }
+
+@media (max-width: 760px) {
+  .course-app .lesson-screen.rail-closed { display: block; }
+  .course-app .lesson-screen.rail-closed .lesson-rail { display: none; }
+  .course-app .rail-open .rail-toggle { left: 18px; }
+  .course-app .rail-closed .lesson-workspace { padding-left: 20px; }
+  .course-app .rail-toggle { top: 12px; }
+  .course-app .deep-dive h2 { font-size: 22px; }
+}
+
 /* Multimodal lesson support: visual explanation first, structured dialogue second, quiz last. */
 .course-app .lesson-visual { margin: 28px 0 30px; }
 .course-app .lesson-visual img { border: 1px solid #d8dacd; display: block; height: auto; max-height: 370px; object-fit: cover; width: 100%; }
