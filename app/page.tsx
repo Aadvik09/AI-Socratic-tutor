@@ -428,6 +428,28 @@ const briefingVisuals = [
       "The missing cells cluster around a process. That pattern can be evidence about who was measured and who may be absent from the analysis.",
   },
 ];
+const briefingScripts = [
+  [
+    "Start with the shape of the length-of-stay distribution, not a single average.",
+    "Long stays pull the mean upward, while the median remains closer to the middle patient experience.",
+    "Report both summaries, then inspect the long right tail before describing a stay as typical.",
+  ],
+  [
+    "Before calculating, decide what each field represents in the real world.",
+    "Discharge disposition names groups, so averaging its numeric codes would not create a meaningful clinical result.",
+    "Use category counts and a bar chart to compare disposition groups clearly.",
+  ],
+  [
+    "An unusual laboratory value is a signal to investigate, not an automatic reason to delete it.",
+    "Trace the value through its units, timestamp, source system, and related clinical information.",
+    "Keep a reviewable record of the evidence and the decision you make.",
+  ],
+  [
+    "A blank value can reveal something about the care process that produced the dataset.",
+    "Find out who is missing values and whether the pattern connects to workflow, access, or an outcome.",
+    "Describe the pattern before deleting rows or filling in missing values, because either choice can change the population represented.",
+  ],
+];
 const lessonDeepDives = [
   [
     {
@@ -517,6 +539,10 @@ const tutorScenarios = [
       "Before checking any answer, what would you report to a care team as the more typical stay—and what evidence supports that choice?",
     probe:
       "Now name one visual or summary you would inspect next before making a claim about the whole distribution.",
+    transfer:
+      "A clinic has a mean wait time of 31 minutes and a median of 18 minutes. What would you investigate before reporting a typical wait?",
+    quizFocus:
+      "You will independently decide what a gap between mean and median can—and cannot—tell you.",
   },
   {
     case: "A discharge field contains home, skilled nursing facility, hospice, and transferred. A colleague proposes computing its average code.",
@@ -524,6 +550,10 @@ const tutorScenarios = [
       "Commit to a position: what is problematic about that plan, if anything? Explain using what the values represent.",
     probe:
       "Choose one appropriate way to summarize or display this field and explain why it respects the data type.",
+    transfer:
+      "A triage field is stored as red, yellow, and green. What would you check before treating those codes as a numeric measurement?",
+    quizFocus:
+      "You will independently match data meaning to an appropriate summary or display.",
   },
   {
     case: "One creatinine value is far above the rest of a clinical dataset. The analyst has not yet checked the source system, units, or chart context.",
@@ -531,6 +561,10 @@ const tutorScenarios = [
       "What should the analyst do before changing this record? Commit to a first step and explain why.",
     probe:
       "Name two pieces of evidence that would help distinguish a data error from a clinically important extreme value.",
+    transfer:
+      "A potassium result is dramatically lower than every other result that day. What information would you verify before changing it?",
+    quizFocus:
+      "You will independently choose the safest first action when a clinical value looks extreme.",
   },
   {
     case: "Blood-pressure values are blank most often for patients who leave a clinic appointment early.",
@@ -538,6 +572,10 @@ const tutorScenarios = [
       "What does this pattern make you wonder about? Commit to one concern before deciding how to handle the blanks.",
     probe:
       "How could deleting every incomplete row change the patients represented in the analysis?",
+    transfer:
+      "BMI is missing for many urgent walk-in visits but rarely for scheduled visits. What concern does that raise about a complete-case analysis?",
+    quizFocus:
+      "You will independently identify when missingness may change who is represented in a result.",
   },
 ];
 const diagnostic: Question[] = [
@@ -639,6 +677,7 @@ export default function Home() {
   const visual = lessonVisuals[lessonIndex];
   const briefingVisual = briefingVisuals[lessonIndex];
   const deepDive = lessonDeepDives[lessonIndex];
+  const briefingScript = briefingScripts[lessonIndex];
   const tutorScenario = tutorScenarios[lessonIndex];
   const mastery = Math.round((completed.length / lessons.length) * 100);
   function openLesson(index: number) {
@@ -724,13 +763,7 @@ export default function Home() {
       stopNarration();
       return;
     }
-    const narration = [
-      lesson.title,
-      lesson.concept,
-      lesson.teaching,
-      "Clinical example. " + lesson.example,
-      "Why it matters. " + lesson.why,
-    ].join(". ");
+    const narration = [lesson.title, ...briefingScript].join(". ");
     setIsReading(true);
     try {
       const response = await fetch("/api/narration", {
@@ -792,7 +825,11 @@ export default function Home() {
     setTutorLoading(true);
     try {
       const currentPrompt =
-        tutorTurns.length === 0 ? tutorScenario.prompt : tutorScenario.probe;
+        tutorTurns.length === 0
+          ? tutorScenario.prompt
+          : tutorTurns.length === 1
+            ? tutorScenario.probe
+            : tutorScenario.transfer;
       const r = await fetch("/api/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -800,6 +837,8 @@ export default function Home() {
           question: `${tutorScenario.case}\n\n${currentPrompt}`,
           learnerAnswer: answer,
           hintLevel: Math.min(tutorTurns.length, 2),
+          quizFocus: tutorScenario.quizFocus,
+          dialogueStep: tutorTurns.length + 1,
         }),
       });
       const data = (await r.json()) as {
@@ -1285,6 +1324,20 @@ export default function Home() {
                       <img src={briefingVisual.src} alt={briefingVisual.alt} />
                       <figcaption>{briefingVisual.caption}</figcaption>
                     </figure>
+                    <section
+                      className="briefing-notes"
+                      aria-label="Briefing notes"
+                    >
+                      <p className="question-type">BRIEFING NOTES</p>
+                      <ol>
+                        {briefingScript.map((line, index) => (
+                          <li key={line}>
+                            <span>0{index + 1}</span>
+                            <p>{line}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
                     <button
                       className="media-play"
                       onClick={() => {
@@ -1298,9 +1351,9 @@ export default function Home() {
                         : "Play spoken briefing"}
                     </button>
                     <p className="media-note">
-                      A warm, measured narrator connects the core idea, clinical
-                      example, and why it matters. Use the image as you listen,
-                      then move into the required dialogue.
+                      Use the image and briefing notes to anchor the case. The
+                      next step asks you to explain the idea in your own words
+                      before the mastery check.
                     </p>
                     {lessonIndex === 0 && (
                       <a
@@ -1328,7 +1381,7 @@ export default function Home() {
                         REQUIRED PRE-QUIZ DIALOGUE
                       </p>
                       <span>
-                        STEP {Math.min(tutorTurns.length + 1, 2)} OF 2
+                        STEP {Math.min(tutorTurns.length + 1, 3)} OF 3
                       </span>
                     </div>
                     <h1>
@@ -1337,19 +1390,26 @@ export default function Home() {
                       <em>test your thinking.</em>
                     </h1>
                     <p className="lesson-lead">
-                      This is formative and ungraded. Make a defensible claim
-                      before the quiz asks you to retrieve it independently.
+                      This is formative and ungraded. First make a claim, then
+                      examine the evidence, then transfer the idea to a new
+                      case. The quiz will ask you to retrieve it independently.
                     </p>
                     <section className="tutor-case">
                       <span>CLINICAL CASE</span>
                       <p>{tutorScenario.case}</p>
                     </section>
-                    {tutorTurns.length < 2 && (
+                    <section className="tutor-quiz-bridge">
+                      <span>WHAT THIS PREPARES YOU TO DO</span>
+                      <p>{tutorScenario.quizFocus}</p>
+                    </section>
+                    {tutorTurns.length < 3 && (
                       <>
                         <p className="tutor-prompt">
                           {tutorTurns.length === 0
                             ? tutorScenario.prompt
-                            : tutorScenario.probe}
+                            : tutorTurns.length === 1
+                              ? tutorScenario.probe
+                              : tutorScenario.transfer}
                         </p>
                         <textarea
                           aria-label="Your tutor response"
@@ -1368,7 +1428,9 @@ export default function Home() {
                             ? "Tutor is considering your reasoning..."
                             : tutorTurns.length === 0
                               ? "Submit my position"
-                              : "Respond to the probe"}{" "}
+                              : tutorTurns.length === 1
+                                ? "Examine the evidence"
+                                : "Apply the idea"}{" "}
                           <span>&rarr;</span>
                         </button>
                       </>
@@ -1379,19 +1441,19 @@ export default function Home() {
                         <p>{tutorReply}</p>
                       </section>
                     )}
-                    {tutorTurns.length >= 2 && (
+                    {tutorTurns.length >= 3 && (
                       <section className="tutor-complete">
                         <b>Pre-quiz reasoning complete</b>
                         <p>
-                          You have made a claim, defended it with evidence, and
-                          considered a second probe. Now use retrieval practice
-                          to show what you can do independently.
+                          You have made a claim, examined evidence, and applied
+                          the idea in a new setting. The mastery check now asks
+                          you to retrieve that reasoning on your own.
                         </p>
                         <button
                           className="primary-button"
                           onClick={startPractice}
                         >
-                          Begin four-question mastery check <span>&rarr;</span>
+                          Begin independent mastery check <span>&rarr;</span>
                         </button>
                       </section>
                     )}
@@ -1401,6 +1463,14 @@ export default function Home() {
                   <article className="question-card">
                     <p className="question-type">APPLY THE IDEA</p>
                     <h1>Check your reasoning.</h1>
+                    <section className="quiz-brief">
+                      <span>INDEPENDENT MASTERY CHECK</span>
+                      <p>
+                        The tutor prepared your reasoning. Now choose the best
+                        answer independently, check your explanation, and use a
+                        nudge only if you need one.
+                      </p>
+                    </section>
                     <p className="lesson-prompt">{question.prompt}</p>
                     <div className="answer-list">
                       {question.options.map((x, i) => (

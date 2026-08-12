@@ -679,6 +679,25 @@
   line-height: 1.65;
   margin: 10px 0 0;
 }
+.course-app .tutor-quiz-bridge {
+  background: #f1f4ea;
+  border-left: 3px solid #9cab81;
+  margin: 0 0 25px;
+  padding: 14px 16px;
+}
+.course-app .tutor-quiz-bridge > span {
+  color: #667456;
+  font:
+    600 9px "DM Mono",
+    monospace;
+  letter-spacing: 0.09em;
+}
+.course-app .tutor-quiz-bridge p {
+  color: #3d473c;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 7px 0 0;
+}
 .course-app .tutor-prompt {
   color: #1f2720;
   font-family: Fraunces, Georgia, serif;
@@ -788,6 +807,44 @@
   line-height: 1.6;
   padding: 13px 15px;
 }
+.course-app .briefing-notes {
+  border-top: 1px solid #d7d9d0;
+  margin: 28px 0 22px;
+  padding-top: 22px;
+}
+.course-app .briefing-notes .question-type {
+  margin-bottom: 13px;
+}
+.course-app .briefing-notes ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.course-app .briefing-notes li {
+  align-items: flex-start;
+  border-top: 1px solid #e0e2d9;
+  display: grid;
+  gap: 13px;
+  grid-template-columns: 28px 1fr;
+  padding: 13px 0;
+}
+.course-app .briefing-notes li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.course-app .briefing-notes li > span {
+  color: #7b8d66;
+  font:
+    600 10px "DM Mono",
+    monospace;
+  padding-top: 3px;
+}
+.course-app .briefing-notes li p {
+  color: #3e473e;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
 .course-app .media-play {
   align-items: center;
   background: #171c18;
@@ -876,6 +933,25 @@
   letter-spacing: -0.035em;
   line-height: 1.2;
   max-width: 760px;
+}
+.course-app .quiz-brief {
+  border-bottom: 1px solid #dce0d6;
+  margin: -3px 0 27px;
+  padding: 0 0 18px;
+}
+.course-app .quiz-brief span {
+  color: #62715a;
+  font:
+    600 9px "DM Mono",
+    monospace;
+  letter-spacing: 0.1em;
+}
+.course-app .quiz-brief p {
+  color: #596258;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 8px 0 0;
+  max-width: 650px;
 }
 
 /* A cleaner, more editorial landing screen. */
