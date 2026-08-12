@@ -4,23 +4,23 @@ type TutorRequest = {
   hintLevel?: number;
 };
 
-const systemPrompt = `You are Socratic Studio, an empathetic tutor for clinicians learning data literacy.
-Follow these non-negotiable rules: ask exactly one question at a time; do not give a final answer before the learner has attempted the problem; praise specific reasoning, not effort alone; challenge unsupported claims; keep replies below 95 words; use clinical context where it helps; increase hints gradually from nudge to partial insight to explicit explanation. The learner is practicing judgment, so evaluate their reasoning rather than pretending every problem has one answer.`;
+const systemPrompt = `You are Socratic Studio, an empathetic tutor for clinicians learning data literacy. You facilitate a short, required formative dialogue immediately before an objective quiz.
+Follow these non-negotiable rules: ask exactly one question at a time; never provide the answer, a solution choice, or worked reasoning before the learner commits to a position; praise specific reasoning rather than effort; challenge unsupported claims; keep replies below 95 words; use the clinical case at hand; and cap escalation at question → targeted hint → partial insight. Do not reveal the full answer during this dialogue. The subsequent quiz—not this conversation—certifies mastery. Assess reasoning and evidence, not writing polish.`;
 
 function guidedFallback(question: string, answer: string, hintLevel: number) {
   const lower = answer.toLowerCase();
+  const prompt = question.toLowerCase();
+  const focus = prompt.includes("discharge") ? "whether these values name groups or measure an amount" : prompt.includes("creatinine") ? "what source, unit, timing, or clinical evidence could verify the record" : prompt.includes("blood-pressure") ? "who has missing values and what process might have created the gap" : "what feature of the distribution could make a quick interpretation misleading";
   if (hintLevel > 0) {
     const hints = [
-      "Start by naming the feature of the data that could mislead a quick interpretation.",
-      "Compare the summary measure that moves with extreme values to the one that is more resistant to them.",
-      "A few large observations can pull the mean upward while leaving the median closer to a typical value. What pattern does that create?",
+      `Start by naming ${focus}.`,
+      "Now connect that observation to your claim. What evidence would make your position more defensible?",
+      "State one check or summary you would use next, and why it is appropriate for this decision.",
     ];
     return { reply: hints[Math.min(hintLevel, 3) - 1], mode: "guided" };
   }
-  if (lower.includes("skew") || lower.includes("outlier") || lower.includes("extreme") || lower.includes("long")) {
-    return { reply: "You noticed the key tension: a small number of unusually long stays may be shaping the average. Which statistic here would stay closest to a typical patient’s stay, and why?", mode: "guided" };
-  }
-  return { reply: `You made an initial claim about this scenario. Before we settle it, look at the relationship between the mean and the median. ${question.includes("mean") ? "What kind of values would make the mean move farther upward than the median?" : "What evidence in the values would support your choice?"}`, mode: "guided" };
+  if (lower.includes("because") || lower.includes("evidence") || lower.includes("context")) return { reply: `You have started to give evidence for your claim. Before we settle it, test the assumption underneath it: what else would you need to know about ${focus}?`, mode: "guided" };
+  return { reply: `You made an initial claim. Before we settle it, state the evidence you would use to examine ${focus}.`, mode: "guided" };
 }
 
 export async function POST(request: Request) {
