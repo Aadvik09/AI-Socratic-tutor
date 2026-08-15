@@ -1511,10 +1511,18 @@ export default function Home() {
             </div>
             <div className="library-grid">
               {courseLibrary.map((course) => (
-                <button
+                <article
                   key={course.id}
                   className={`library-card ${libraryCourse.id === course.id ? "selected" : ""}`}
                   onClick={() => setLibraryCourseId(course.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setLibraryCourseId(course.id);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="library-card-image">
                     <img src={course.visual} alt={course.visualAlt} />
@@ -1526,12 +1534,20 @@ export default function Home() {
                     <p>{course.description}</p>
                     <footer>
                       <span>{course.level}</span>
+                      <button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          openCourse(course.id);
+                        }}
+                      >
+                        Open course <span>&rarr;</span>
+                      </button>
                       <b>
                         {course.available ? "Open course" : "View outline"} →
                       </b>
                     </footer>
                   </div>
-                </button>
+                </article>
               ))}
             </div>
           </section>
