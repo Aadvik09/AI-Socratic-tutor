@@ -21,11 +21,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Socratic Studio — Data Literacy for Clinicians",
-  description: "A course-based Socratic tutor for careful, defensible clinical data reasoning.",
+  metadataBase: new URL("https://socraticai-two.vercel.app"),
+  title: "SocraticAI — Learn the concept. Defend the why.",
+  description:
+    "College-level courses that pair visual and audio teaching, Socratic reasoning, and independent mastery checks.",
   openGraph: {
-    title: "Socratic Studio — See the data before you trust it.",
-    description: "A course-based Socratic tutor for clinical data literacy.",
+    title: "SocraticAI — Learn the concept. Defend the why.",
+    description:
+      "College-level courses in data, computing, cybersecurity, and more.",
     images: ["/og.png"],
   },
   twitter: {

@@ -88,6 +88,357 @@
   }
 }
 
+/* The broader library carries the same calm, rigorous visual language as the course. */
+.course-app .library-screen {
+  background: #f7f7f2;
+  min-height: calc(100vh - 74px);
+}
+.course-app .library-hero {
+  background: #1c201d;
+  color: #f8f8f3;
+  display: grid;
+  gap: clamp(36px, 7vw, 120px);
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.8fr);
+  padding: clamp(54px, 7vw, 100px) clamp(28px, 9vw, 160px);
+}
+.course-app .library-hero > div {
+  max-width: 690px;
+}
+.course-app .library-hero .eyebrow {
+  color: #c6cec1;
+}
+.course-app .library-hero .eyebrow i {
+  background: #abbc8e;
+}
+.course-app .library-hero h1,
+.course-app .library-heading h2,
+.course-app .library-detail h2 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 560;
+  letter-spacing: -0.065em;
+}
+.course-app .library-hero h1 {
+  font-size: clamp(48px, 6vw, 83px);
+  line-height: 0.93;
+  margin: 22px 0;
+}
+.course-app .library-hero h1 em {
+  color: #b8c99b;
+  font-style: normal;
+}
+.course-app .library-hero > div > p:not(.eyebrow) {
+  color: #c8cec5;
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 600px;
+}
+.course-app .library-hero figure {
+  align-self: center;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+.course-app .library-hero figure::after {
+  border: 1px solid rgba(250, 250, 244, 0.25);
+  content: "";
+  inset: 14px;
+  pointer-events: none;
+  position: absolute;
+}
+.course-app .library-hero figure img {
+  display: block;
+  height: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  width: 100%;
+}
+.course-app .library-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+.course-app .library-hero-meta span {
+  border: 1px solid rgba(229, 235, 221, 0.24);
+  color: #dfe5d8;
+  font:
+    10px "DM Mono",
+    monospace;
+  letter-spacing: 0.03em;
+  padding: 9px 11px;
+}
+.course-app .library-body {
+  margin: 0 auto;
+  max-width: 1500px;
+  padding: clamp(52px, 7vw, 100px) clamp(24px, 6vw, 90px) 64px;
+}
+.course-app .library-heading {
+  align-items: end;
+  display: flex;
+  gap: 50px;
+  justify-content: space-between;
+  margin-bottom: 38px;
+}
+.course-app .library-heading h2 {
+  color: #202720;
+  font-size: clamp(33px, 4vw, 54px);
+  line-height: 0.95;
+  margin: 8px 0 0;
+}
+.course-app .library-heading > p {
+  color: #616a61;
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 410px;
+}
+.course-app .library-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.course-app .library-card {
+  background: #fffefa;
+  border: 1px solid #d8dbd2;
+  color: #1a211a;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  transition:
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    transform 0.24s ease;
+}
+.course-app .library-card:hover {
+  border-color: #8c9b80;
+  box-shadow: 0 18px 36px rgba(26, 34, 26, 0.1);
+  transform: translateY(-5px);
+}
+.course-app .library-card.selected {
+  border-color: #6f8168;
+  box-shadow: 0 0 0 3px rgba(162, 181, 139, 0.22);
+}
+.course-app .library-card-image {
+  height: 170px;
+  overflow: hidden;
+  position: relative;
+}
+.course-app .library-card-image::after {
+  background: linear-gradient(180deg, transparent 30%, rgba(12, 16, 13, 0.35));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+.course-app .library-card-image img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  width: 100%;
+}
+.course-app .library-card:hover .library-card-image img {
+  transform: scale(1.045);
+}
+.course-app .library-card-image span {
+  background: rgba(246, 248, 240, 0.94);
+  bottom: 12px;
+  color: #3c473a;
+  font:
+    600 9px "DM Mono",
+    monospace;
+  left: 13px;
+  letter-spacing: 0.08em;
+  padding: 7px 8px;
+  position: absolute;
+  z-index: 1;
+}
+.course-app .library-card-copy {
+  min-height: 232px;
+  padding: 22px 22px 18px;
+}
+.course-app .library-card-copy small {
+  color: #6b7961;
+  font:
+    600 9px "DM Mono",
+    monospace;
+  letter-spacing: 0.09em;
+}
+.course-app .library-card-copy h3 {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 25px;
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 1.03;
+  margin: 11px 0 10px;
+}
+.course-app .library-card-copy > p {
+  color: #616a61;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+}
+.course-app .library-card-copy footer {
+  align-items: end;
+  border-top: 1px solid #e0e2da;
+  color: #6a7367;
+  display: flex;
+  font-size: 10px;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 13px;
+}
+.course-app .library-card-copy footer b {
+  color: #354235;
+  font:
+    600 10px "DM Mono",
+    monospace;
+}
+.course-app .library-detail {
+  background: #e9ede2;
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+  margin: 0 auto;
+  max-width: 1500px;
+}
+.course-app .library-detail-visual {
+  min-height: 470px;
+  overflow: hidden;
+  position: relative;
+}
+.course-app .library-detail-visual::after {
+  background: linear-gradient(180deg, transparent 52%, rgba(16, 20, 16, 0.48));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+.course-app .library-detail-visual img {
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
+.course-app .library-detail-visual span {
+  bottom: 25px;
+  color: #f5f7ef;
+  font:
+    600 10px "DM Mono",
+    monospace;
+  left: 27px;
+  letter-spacing: 0.1em;
+  position: absolute;
+  z-index: 1;
+}
+.course-app .library-detail-copy {
+  padding: clamp(35px, 5vw, 72px);
+}
+.course-app .library-detail h2 {
+  color: #1f2720;
+  font-size: clamp(35px, 4vw, 58px);
+  line-height: 0.96;
+  margin: 11px 0 17px;
+}
+.course-app .library-detail-lead {
+  color: #505a50;
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 660px;
+}
+.course-app .library-outcomes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 24px 0;
+}
+.course-app .library-outcomes span {
+  background: rgba(255, 255, 250, 0.64);
+  border: 1px solid #cbd2c2;
+  color: #44513e;
+  font-size: 11px;
+  padding: 8px 10px;
+}
+.course-app .library-detail ol {
+  border-top: 1px solid #cdd4c4;
+  list-style: none;
+  margin: 30px 0 0;
+  padding: 0;
+}
+.course-app .library-detail li {
+  align-items: baseline;
+  border-bottom: 1px solid #cdd4c4;
+  color: #2d382d;
+  display: grid;
+  font-size: 14px;
+  gap: 16px;
+  grid-template-columns: 30px 1fr;
+  padding: 14px 0;
+}
+.course-app .library-detail li span {
+  color: #738568;
+  font:
+    10px "DM Mono",
+    monospace;
+}
+.course-app .library-detail-footer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  margin-top: 26px;
+}
+.course-app .library-detail-footer > span:first-child {
+  color: #63705d;
+  font:
+    10px "DM Mono",
+    monospace;
+}
+.course-app .library-detail-footer .primary-button {
+  margin: 0;
+}
+.course-app .course-plan-note {
+  color: #53604f;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 320px;
+}
+@media (max-width: 960px) {
+  .course-app .library-hero {
+    grid-template-columns: 1fr;
+  }
+  .course-app .library-hero figure {
+    max-width: 700px;
+  }
+  .course-app .library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 680px) {
+  .course-app .library-hero {
+    padding: 50px 25px;
+  }
+  .course-app .library-heading {
+    align-items: flex-start;
+    display: block;
+  }
+  .course-app .library-heading > p {
+    margin-top: 16px;
+  }
+  .course-app .library-grid {
+    grid-template-columns: 1fr;
+  }
+  .course-app .library-detail {
+    grid-template-columns: 1fr;
+  }
+  .course-app .library-detail-visual {
+    min-height: 270px;
+  }
+  .course-app .library-detail-copy {
+    padding: 34px 25px 40px;
+  }
+}
+
 /* Signature display type and a calmer, more intentional course path. */
 .course-app .course-main h1,
 .course-app .teaching-card h1,

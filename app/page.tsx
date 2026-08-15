@@ -635,10 +635,132 @@ const diagnostic: Question[] = [
     hint: "What could pull one summary away from the other?",
   },
 ];
+const courseLibrary = [
+  {
+    id: "data-literacy",
+    subject: "DATA + HEALTH",
+    title: "Basic Data Literacy for Clinicians",
+    description:
+      "Learn to inspect clinical data before using it to justify a conclusion.",
+    level: "College + professional",
+    format: "4 lessons · audio, visual, tutor, quiz",
+    visual: "/distribution-mean-median.png",
+    visualAlt: "A right-skewed distribution showing mean and median markers.",
+    available: true,
+    modules: [
+      "Read distributions before reporting an average",
+      "Classify variables before choosing a summary",
+      "Investigate unusual records with clinical context",
+      "Interrogate missingness before cleaning data",
+    ],
+    outcomes: ["Read claims critically", "Use defensible summaries"],
+  },
+  {
+    id: "python-reasoning",
+    subject: "COMPUTER SCIENCE",
+    title: "Python for Computational Reasoning",
+    description:
+      "Use code to turn a vague problem into small, testable steps and reliable programs.",
+    level: "College foundation",
+    format: "6 modules · examples, tutor, labs",
+    visual: "/course-library-hero.png",
+    visualAlt:
+      "A tactile study composition with a terminal window, data, and algorithm tiles.",
+    available: false,
+    modules: [
+      "Trace values, variables, and control flow",
+      "Break a task into functions and tests",
+      "Reason about lists, dictionaries, and data files",
+      "Debug claims with evidence rather than guesswork",
+    ],
+    outcomes: ["Write clear programs", "Debug systematically"],
+  },
+  {
+    id: "cybersecurity",
+    subject: "CYBERSECURITY",
+    title: "Cybersecurity: Think Like a Defender",
+    description:
+      "Learn to recognize attack surfaces, evaluate evidence, and make proportionate security decisions.",
+    level: "College + professional",
+    format: "5 modules · cases, tutor, applied checks",
+    visual: "/course-library-hero.png",
+    visualAlt:
+      "A tactile study composition representing network security and computing systems.",
+    available: false,
+    modules: [
+      "Map assets, threats, and trust boundaries",
+      "Analyze a phishing message without relying on hunches",
+      "Reason about passwords, authentication, and access",
+      "Investigate an incident using an evidence trail",
+    ],
+    outcomes: ["Assess risk", "Explain a defense"],
+  },
+  {
+    id: "algorithms",
+    subject: "COMPUTER SCIENCE",
+    title: "Algorithms & Complexity",
+    description:
+      "Build an intuition for how algorithms scale—and how to choose a method that fits the problem.",
+    level: "College intermediate",
+    format: "6 modules · visual models, tutor, quiz",
+    visual: "/course-library-hero.png",
+    visualAlt:
+      "Algorithm flow tiles and data elements in an editorial study composition.",
+    available: false,
+    modules: [
+      "Compare algorithms by the work they perform",
+      "Recognize growth rates from simple traces",
+      "Use recursion and divide-and-conquer thoughtfully",
+      "Defend a tradeoff between speed, memory, and clarity",
+    ],
+    outcomes: ["Analyze scale", "Choose tradeoffs"],
+  },
+  {
+    id: "sql-modeling",
+    subject: "DATA SYSTEMS",
+    title: "SQL & Relational Data Modeling",
+    description:
+      "Ask sound questions of data by designing tables, relationships, and queries that preserve meaning.",
+    level: "College foundation",
+    format: "5 modules · diagrams, tutor, practice",
+    visual: "/course-library-hero.png",
+    visualAlt:
+      "Layered data visualizations and study objects representing data systems.",
+    available: false,
+    modules: [
+      "Model entities, attributes, and relationships",
+      "Write queries that match the question being asked",
+      "Use joins without accidentally changing the population",
+      "Audit results for duplicates and missing records",
+    ],
+    outcomes: ["Design a schema", "Query responsibly"],
+  },
+  {
+    id: "data-visualization",
+    subject: "DATA + DESIGN",
+    title: "Data Visualization & Evidence",
+    description:
+      "Learn to see the claim inside a chart, spot visual distortion, and design honest comparisons.",
+    level: "College + professional",
+    format: "4 modules · critique, visual studio, quiz",
+    visual: "/honest-chart.png",
+    visualAlt:
+      "An honest chart compared with a visually exaggerated truncated-axis chart.",
+    available: false,
+    modules: [
+      "Match a visual form to the question",
+      "Critique scales, baselines, and comparisons",
+      "Design for uncertainty and context",
+      "Defend a chart choice to a skeptical audience",
+    ],
+    outcomes: ["Read charts critically", "Design honestly"],
+  },
+];
 export default function Home() {
   const [screen, setScreen] = useState<
-    "home" | "course" | "lesson" | "diagnostic" | "result" | "notes"
+    "home" | "library" | "course" | "lesson" | "diagnostic" | "result" | "notes"
   >("home");
+  const [libraryCourseId, setLibraryCourseId] = useState("data-literacy");
   const [lessonIndex, setLessonIndex] = useState(0);
   const [stage, setStage] = useState<
     "learn" | "media" | "tutor" | "practice" | "complete"
@@ -679,6 +801,9 @@ export default function Home() {
   const deepDive = lessonDeepDives[lessonIndex];
   const briefingScript = briefingScripts[lessonIndex];
   const tutorScenario = tutorScenarios[lessonIndex];
+  const libraryCourse =
+    courseLibrary.find((course) => course.id === libraryCourseId) ??
+    courseLibrary[0];
   const mastery = Math.round((completed.length / lessons.length) * 100);
   function openLesson(index: number) {
     if (index > unlocked) return;
@@ -885,6 +1010,12 @@ export default function Home() {
         </button>
         <nav>
           <button
+            className={screen === "library" ? "active" : ""}
+            onClick={() => setScreen("library")}
+          >
+            Library
+          </button>
+          <button
             className={screen === "course" ? "active" : ""}
             onClick={() => setScreen("course")}
           >
@@ -948,6 +1079,12 @@ export default function Home() {
               <button className="text-button" onClick={beginDiagnostic}>
                 Take the diagnostic <span>&rarr;</span>
               </button>
+              <button
+                className="text-button"
+                onClick={() => setScreen("library")}
+              >
+                Browse course library <span>&rarr;</span>
+              </button>
             </div>
           </div>
           <div className="home-orbit">
@@ -979,6 +1116,120 @@ export default function Home() {
               Explore curriculum <span>↓</span>
             </button>
           </div>
+        </section>
+      )}
+
+      {screen === "library" && (
+        <section className="library-screen">
+          <section className="library-hero">
+            <div>
+              <p className="eyebrow">
+                <i /> THE SOCRATIC COURSE LIBRARY
+              </p>
+              <h1>
+                Learn the concept.
+                <br />
+                <em>Defend the why.</em>
+              </h1>
+              <p>
+                College-level courses built around a consistent learning loop:
+                clear teaching, visual and audio support, formative Socratic
+                reasoning, then an independent mastery check.
+              </p>
+              <div className="library-hero-meta">
+                <span>6 course pathways</span>
+                <span>Visual + audio learning</span>
+                <span>Required reasoning before quizzes</span>
+              </div>
+            </div>
+            <figure>
+              <img
+                src="/course-library-hero.png"
+                alt="An editorial study composition representing computing, data, algorithms, and cybersecurity."
+              />
+            </figure>
+          </section>
+
+          <section className="library-body">
+            <div className="library-heading">
+              <div>
+                <p className="question-type">EXPLORE BY DISCIPLINE</p>
+                <h2>Built for deeper learning.</h2>
+              </div>
+              <p>
+                Every pathway starts with an explanation and an example, then
+                asks the learner to reason before a quiz measures mastery.
+              </p>
+            </div>
+            <div className="library-grid">
+              {courseLibrary.map((course) => (
+                <button
+                  key={course.id}
+                  className={`library-card ${libraryCourse.id === course.id ? "selected" : ""}`}
+                  onClick={() => setLibraryCourseId(course.id)}
+                >
+                  <div className="library-card-image">
+                    <img src={course.visual} alt={course.visualAlt} />
+                    <span>
+                      {course.available ? "AVAILABLE NOW" : "COURSE PLAN"}
+                    </span>
+                  </div>
+                  <div className="library-card-copy">
+                    <small>{course.subject}</small>
+                    <h3>{course.title}</h3>
+                    <p>{course.description}</p>
+                    <footer>
+                      <span>{course.level}</span>
+                      <b>
+                        {course.available ? "Open course" : "View outline"} →
+                      </b>
+                    </footer>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="library-detail" aria-live="polite">
+            <div className="library-detail-visual">
+              <img src={libraryCourse.visual} alt={libraryCourse.visualAlt} />
+              <span>{libraryCourse.subject}</span>
+            </div>
+            <div className="library-detail-copy">
+              <p className="question-type">COURSE BLUEPRINT</p>
+              <h2>{libraryCourse.title}</h2>
+              <p className="library-detail-lead">{libraryCourse.description}</p>
+              <div className="library-outcomes">
+                {libraryCourse.outcomes.map((outcome) => (
+                  <span key={outcome}>✦ {outcome}</span>
+                ))}
+              </div>
+              <ol>
+                {libraryCourse.modules.map((module, index) => (
+                  <li key={module}>
+                    <span>0{index + 1}</span>
+                    {module}
+                  </li>
+                ))}
+              </ol>
+              <div className="library-detail-footer">
+                <span>{libraryCourse.format}</span>
+                {libraryCourse.available ? (
+                  <button
+                    className="primary-button"
+                    onClick={() => setScreen("course")}
+                  >
+                    Start this course <span>&rarr;</span>
+                  </button>
+                ) : (
+                  <span className="course-plan-note">
+                    This course is designed and ready for the same tutor-first
+                    learning pattern.
+                  </span>
+                )}
+              </div>
+            </div>
+          </section>
         </section>
       )}
 
