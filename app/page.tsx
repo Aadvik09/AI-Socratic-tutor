@@ -663,10 +663,9 @@ const courseLibrary = [
       "Use code to turn a vague problem into small, testable steps and reliable programs.",
     level: "College foundation",
     format: "6 modules · examples, tutor, labs",
-    visual: "/course-library-hero.png",
-    visualAlt:
-      "A tactile study composition with a terminal window, data, and algorithm tiles.",
-    available: false,
+    visual: "/python-reasoning.png",
+    visualAlt: "A Python notebook and terminal in a warm editorial study composition.",
+    available: true,
     modules: [
       "Trace values, variables, and control flow",
       "Break a task into functions and tests",
@@ -683,10 +682,9 @@ const courseLibrary = [
       "Learn to recognize attack surfaces, evaluate evidence, and make proportionate security decisions.",
     level: "College + professional",
     format: "5 modules · cases, tutor, applied checks",
-    visual: "/course-library-hero.png",
-    visualAlt:
-      "A tactile study composition representing network security and computing systems.",
-    available: false,
+    visual: "/cybersecurity.png",
+    visualAlt: "Security tokens and a response checklist arranged on a charcoal desk.",
+    available: true,
     modules: [
       "Map assets, threats, and trust boundaries",
       "Analyze a phishing message without relying on hunches",
@@ -703,10 +701,9 @@ const courseLibrary = [
       "Build an intuition for how algorithms scale—and how to choose a method that fits the problem.",
     level: "College intermediate",
     format: "6 modules · visual models, tutor, quiz",
-    visual: "/course-library-hero.png",
-    visualAlt:
-      "Algorithm flow tiles and data elements in an editorial study composition.",
-    available: false,
+    visual: "/algorithms.png",
+    visualAlt: "A tabletop study of branching paths, sorting tiles, and a maze grid.",
+    available: true,
     modules: [
       "Compare algorithms by the work they perform",
       "Recognize growth rates from simple traces",
@@ -723,10 +720,9 @@ const courseLibrary = [
       "Ask sound questions of data by designing tables, relationships, and queries that preserve meaning.",
     level: "College foundation",
     format: "5 modules · diagrams, tutor, practice",
-    visual: "/course-library-hero.png",
-    visualAlt:
-      "Layered data visualizations and study objects representing data systems.",
-    available: false,
+    visual: "/sql-modeling.png",
+    visualAlt: "Linked relational data cards, a database token, and key-shaped markers.",
+    available: true,
     modules: [
       "Model entities, attributes, and relationships",
       "Write queries that match the question being asked",
@@ -743,10 +739,9 @@ const courseLibrary = [
       "Learn to see the claim inside a chart, spot visual distortion, and design honest comparisons.",
     level: "College + professional",
     format: "4 modules · critique, visual studio, quiz",
-    visual: "/honest-chart.png",
-    visualAlt:
-      "An honest chart compared with a visually exaggerated truncated-axis chart.",
-    available: false,
+    visual: "/data-visualization.png",
+    visualAlt: "Clear and misleading chart cards arranged with a ruler and annotation pencil.",
+    available: true,
     modules: [
       "Match a visual form to the question",
       "Critique scales, baselines, and comparisons",
@@ -756,11 +751,336 @@ const courseLibrary = [
     outcomes: ["Read charts critically", "Design honestly"],
   },
 ];
+
+type CourseProgram = {
+  lessons: Lesson[];
+  learningExtras: typeof learningExtras;
+  lessonVisuals: typeof lessonVisuals;
+  briefingVisuals: typeof briefingVisuals;
+  briefingScripts: string[][];
+  lessonDeepDives: typeof lessonDeepDives;
+  tutorScenarios: typeof tutorScenarios;
+};
+
+function makeQuestions(
+  prompt: string,
+  options: string[],
+  correct: number,
+  feedback: string,
+  hint: string,
+  transfer: string,
+): Question[] {
+  return [
+    { prompt, options, correct, feedback, hint },
+    {
+      prompt: `Which habit best supports this idea: ${transfer}`,
+      options: [
+        "State the claim, check the relevant evidence, then decide.",
+        "Choose the first answer that sounds familiar.",
+        "Skip the evidence when a result feels plausible.",
+        "Treat an output as proof without checking its assumptions.",
+      ],
+      correct: 0,
+      feedback:
+        "A defensible decision makes its claim and the evidence supporting it visible. That habit transfers across problems.",
+      hint: "Which choice keeps the evidence connected to the conclusion?",
+    },
+    {
+      prompt: `Apply the same principle: ${transfer}`,
+      options,
+      correct,
+      feedback,
+      hint,
+    },
+    {
+      prompt: "Before you finalize an answer, what is the strongest final check?",
+      options: [
+        "Compare the answer with the question, assumptions, and evidence.",
+        "Add more technical language.",
+        "Use a larger number because it looks more certain.",
+        "Avoid explaining the decision.",
+      ],
+      correct: 0,
+      feedback:
+        "A final check reconnects the result to the original question and exposes assumptions before they become conclusions.",
+      hint: "A good answer remains accountable to the question it was meant to answer.",
+    },
+  ];
+}
+
+function makeProgram(
+  lessons: Lesson[],
+  visual: string,
+  visualAlt: string,
+  source: { label: string; href: string },
+): CourseProgram {
+  return {
+    lessons,
+    learningExtras: lessons.map((lesson) => ({
+      steps: [lesson.teaching, lesson.example, lesson.why],
+      sources: [source],
+    })),
+    lessonVisuals: lessons.map((lesson) => ({
+      src: visual,
+      alt: visualAlt,
+      caption: `${lesson.title}: use this visual as a concrete cue for the concept before attempting the practice questions.`,
+    })),
+    briefingVisuals: lessons.map((lesson) => ({
+      src: visual,
+      alt: visualAlt,
+      caption: `${lesson.title}: the briefing connects the key idea to a realistic decision.`,
+    })),
+    briefingScripts: lessons.map((lesson) => [
+      lesson.concept,
+      lesson.teaching,
+      lesson.why,
+    ]),
+    lessonDeepDives: lessons.map((lesson) => [
+      { title: "Core idea", copy: lesson.concept, example: lesson.example },
+      { title: "How to use it", copy: lesson.teaching, example: lesson.why },
+      {
+        title: "A defensible move",
+        copy: "Name the assumption you are making, then identify the evidence that would change your mind.",
+        example: "This is the bridge between a correct-looking answer and a reasoned one.",
+      },
+    ]),
+    tutorScenarios: lessons.map((lesson) => ({
+      case: lesson.example,
+      prompt: `Commit to a position: how would you approach this example using ${lesson.title.toLowerCase()}? Explain your first move.`,
+      probe: `What evidence would you seek before you felt confident in that decision?`,
+      transfer: `Now apply the idea to a new but similar situation. What would stay the same, and what would you re-check?`,
+      quizFocus: `The quiz asks you to independently apply the reasoning from ${lesson.title.toLowerCase()}.`,
+    })),
+  };
+}
+
+const coursePrograms: Record<string, CourseProgram> = {
+  "data-literacy": {
+    lessons,
+    learningExtras,
+    lessonVisuals,
+    briefingVisuals,
+    briefingScripts,
+    lessonDeepDives,
+    tutorScenarios,
+  },
+  "python-reasoning": makeProgram(
+    [
+      {
+        id: "01", unit: "PROGRAM STATE", title: "Trace values before trusting output", description: "Follow assignments and expressions one step at a time.",
+        concept: "A variable names a value at a particular moment; an assignment changes what that name refers to.",
+        teaching: "Trace short programs with a table: write each line, update the value, and predict output before running code.",
+        example: "A script sets total = 8, then total = total + 3, then prints total.",
+        why: "The printed value is 11 because the second assignment uses the old value and stores a new one.",
+        takeaways: ["Variables hold current values, not permanent equations.", "Predict before you run.", "Trace state line by line."],
+        questions: makeQuestions("After x = 4; x = x + 2, what is x?", ["4", "6", "x + 2", "An error"], 1, "The second line evaluates 4 + 2 and stores 6 back in x.", "What value does x have just before the second line?", "A counter begins at 4 and is increased by 2."),
+      },
+      {
+        id: "02", unit: "CONTROL FLOW", title: "Choose a path with evidence", description: "Use conditions and loops to make a program's choices explicit.",
+        concept: "A conditional evaluates a true-or-false expression; a loop repeats a clearly defined action over a changing state.",
+        teaching: "Read the condition in plain language, then test it with a concrete value before predicting the branch or repetition.",
+        example: "A program labels a temperature at least 38 as fever; otherwise it labels it not fever.",
+        why: "The boundary belongs to the condition. For 38 exactly, the at-least branch runs.",
+        takeaways: ["Conditions express decision rules.", "Boundary values deserve explicit tests.", "Loops need a changing state or finite collection."],
+        questions: makeQuestions("If a condition is `score >= 70` and score is 70, which branch runs?", ["The true branch", "The false branch", "Both branches", "Neither branch"], 0, "Greater-than-or-equal includes the boundary value 70.", "Read >= as 'at least.'", "A threshold rule uses `>= 70` for a score of 70."),
+      },
+      {
+        id: "03", unit: "FUNCTIONS + TESTS", title: "Make a claim small enough to test", description: "Break a problem into focused functions and examples.",
+        concept: "A function gives a named task explicit inputs and an output; tests check its behavior on representative cases.",
+        teaching: "Write one function for one job, specify the expected result, then test ordinary, boundary, and unusual cases.",
+        example: "A `mean(values)` function should be tested on [2, 4, 6], a one-item list, and an empty list policy.",
+        why: "A clear policy for an empty list prevents a hidden assumption from becoming a silent bug.",
+        takeaways: ["Functions make reasoning local.", "Tests include boundaries, not only happy paths.", "Specify behavior before implementation."],
+        questions: makeQuestions("Which is the strongest test set for a function that finds a maximum?", ["Only [4, 7, 2]", "A normal list, a one-item list, and an empty-list policy", "Only a list of positive numbers", "No tests if code runs once"], 1, "Representative, boundary, and defined edge cases test the contract rather than a single example.", "What cases might behave differently from the usual input?", "You are testing a function that receives a normal list, one item, or no items."),
+      },
+      {
+        id: "04", unit: "DATA + DEBUGGING", title: "Debug the assumption, not just the line", description: "Use evidence to locate a mismatch between expectation and program state.",
+        concept: "Debugging is an investigation: compare expected and actual values, isolate the smallest failing case, and test a hypothesis.",
+        teaching: "Use a small input, inspect intermediate values, and change one plausible cause at a time.",
+        example: "A program counts duplicate emails because it normalizes spaces after, rather than before, comparing strings.",
+        why: "The bug is an assumption about equivalence; inspecting cleaned and raw values reveals it.",
+        takeaways: ["Start with a reproducible small case.", "Inspect intermediate state.", "Change one hypothesis at a time."],
+        questions: makeQuestions("What is the best first debugging move when output is surprising?", ["Rewrite everything", "Use a small reproducible input and inspect intermediate values", "Add random delays", "Assume the language is broken"], 1, "A small case makes the program's state visible and lets you test a concrete hypothesis.", "What would make the mismatch easiest to observe?", "A list gives the wrong count only when two values differ by trailing spaces."),
+      },
+    ],
+    "/python-reasoning.png", "A Python notebook and terminal in a warm editorial study composition.",
+    { label: "Python documentation: tutorial", href: "https://docs.python.org/3/tutorial/" },
+  ),
+  cybersecurity: makeProgram(
+    [
+      {
+        id: "01", unit: "RISK MODELING", title: "Map what needs protection", description: "Connect assets, threats, and likely harm before selecting a control.",
+        concept: "Risk reasoning begins with an asset, a threat, a vulnerability, and the impact if that path succeeds.",
+        teaching: "Name the asset and the harm first; then ask who could affect it, through which weakness, and how a control changes the risk.",
+        example: "A clinic portal holds appointment data; reused passwords create an account-takeover path.",
+        why: "Multi-factor authentication changes the attacker path, but it does not remove the need to protect recovery processes.",
+        takeaways: ["Risk is contextual.", "Controls reduce specific paths.", "Start with assets and harm."],
+        questions: makeQuestions("Which is an asset in a risk analysis?", ["A patient appointment database", "A vague feeling of danger", "A random password", "A marketing slogan"], 0, "An asset is something valuable the organization needs to protect.", "What valuable thing could be affected?", "You are prioritizing security for records stored in a scheduling system."),
+      },
+      {
+        id: "02", unit: "SOCIAL ENGINEERING", title: "Read a message like evidence", description: "Evaluate phishing cues without trusting one superficial signal.",
+        concept: "Phishing attempts exploit urgency, authority, and look-alike context to obtain credentials or trigger unsafe actions.",
+        teaching: "Pause, verify the request using a separate trusted channel, and inspect the actual sender and destination before acting.",
+        example: "An email asks payroll staff to open a shared document immediately; the display name is familiar but the address is not.",
+        why: "A familiar name is not proof. Independent verification breaks the attacker-controlled channel.",
+        takeaways: ["Urgency is a cue, not proof.", "Verify out of band.", "Inspect destinations before entering credentials."],
+        questions: makeQuestions("What is the safest response to an urgent credential request from an unfamiliar sender address?", ["Use the link quickly", "Verify through a trusted, separate channel", "Forward credentials by reply", "Ignore every security message forever"], 1, "Independent verification avoids relying on the suspicious message itself.", "How can you verify without using the message's link or reply path?", "A message claims an account will be closed today unless you sign in."),
+      },
+      {
+        id: "03", unit: "ACCESS CONTROL", title: "Make access proportionate", description: "Use authentication and authorization for a defined purpose.",
+        concept: "Authentication establishes who is requesting access; authorization limits what that identity may do.",
+        teaching: "Give people the minimum access needed for their task and review high-impact permissions regularly.",
+        example: "A student worker needs to update contact details but should not approve refunds or export the entire customer table.",
+        why: "Least privilege reduces the harm from mistakes, compromised accounts, and unnecessary access.",
+        takeaways: ["Authentication and authorization differ.", "Least privilege is task-specific.", "Review access as roles change."],
+        questions: makeQuestions("Which choice is authorization rather than authentication?", ["Checking a password", "Allowing a verified user to approve refunds", "Sending a login code", "Confirming a device"], 1, "Authorization decides what an authenticated identity may do.", "Which action controls permissions after identity is known?", "A verified user needs permission to export a sensitive report."),
+      },
+      {
+        id: "04", unit: "INCIDENT RESPONSE", title: "Contain, preserve, and learn", description: "Turn an alert into a proportionate evidence-guided response.",
+        concept: "Incident response balances containment, evidence preservation, communication, and recovery rather than treating every alert as a single fix.",
+        teaching: "Follow the response plan: confirm the signal, limit further harm, preserve relevant evidence, communicate through designated channels, and learn after recovery.",
+        example: "A workstation begins encrypting shared files and an alert reports unusual file activity.",
+        why: "Disconnecting the affected system can limit spread while logs and timestamps support later analysis.",
+        takeaways: ["Containment comes before convenience.", "Preserve evidence.", "Recovery includes improvement."],
+        questions: makeQuestions("A workstation appears to be encrypting shared files. What is the strongest immediate priority?", ["Contain the affected system using the response plan", "Delete all logs", "Wait for the next day", "Post details publicly"], 0, "Containment limits additional harm while preserving the path for investigation and recovery.", "Which action reduces spread without destroying evidence?", "An alert suggests active ransomware behavior on a shared drive."),
+      },
+    ],
+    "/cybersecurity.png", "Security tokens and a response checklist arranged on a charcoal desk.",
+    { label: "NIST Cybersecurity Framework 2.0", href: "https://www.nist.gov/cyberframework" },
+  ),
+  algorithms: makeProgram(
+    [
+      {
+        id: "01", unit: "ALGORITHMIC THINKING", title: "Count the work, not the vibe", description: "Describe an algorithm as explicit steps before comparing it.",
+        concept: "An algorithm is a precise procedure; comparison starts by identifying the work it performs as input grows.",
+        teaching: "Trace a small input, count the repeated operation, and separate the algorithm from the speed of one computer.",
+        example: "To find a name in an unsorted list, a scan checks items one by one until it finds a match or reaches the end.",
+        why: "The worst case grows with the list length because every item may need inspection.",
+        takeaways: ["Algorithms are procedures.", "Trace the repeated operation.", "Separate hardware from growth."],
+        questions: makeQuestions("For an unsorted list, what is the worst-case work of scanning for a name?", ["Check one item", "Check every item", "Sort instantly", "No comparison is needed"], 1, "If the name is last or absent, a linear scan may inspect each item.", "What happens when the target is absent?", "You search an unsorted list of 1,000 names and the target is not present."),
+      },
+      {
+        id: "02", unit: "GROWTH RATES", title: "See what scales", description: "Use Big-O to compare how work grows with input size.",
+        concept: "Asymptotic analysis focuses on growth for large inputs, ignoring constant factors that depend on a particular machine.",
+        teaching: "Identify nesting and halving: one pass is linear, a pairwise comparison can be quadratic, and repeated halving is logarithmic.",
+        example: "Checking every pair among n student projects requires roughly n times n comparisons.",
+        why: "Doubling n makes a quadratic workload roughly four times larger, not merely twice as large.",
+        takeaways: ["Growth matters at scale.", "Nested independent loops often multiply work.", "Halving is a distinctive pattern."],
+        questions: makeQuestions("A process compares every item with every other item. Which growth rate best fits?", ["O(1)", "O(log n)", "O(n)", "O(n²)"], 3, "Independent nested comparisons produce about n × n work.", "How many pairs are considered as the list grows?", "A program compares every student record with every other student record."),
+      },
+      {
+        id: "03", unit: "SEARCH + SORT", title: "Use structure to reduce work", description: "Choose a search method that matches what is already known.",
+        concept: "Binary search gains speed by discarding half a sorted search space at each comparison.",
+        teaching: "Ask first whether the collection is sorted and whether maintaining that order is worth its cost for the task.",
+        example: "A sorted phone directory lets you compare a target with the midpoint and discard one half repeatedly.",
+        why: "Binary search is fast because it uses the order; it is not valid on an arbitrary unsorted list.",
+        takeaways: ["Binary search needs sorted data.", "Order is an investment.", "Match the method to the representation."],
+        questions: makeQuestions("What condition is required before binary search is valid?", ["The data are sorted by the search key", "The list is random", "There are exactly two items", "Every item is unique"], 0, "Binary search relies on order to justify discarding half the remaining values.", "What evidence lets you discard one half safely?", "You want to use binary search for last names in a directory."),
+      },
+      {
+        id: "04", unit: "TRADEOFFS", title: "Defend the tradeoff", description: "Choose for time, memory, accuracy, and maintainability—not speed alone.",
+        concept: "A good algorithmic choice considers constraints: input size, update frequency, memory, correctness needs, and implementation risk.",
+        teaching: "Name the workload and constraints before declaring a method best; a faster lookup may cost memory or update time.",
+        example: "A hash table speeds repeated lookups but requires extra storage and a strategy for collisions.",
+        why: "The right choice changes if memory is scarce, ordering matters, or records are constantly updated.",
+        takeaways: ["There is rarely one universal best method.", "State the workload.", "Include costs beyond running time."],
+        questions: makeQuestions("Why might a faster lookup structure not always be the best choice?", ["It may use more memory or make other operations harder", "Speed never matters", "Algorithms have no constraints", "All structures cost the same"], 0, "Choosing a structure means balancing multiple costs against the actual workload.", "What resource or operation might be traded for faster lookup?", "A mobile device needs fast lookup but has tight memory limits."),
+      },
+    ],
+    "/algorithms.png", "A tabletop study of branching paths, sorting tiles, and a maze grid.",
+    { label: "MIT OpenCourseWare: Introduction to Algorithms", href: "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/" },
+  ),
+  "sql-modeling": makeProgram(
+    [
+      {
+        id: "01", unit: "RELATIONAL THINKING", title: "Model what the facts are about", description: "Separate entities, attributes, and relationships before writing queries.",
+        concept: "A relational model stores facts about entities in tables and connects them through meaningful keys.",
+        teaching: "Ask what one row represents. Give each entity a stable key, and avoid placing repeating groups in one cell.",
+        example: "Students belong in a Students table, courses in Courses, and enrollments in a table that links one student to one course.",
+        why: "The enrollment relationship has its own facts, such as term and grade, which do not belong to either entity alone.",
+        takeaways: ["One table has one row meaning.", "Keys identify rows.", "Relationships can hold their own facts."],
+        questions: makeQuestions("What does a row in an Enrollments table most naturally represent?", ["One student taking one course", "All courses at a university", "A random list of names", "One entire department"], 0, "An enrollment is a relationship between a particular student and a particular course.", "What two entities does an enrollment connect?", "You need to record a student's course, term, and grade."),
+      },
+      {
+        id: "02", unit: "QUERY MEANING", title: "Ask exactly the question you mean", description: "Use selection, projection, and conditions deliberately.",
+        concept: "A SQL query is a claim about a defined set of rows and columns; filters determine who is included.",
+        teaching: "Read a query in plain language: which table, which rows, which columns, and which grouping does it request?",
+        example: "SELECT name FROM Students WHERE major = 'Biology' asks for names only among biology students.",
+        why: "Moving a condition or omitting it changes the population behind the answer.",
+        takeaways: ["Filters define the population.", "Columns define the output.", "Translate SQL into a sentence."],
+        questions: makeQuestions("What does a WHERE clause primarily control?", ["Which rows are included", "The font of results", "The database password", "The table's physical location"], 0, "WHERE filters the rows that satisfy the stated condition.", "Which part decides who belongs in the result?", "You only want orders created after January 1."),
+      },
+      {
+        id: "03", unit: "JOINS", title: "Join without changing the population", description: "Check keys and cardinality before trusting a combined table.",
+        concept: "A join combines rows through a matching condition; duplicate keys or mismatched grain can multiply or drop records.",
+        teaching: "State the expected row grain before the join, inspect key uniqueness, and compare counts before and after.",
+        example: "Joining one order to multiple order-line rows will create multiple rows for that order.",
+        why: "A total can be inflated if an order-level amount is repeated once for every line item.",
+        takeaways: ["Joins can multiply rows.", "Match grain to the question.", "Audit row counts after joins."],
+        questions: makeQuestions("Why can a join inflate an order-level total?", ["One order can match several line items, repeating the order amount", "Joins always remove rows", "SQL ignores duplicate keys", "Tables cannot be related"], 0, "One-to-many joins repeat the one-side values across the many-side rows.", "How many line items might match one order?", "You join order totals to individual order lines and then sum order totals."),
+      },
+      {
+        id: "04", unit: "AGGREGATES + AUDIT", title: "Aggregate, then audit", description: "Summarize groups while checking denominator and duplicates.",
+        concept: "Aggregate functions summarize the rows currently present; GROUP BY defines which rows are summarized together.",
+        teaching: "Before reporting a count or average, inspect the unit of analysis, missing values, duplicate records, and denominator.",
+        example: "Counting rows in a visit table answers visits, not necessarily unique patients.",
+        why: "A patient with three visits contributes three rows unless the query explicitly counts distinct patient IDs.",
+        takeaways: ["Counts depend on row grain.", "Distinct changes the unit counted.", "Audit the denominator."],
+        questions: makeQuestions("When should you use COUNT(DISTINCT patient_id)?", ["When the question is how many unique patients", "When counting every visit", "To sort a table", "To create a password"], 0, "DISTINCT removes repeated patient IDs before counting, matching a unique-patient question.", "Does the question ask about events or people?", "A patient appears in the Visits table three times, and you need the number of patients."),
+      },
+    ],
+    "/sql-modeling.png", "Linked relational data cards, a database token, and key-shaped markers.",
+    { label: "PostgreSQL documentation: SQL tutorial", href: "https://www.postgresql.org/docs/current/tutorial-sql.html" },
+  ),
+  "data-visualization": makeProgram(
+    [
+      {
+        id: "01", unit: "CHART CHOICE", title: "Match the chart to the question", description: "Select a visual encoding that lets the comparison be seen.",
+        concept: "A chart is an argument: its form should match the comparison, trend, distribution, or relationship the reader must evaluate.",
+        teaching: "Name the question first, then choose an encoding that makes the relevant values easy to compare without decorative noise.",
+        example: "To compare infection rates across six units, a sorted bar chart makes magnitude differences easier to read than a pie chart.",
+        why: "Human comparison of aligned lengths is more reliable than comparison of many angles and areas.",
+        takeaways: ["Start with the decision question.", "Choose a perceptually direct comparison.", "Reduce decoration that competes with evidence."],
+        questions: makeQuestions("Which chart is usually clearest for comparing values across six named units?", ["A sorted bar chart", "A pie chart with six similar slices", "A decorative 3D chart", "A table with no labels"], 0, "Aligned bar lengths make comparisons across named groups easy to judge.", "What chart lets the reader compare magnitudes on a common baseline?", "You need to compare rates across six hospital units."),
+      },
+      {
+        id: "02", unit: "SCALE + BASELINE", title: "Interrogate the visual claim", description: "Recognize how axes, ranges, and design choices change perceived difference.",
+        concept: "A truncated axis can visually amplify a small absolute difference; scale choices must be clear and appropriate to the claim.",
+        teaching: "Read the baseline, range, units, and interval before reacting to a dramatic visual gap.",
+        example: "Two satisfaction scores of 92% and 94% look dramatically different when a bar chart axis starts at 90%.",
+        why: "The numbers differ by two percentage points; the chart's cropped range makes that modest difference look much larger.",
+        takeaways: ["Check baselines.", "Separate absolute from visual difference.", "Use context when a truncated scale is justified."],
+        questions: makeQuestions("What is the main risk of a truncated axis on a bar chart?", ["It can exaggerate a modest difference", "It always improves accuracy", "It removes all labels", "It makes data categorical"], 0, "A narrow range can make small changes appear visually enormous relative to their actual magnitude.", "Where does the displayed scale begin?", "A bar chart begins at 90% and compares values of 92% and 94%."),
+      },
+      {
+        id: "03", unit: "UNCERTAINTY", title: "Show what the estimate cannot say", description: "Present uncertainty, sample size, and variation as part of the evidence.",
+        concept: "A point estimate is incomplete when its uncertainty, variability, or denominator changes how confidently it should be interpreted.",
+        teaching: "Label the population and time period, show uncertainty where appropriate, and avoid claiming a precise difference the data do not support.",
+        example: "A clinic rate rises from 2% to 4%, but the underlying sample is only 50 patients and the interval is wide.",
+        why: "The change may matter, but the small denominator means the estimate needs careful contextual interpretation.",
+        takeaways: ["Denominators matter.", "Uncertainty belongs in the story.", "Precision is not the same as certainty."],
+        questions: makeQuestions("Why should a reader see the denominator alongside a rate?", ["It helps judge how stable and meaningful the estimate is", "It makes the chart prettier", "It removes uncertainty", "It guarantees causation"], 0, "The same percentage can reflect very different evidence when based on 10 versus 10,000 observations.", "How many observations produced the rate?", "A rate changes from 2% to 4% in a sample of 50 people."),
+      },
+      {
+        id: "04", unit: "DESIGN DEFENSE", title: "Defend an honest comparison", description: "Explain a chart choice to a skeptical reader.",
+        concept: "An honest visualization makes its population, measure, comparison, scale, and uncertainty inspectable rather than hiding them behind polish.",
+        teaching: "Write a one-sentence claim, then check that every visual choice supports that claim without overstating it.",
+        example: "A line chart shows monthly wait time with a clearly labeled median, sample size, and a note describing an outlier month.",
+        why: "Readers can see what changed, how it was summarized, and what context limits the conclusion.",
+        takeaways: ["Make the claim explicit.", "Label the measure and population.", "Invite inspection, not persuasion by decoration."],
+        questions: makeQuestions("Which addition most improves the defensibility of a trend chart?", ["A labeled measure, population, time period, and relevant context", "A stronger gradient", "A 3D effect", "Fewer labels regardless of audience"], 0, "Context lets a reader evaluate what the trend actually represents and how far the claim can go.", "What information would a skeptical reader need to evaluate the claim?", "You are charting monthly wait time after a major workflow change."),
+      },
+    ],
+    "/data-visualization.png", "Clear and misleading chart cards arranged with a ruler and annotation pencil.",
+    { label: "NIST: Exploratory Data Analysis", href: "https://www.itl.nist.gov/div898/handbook/eda/section1/eda11.htm" },
+  ),
+};
 export default function Home() {
   const [screen, setScreen] = useState<
     "home" | "library" | "course" | "lesson" | "diagnostic" | "result" | "notes"
   >("home");
   const [libraryCourseId, setLibraryCourseId] = useState("data-literacy");
+  const [activeCourseId, setActiveCourseId] = useState("data-literacy");
   const [lessonIndex, setLessonIndex] = useState(0);
   const [stage, setStage] = useState<
     "learn" | "media" | "tutor" | "practice" | "complete"
@@ -771,8 +1091,9 @@ export default function Home() {
     "idle",
   );
   const [hint, setHint] = useState(false);
-  const [completed, setCompleted] = useState<number[]>([]);
-  const [unlocked, setUnlocked] = useState(0);
+  const [progressByCourse, setProgressByCourse] = useState<
+    Record<string, { completed: number[]; unlocked: number }>
+  >({});
   const [tutorReply, setTutorReply] = useState("");
   const [tutorLoading, setTutorLoading] = useState(false);
   const [tutorInput, setTutorInput] = useState("");
@@ -790,21 +1111,38 @@ export default function Home() {
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [quickNote, setQuickNote] = useState("");
   const [savedNotes, setSavedNotes] = useState<string[]>([]);
-  const lesson = lessons[lessonIndex];
+  const activeCourse = coursePrograms[activeCourseId] ?? coursePrograms["data-literacy"];
+  const activeCourseMeta = courseLibrary.find((course) => course.id === activeCourseId) ?? courseLibrary[0];
+  const completed = progressByCourse[activeCourseId]?.completed ?? [];
+  const unlocked = progressByCourse[activeCourseId]?.unlocked ?? 0;
+  const lesson = activeCourse.lessons[lessonIndex];
   const questions = lesson.questions.map((q) =>
     level === "Accelerated" && q.challenge ? { ...q, prompt: q.challenge } : q,
   );
   const question = questions[questionIndex];
-  const extra = learningExtras[lessonIndex];
-  const visual = lessonVisuals[lessonIndex];
-  const briefingVisual = briefingVisuals[lessonIndex];
-  const deepDive = lessonDeepDives[lessonIndex];
-  const briefingScript = briefingScripts[lessonIndex];
-  const tutorScenario = tutorScenarios[lessonIndex];
+  const extra = activeCourse.learningExtras[lessonIndex];
+  const visual = activeCourse.lessonVisuals[lessonIndex];
+  const briefingVisual = activeCourse.briefingVisuals[lessonIndex];
+  const deepDive = activeCourse.lessonDeepDives[lessonIndex];
+  const briefingScript = activeCourse.briefingScripts[lessonIndex];
+  const tutorScenario = activeCourse.tutorScenarios[lessonIndex];
   const libraryCourse =
     courseLibrary.find((course) => course.id === libraryCourseId) ??
     courseLibrary[0];
-  const mastery = Math.round((completed.length / lessons.length) * 100);
+  const mastery = Math.round((completed.length / activeCourse.lessons.length) * 100);
+  function openCourse(courseId: string) {
+    setActiveCourseId(courseId);
+    setLibraryCourseId(courseId);
+    setLessonIndex(0);
+    setStage("learn");
+    setQuestionIndex(0);
+    setChoice(null);
+    setFeedback("idle");
+    setHint(false);
+    setTutorReply("");
+    setTutorTurns([]);
+    setScreen("course");
+  }
   function openLesson(index: number) {
     if (index > unlocked) return;
     setLessonIndex(index);
@@ -831,16 +1169,26 @@ export default function Home() {
   }
   function nextQuestion() {
     if (feedback !== "correct") return;
-    if (questionIndex < 3) {
+    if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1);
       setChoice(null);
       setFeedback("idle");
       setHint(false);
       return;
     }
-    if (!completed.includes(lessonIndex))
-      setCompleted([...completed, lessonIndex]);
-    if (lessonIndex < 3) setUnlocked(lessonIndex + 1);
+    const nextCompleted = completed.includes(lessonIndex)
+      ? completed
+      : [...completed, lessonIndex];
+    setProgressByCourse({
+      ...progressByCourse,
+      [activeCourseId]: {
+        completed: nextCompleted,
+        unlocked:
+          lessonIndex < activeCourse.lessons.length - 1
+            ? Math.max(unlocked, lessonIndex + 1)
+            : unlocked,
+      },
+    });
     setStage("complete");
   }
   function retry() {
@@ -1031,7 +1379,7 @@ export default function Home() {
         </nav>
         <div className="header-progress">
           <span>
-            <b>{completed.length}</b> / 4 skills
+            <b>{completed.length}</b> / {activeCourse.lessons.length} skills
           </span>
           <i>
             <b style={{ width: `${mastery}%` }} />
@@ -1170,9 +1518,7 @@ export default function Home() {
                 >
                   <div className="library-card-image">
                     <img src={course.visual} alt={course.visualAlt} />
-                    <span>
-                      {course.available ? "AVAILABLE NOW" : "COURSE PLAN"}
-                    </span>
+                    <span>OPEN NOW</span>
                   </div>
                   <div className="library-card-copy">
                     <small>{course.subject}</small>
@@ -1213,20 +1559,13 @@ export default function Home() {
                 ))}
               </ol>
               <div className="library-detail-footer">
-                <span>{libraryCourse.format}</span>
-                {libraryCourse.available ? (
-                  <button
-                    className="primary-button"
-                    onClick={() => setScreen("course")}
-                  >
-                    Start this course <span>&rarr;</span>
-                  </button>
-                ) : (
-                  <span className="course-plan-note">
-                    This course is designed and ready for the same tutor-first
-                    learning pattern.
-                  </span>
-                )}
+                <span>4 lessons · audio, visual, tutor, quiz</span>
+                <button
+                  className="primary-button"
+                  onClick={() => openCourse(libraryCourse.id)}
+                >
+                  Open this course <span>&rarr;</span>
+                </button>
               </div>
             </div>
           </section>
@@ -1314,17 +1653,10 @@ export default function Home() {
         <section className="course-screen">
           <aside className="course-sidebar">
             <div className="course-kicker">
-              YOUR PATH <span>01 / 04</span>
+              YOUR PATH <span>01 / {activeCourse.lessons.length.toString().padStart(2, "0")}</span>
             </div>
-            <h2>
-              Prepare
-              <br />
-              <em>& explore.</em>
-            </h2>
-            <p>
-              Read the structure of clinical data before you use it to draw a
-              conclusion.
-            </p>
+            <h2>{activeCourseMeta.title}</h2>
+            <p>{activeCourseMeta.description}</p>
             <div className="mastery-block">
               <div>
                 <span>MODULE MASTERY</span>
@@ -1356,17 +1688,17 @@ export default function Home() {
               <em>Then prove it.</em>
             </h1>
             <p className="course-intro">
-              Each skill moves from a detailed teaching lesson and clinical
+              Each skill moves from a detailed teaching lesson and concrete
               examples, through a visual + spoken briefing and required Socratic
-              case, then into an independent four-question mastery check.
+              case, then into an independent objective mastery check.
             </p>
             <div className="module-meta">
-              <span>4 teaching lessons</span>
-              <span>16 mastery questions</span>
+              <span>{activeCourse.lessons.length} teaching lessons</span>
+              <span>{activeCourse.lessons.length * 4} mastery questions</span>
               <span>Adaptive level: {level}</span>
             </div>
             <div className="skill-list">
-              {lessons.map((item, index) => {
+              {activeCourse.lessons.map((item, index) => {
                 const locked = index > unlocked;
                 return (
                   <button
@@ -1454,7 +1786,7 @@ export default function Home() {
               </i>
             </div>
             <div className="rail-list">
-              {lessons.map((item, index) => (
+              {activeCourse.lessons.map((item, index) => (
                 <button
                   key={item.id}
                   disabled={index > unlocked}
