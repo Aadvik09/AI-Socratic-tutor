@@ -1,5 +1,14 @@
 "use client";
 import { useRef, useState } from "react";
+
+const THEMES = [
+  { id: "noir", label: "Noir", swatch: "#ffffff" },
+  { id: "signal", label: "Signal", swatch: "#5eebA0" },
+  { id: "arctic", label: "Arctic", swatch: "#6fb8ff" },
+  { id: "ember", label: "Ember", swatch: "#ffb454" },
+  { id: "bloom", label: "Bloom", swatch: "#e08fff" },
+] as const;
+type ThemeId = (typeof THEMES)[number]["id"];
 type Question = {
   prompt: string;
   options: string[];
@@ -1508,6 +1517,17 @@ export default function Home() {
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [quickNote, setQuickNote] = useState("");
   const [savedNotes, setSavedNotes] = useState<string[]>([]);
+  const [theme, setTheme] = useState<ThemeId>(() => {
+    if (typeof window === "undefined") return "noir";
+    const saved = window.localStorage.getItem("socratic-theme");
+    return saved && THEMES.some((t) => t.id === saved) ? (saved as ThemeId) : "noir";
+  });
+  const [themePickerOpen, setThemePickerOpen] = useState(false);
+  function chooseTheme(id: ThemeId) {
+    setTheme(id);
+    setThemePickerOpen(false);
+    window.localStorage.setItem("socratic-theme", id);
+  }
   const [customTitle, setCustomTitle] = useState("");
   const [customText, setCustomText] = useState("");
   const [customLoading, setCustomLoading] = useState(false);
@@ -1804,7 +1824,7 @@ export default function Home() {
     );
   }
   return (
-    <main className="course-app">
+    <main className="course-app" data-theme={theme}>
       <header className="app-header">
         <button className="app-brand" onClick={() => setScreen("home")}>
           <span className="brand-orbit">
@@ -1842,6 +1862,42 @@ export default function Home() {
           <i>
             <b style={{ width: `${mastery}%` }} />
           </i>
+          <div className="theme-picker">
+            <button
+              className="theme-picker-trigger"
+              onClick={() => setThemePickerOpen((open) => !open)}
+              aria-label="Change color palette"
+              aria-expanded={themePickerOpen}
+            >
+              <span style={{ background: THEMES.find((t) => t.id === theme)?.swatch }} />
+            </button>
+            {themePickerOpen && (
+              <button
+                type="button"
+                className="theme-picker-backdrop"
+                aria-label="Close palette picker"
+                onClick={() => setThemePickerOpen(false)}
+              />
+            )}
+            {themePickerOpen && (
+              <div className="theme-picker-menu" role="menu">
+                <p>PALETTE</p>
+                {THEMES.map((t) => (
+                  <button
+                    key={t.id}
+                    role="menuitemradio"
+                    aria-checked={theme === t.id}
+                    className={theme === t.id ? "selected" : ""}
+                    onClick={() => chooseTheme(t.id)}
+                  >
+                    <span style={{ background: t.swatch }} />
+                    {t.label}
+                    {theme === t.id && <em>✓</em>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button className="profile-dot">AK</button>
         </div>
       </header>

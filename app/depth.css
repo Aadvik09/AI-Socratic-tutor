@@ -1,5 +1,66 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,500..700,0..100&display=swap");
 
+/* ============ Motion system ============ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 8px rgba(var(--lime-rgb), 0.14); }
+  50% { box-shadow: 0 0 0 13px rgba(var(--lime-rgb), 0.05); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-slow-reverse {
+  to { transform: rotate(-360deg); }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.9); }
+  60% { opacity: 1; transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+@keyframes shake-x {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+@keyframes underline-in {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes ambient-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-14px, 10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .course-app *,
+  .course-app *::before,
+  .course-app *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .course-app .tutor-card h2 {
   font-family: Fraunces, Georgia, serif;
   font-size: 35px;
@@ -94,6 +155,7 @@
   min-height: calc(100vh - 74px);
 }
 .course-app .library-hero {
+  animation: fade-in 0.7s ease both;
   background: #000000;
   color: #f2f2ef;
   display: grid;
@@ -108,7 +170,7 @@
   color: #c2c2bc;
 }
 .course-app .library-hero .eyebrow i {
-  background: #ffffff;
+  background: var(--lime);
 }
 .course-app .library-hero h1,
 .course-app .library-heading h2,
@@ -149,8 +211,13 @@
 }
 .course-app .library-hero-stat {
   align-self: center;
+  animation: scale-in 0.7s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
   border: 1px solid #232320;
   padding: clamp(28px, 4vw, 42px);
+  transition: border-color 0.3s ease;
+}
+.course-app .library-hero-stat:hover {
+  border-color: rgba(var(--lime-rgb), 0.4);
 }
 .course-app .library-hero-stat strong {
   color: #f2f2ef;
@@ -185,6 +252,7 @@
   padding: 6px 8px;
 }
 .course-app .library-import {
+  animation: fade-up 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
   background: #181817;
   border-bottom: 1px solid #2e2f2d;
   display: grid;
@@ -321,6 +389,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .course-app .library-card {
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   background: #080807;
   border: 1px solid #292928;
   color: #e1e2e1;
@@ -334,12 +403,22 @@
   transition:
     border-color 0.24s ease,
     box-shadow 0.24s ease,
-    transform 0.24s ease;
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.course-app .library-grid .library-card:nth-child(1) { animation-delay: 0.03s; }
+.course-app .library-grid .library-card:nth-child(2) { animation-delay: 0.08s; }
+.course-app .library-grid .library-card:nth-child(3) { animation-delay: 0.13s; }
+.course-app .library-grid .library-card:nth-child(4) { animation-delay: 0.18s; }
+.course-app .library-grid .library-card:nth-child(5) { animation-delay: 0.23s; }
+.course-app .library-grid .library-card:nth-child(6) { animation-delay: 0.28s; }
+.course-app .library-grid .library-card:nth-child(7) { animation-delay: 0.33s; }
+.course-app .library-grid .library-card:nth-child(8) { animation-delay: 0.38s; }
+.course-app .library-grid .library-card:nth-child(9) { animation-delay: 0.43s; }
+.course-app .library-grid .library-card:nth-child(10) { animation-delay: 0.48s; }
 .course-app .library-card:hover {
   border-color: #717370;
   box-shadow: 0 18px 36px rgba(26, 34, 26, 0.1);
-  transform: translateY(-5px);
+  transform: translateY(-7px);
 }
 .course-app .library-card.selected {
   border-color: #8a8c89;
@@ -380,7 +459,7 @@
   user-select: none;
 }
 .course-app .course-panel-index {
-  color: #4a4a45;
+  color: #87877f;
   font: 600 11px "DM Mono", monospace;
   letter-spacing: 0.06em;
   position: absolute;
@@ -468,11 +547,13 @@
   font-size: 14px;
 }
 .course-app .library-detail {
+  animation: fade-in 0.6s ease both;
   background: #181817;
   display: grid;
   grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
   margin: 0 auto;
   max-width: 1500px;
+  transition: background 0.3s ease;
 }
 .course-app .library-detail-visual {
   background: repeating-linear-gradient(
@@ -724,8 +805,8 @@
     transform 0.24s ease;
 }
 .course-app .skill-list button:not(:disabled):hover .skill-number {
-  background: #ffffff;
-  border-color: #ffffff;
+  background: var(--lime);
+  border-color: var(--lime);
   color: #080808;
   transform: rotate(-8deg) scale(1.08);
 }
@@ -762,7 +843,7 @@
 }
 .notebook-fab > span {
   align-items: center;
-  background: #ffffff;
+  background: var(--lime);
   border-radius: 50%;
   color: #0a0a0a;
   display: inline-flex;
@@ -791,7 +872,7 @@
   justify-content: space-between;
 }
 .notebook-popover > div p {
-  color: #080808;
+  color: #b8b9b7;
   font:
     10px "DM Mono",
     monospace;
@@ -800,10 +881,16 @@
 }
 .notebook-popover > div button {
   background: transparent;
-  color: #262725;
+  color: #ececeb;
+  cursor: pointer;
   font-size: 24px;
   line-height: 1;
+  opacity: 0.6;
   padding: 0 0 4px 12px;
+  transition: opacity 0.2s ease;
+}
+.notebook-popover > div button:hover {
+  opacity: 1;
 }
 .notebook-popover h2 {
   font-family: Fraunces, Georgia, serif;
@@ -813,7 +900,7 @@
   margin: 17px 0 7px;
 }
 .notebook-popover > p {
-  color: #454644;
+  color: #9a9a94;
   font-size: 13px;
   line-height: 1.55;
   margin: 0 0 16px;
@@ -937,7 +1024,7 @@
 }
 .course-app .deep-dive aside {
   background: #131412;
-  border-left: 2px solid #080808;
+  border-left: 2px solid #4caf6e;
   color: #afb0af;
   font-size: 12px;
   line-height: 1.6;
@@ -945,7 +1032,7 @@
   padding: 10px 12px;
 }
 .course-app .deep-dive aside b {
-  color: #264931;
+  color: #7fcf9a;
   display: block;
   font:
     600 9px "DM Mono",
@@ -1047,7 +1134,7 @@
   z-index: 1;
 }
 .course-app .tutor-card .tutor-badge span {
-  box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 7px rgba(var(--lime-rgb), 0.09);
   height: 31px;
   width: 31px;
 }
@@ -1072,11 +1159,11 @@
   padding: 20px 22px;
 }
 .course-app .answer-feedback.correct b {
-  color: #2c563a;
+  color: #8fd6a4;
   font-size: 14px;
 }
 .course-app .answer-feedback.correct p {
-  color: #2e593d;
+  color: #d6efdc;
   font-size: 14px;
   line-height: 1.7;
   margin-top: 10px;
@@ -1111,7 +1198,7 @@
   height: 240px;
 }
 .course-app .lesson-visual figcaption {
-  border-left: 3px solid #ffffff;
+  border-left: 3px solid var(--lime);
   color: #acadac;
   font-size: 12px;
   line-height: 1.6;
@@ -1282,7 +1369,7 @@
 }
 .course-app .tutor-response {
   background: #161715;
-  border-left: 4px solid #ffffff;
+  border-left: 4px solid var(--lime);
   margin-top: 20px;
   padding: 16px 18px;
 }
@@ -1345,7 +1432,7 @@
   height: 280px;
 }
 .course-app .media-visual figcaption {
-  border-left: 3px solid #ffffff;
+  border-left: 3px solid var(--lime);
   color: #acadac;
   font-size: 12px;
   line-height: 1.6;
@@ -1423,13 +1510,13 @@
   max-width: 610px;
 }
 .course-app .media-reference {
-  color: #295036;
+  color: #f2f2ef;
   display: block;
   font-size: 12px;
   font-weight: 800;
   margin: 15px 0 24px;
   text-decoration: underline;
-  text-decoration-color: #080808;
+  text-decoration-color: var(--lime);
   text-underline-offset: 5px;
 }
 .course-app .media-reference span {
@@ -1622,7 +1709,7 @@
   height: 2px;
 }
 .course-app .rail-progress i strong {
-  background: #ffffff;
+  background: var(--lime);
 }
 .course-app .rail-list {
   border-top-color: #2d2d2b;
@@ -1654,7 +1741,7 @@
 }
 .course-app .rail-list button.active {
   background: rgba(255, 255, 255, 0.06);
-  border-left-color: #ffffff;
+  border-left-color: var(--lime);
   color: #f2f2ef;
   font-weight: 700;
 }
@@ -1662,7 +1749,7 @@
   color: #f2f2ef;
 }
 .course-app .rail-list button:disabled {
-  color: #57574f;
+  color: #7c7c76;
 }
 
 /* The path switch is deliberately compact in either state. */
@@ -1724,18 +1811,18 @@
   color: #f4f5ee;
 }
 .course-app .tutor-card h2 em {
-  color: #ffffff;
+  color: var(--lime);
 }
 .course-app .tutor-card > p {
   color: #c1c7bd;
 }
 .course-app .tutor-card .tutor-badge span {
-  background: #ffffff;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1);
+  background: var(--lime);
+  box-shadow: 0 0 0 6px rgba(var(--lime-rgb), 0.1);
 }
 .course-app .tutor-card .tutor-ask {
-  background: #ffffff;
-  border-color: #ffffff;
+  background: var(--lime);
+  border-color: var(--lime);
   color: #0a0a09;
 }
 .course-app .tutor-card .tutor-ask:hover {
@@ -1753,5 +1840,104 @@
   }
   .course-app .rail-closed .lesson-workspace {
     padding-left: 20px;
+  }
+}
+
+/* Palette switcher */
+.course-app .theme-picker {
+  position: relative;
+}
+.course-app .theme-picker-trigger {
+  align-items: center;
+  background: #0d0d0c;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  height: 29px;
+  place-items: center;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  width: 29px;
+}
+.course-app .theme-picker-trigger:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.08);
+}
+.course-app .theme-picker-trigger span {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(var(--lime-rgb), 0.18);
+  display: block;
+  height: 13px;
+  width: 13px;
+}
+.course-app .theme-picker-backdrop {
+  background: transparent;
+  border: 0;
+  cursor: default;
+  inset: 0;
+  position: fixed;
+  z-index: 10;
+}
+.course-app .theme-picker-menu {
+  animation: theme-menu-in 0.18s ease both;
+  background: #0d0d0c;
+  border: 1px solid #2a2a27;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  padding: 14px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 190px;
+  z-index: 11;
+}
+.course-app .theme-picker-menu > p {
+  color: #7c7c76;
+  font: 600 9px "DM Mono", monospace;
+  letter-spacing: 0.1em;
+  margin: 0 0 10px;
+}
+.course-app .theme-picker-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #d4d4cf;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  gap: 10px;
+  padding: 9px 6px;
+  text-align: left;
+  transition: background 0.15s ease, padding-left 0.15s ease;
+  width: 100%;
+}
+.course-app .theme-picker-menu button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  padding-left: 10px;
+}
+.course-app .theme-picker-menu button.selected {
+  color: #ffffff;
+  font-weight: 700;
+}
+.course-app .theme-picker-menu button span {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+  display: block;
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
+}
+.course-app .theme-picker-menu button em {
+  color: var(--lime);
+  font-style: normal;
+  margin-left: auto;
+}
+@keyframes theme-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
