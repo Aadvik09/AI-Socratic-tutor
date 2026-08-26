@@ -645,6 +645,108 @@ const diagnostic: Question[] = [
     hint: "What could pull one summary away from the other?",
   },
 ];
+function CourseIcon({ id, className }: { id: string; className?: string }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.4,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    className,
+    "aria-hidden": true,
+  };
+  switch (id) {
+    case "data-literacy":
+      return (
+        <svg {...common}>
+          <path d="M4 20V10M11 20V4M18 20v-7" />
+          <path d="M2.5 20h19" />
+        </svg>
+      );
+    case "python-reasoning":
+      return (
+        <svg {...common}>
+          <path d="M9 8 4.5 12 9 16" />
+          <path d="M15 8l4.5 4-4.5 4" />
+          <path d="M13.5 6.5 10.5 17.5" />
+        </svg>
+      );
+    case "cybersecurity":
+      return (
+        <svg {...common}>
+          <path d="M12 3l7 3v5.2c0 4.6-3 8.4-7 9.8-4-1.4-7-5.2-7-9.8V6l7-3z" />
+          <path d="M9 12.2l2.2 2.2L15.5 10" />
+        </svg>
+      );
+    case "algorithms":
+      return (
+        <svg {...common}>
+          <circle cx="6" cy="6" r="2.3" />
+          <circle cx="18" cy="6" r="2.3" />
+          <circle cx="12" cy="18" r="2.3" />
+          <path d="M8 7.3 10.5 16M16 7.3 13.5 16M8.3 6h7.4" />
+        </svg>
+      );
+    case "sql-modeling":
+      return (
+        <svg {...common}>
+          <ellipse cx="12" cy="5.5" rx="7" ry="2.5" />
+          <path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13" />
+          <path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5" />
+        </svg>
+      );
+    case "data-visualization":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 3.5V12l7 4" />
+        </svg>
+      );
+    case "statistical-inference":
+      return (
+        <svg {...common}>
+          <path d="M3 18h18" />
+          <path d="M4 18c2-.2 3-1 4-3.4C9 11.8 10 6 12 6s3 5.8 4 8.6c1 2.4 2 3.2 4 3.4" />
+        </svg>
+      );
+    case "ml-foundations":
+      return (
+        <svg {...common} strokeWidth={1.1}>
+          <circle cx="5" cy="7" r="1.6" />
+          <circle cx="5" cy="17" r="1.6" />
+          <circle cx="12" cy="5" r="1.6" />
+          <circle cx="12" cy="12" r="1.6" />
+          <circle cx="12" cy="19" r="1.6" />
+          <circle cx="19" cy="9" r="1.6" />
+          <circle cx="19" cy="15" r="1.6" />
+          <path d="M6.3 7.6 10.7 5.6M6.3 7.3 10.7 11.5M6.3 16.3 10.7 12.6M6.3 16.7 10.7 18.6M13.3 5.6 17.7 8.7M13.3 11.7 17.7 9.3M13.3 12.4 17.7 14.6M13.3 18.6 17.7 15.3" />
+        </svg>
+      );
+    case "systems-design":
+      return (
+        <svg {...common}>
+          <path d="M12 3 21 7.5 12 12 3 7.5 12 3Z" />
+          <path d="M3 12 12 16.5 21 12" />
+          <path d="M3 16.5 12 21 21 16.5" />
+        </svg>
+      );
+    case "critical-thinking":
+      return (
+        <svg {...common}>
+          <path d="M9 18h6M10 21h4" />
+          <path d="M12 3a6 6 0 0 0-3.4 10.9c.6.45 1 .95 1.1 1.6h4.6c.1-.65.5-1.15 1.1-1.6A6 6 0 0 0 12 3Z" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.5" />
+          <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+        </svg>
+      );
+  }
+}
 const courseLibrary = [
   {
     id: "data-literacy",
@@ -2116,6 +2218,9 @@ export default function Home() {
                     <span className="course-panel-letter">
                       {course.title.replace(/[^A-Za-z]/g, "")[0]}
                     </span>
+                    <span className="library-card-icon-badge">
+                      <CourseIcon id={course.id} className="library-card-icon" />
+                    </span>
                     <span className="course-panel-index">{String(index + 1).padStart(2, "0")}</span>
                     <span className="library-card-tag">OPEN NOW</span>
                   </div>
@@ -2131,11 +2236,9 @@ export default function Home() {
                           openCourse(course.id);
                         }}
                       >
-                        Open course <span>&rarr;</span>
+                        {course.available ? "Open course" : "View outline"}
+                        <span>&rarr;</span>
                       </button>
-                      <b>
-                        {course.available ? "Open course" : "View outline"} →
-                      </b>
                     </footer>
                   </div>
                 </article>
@@ -2147,6 +2250,9 @@ export default function Home() {
             <div className="library-detail-visual" aria-hidden="true">
               <span className="course-panel-letter">
                 {libraryCourse.title.replace(/[^A-Za-z]/g, "")[0]}
+              </span>
+              <span className="library-detail-icon-badge">
+                <CourseIcon id={libraryCourse.id} className="library-detail-icon" />
               </span>
               <span>{libraryCourse.subject}</span>
             </div>
@@ -2261,6 +2367,9 @@ export default function Home() {
       {screen === "course" && (
         <section className="course-screen">
           <aside className="course-sidebar">
+            <span className="course-sidebar-icon">
+              <CourseIcon id={activeCourseMeta.id} />
+            </span>
             <div className="course-kicker">
               YOUR PATH <span>01 / {activeCourse.lessons.length.toString().padStart(2, "0")}</span>
             </div>
@@ -2283,8 +2392,10 @@ export default function Home() {
                 <i /> Locked until prior mastery
               </span>
             </div>
-            <footer>
-              <span>●</span> Diagnostic level: {level}
+            <footer className="diagnostic-status">
+              <span className="status-dot" />
+              <span className="status-label">Diagnostic level</span>
+              <b>{level}</b>
             </footer>
           </aside>
           <section className="course-main">
@@ -2450,8 +2561,14 @@ export default function Home() {
                     <p className="lesson-body">{lesson.teaching}</p>
                     <figure className="lesson-visual">
                       <div className="concept-panel" aria-hidden="true">
-                        <span className="concept-panel-unit">{lesson.unit}</span>
-                        <strong className="concept-panel-number">{lesson.id}</strong>
+                        <span className="concept-panel-icon">
+                          <CourseIcon id={activeCourseMeta.id} />
+                        </span>
+                        <div className="concept-panel-text">
+                          <span className="concept-panel-unit">{lesson.unit}</span>
+                          <strong className="concept-panel-number">{lesson.id}</strong>
+                        </div>
+                        <span className="concept-panel-mark">SOCRATIC TUTOR</span>
                       </div>
                       <figcaption>{visual.caption}</figcaption>
                     </figure>
@@ -2520,8 +2637,14 @@ export default function Home() {
                     </p>
                     <figure className="media-visual">
                       <div className="concept-panel" aria-hidden="true">
-                        <span className="concept-panel-unit">{lesson.unit}</span>
-                        <strong className="concept-panel-number">{lesson.id}</strong>
+                        <span className="concept-panel-icon">
+                          <CourseIcon id={activeCourseMeta.id} />
+                        </span>
+                        <div className="concept-panel-text">
+                          <span className="concept-panel-unit">{lesson.unit}</span>
+                          <strong className="concept-panel-number">{lesson.id}</strong>
+                        </div>
+                        <span className="concept-panel-mark">SOCRATIC TUTOR</span>
                       </div>
                       <figcaption>{briefingVisual.caption}</figcaption>
                     </figure>

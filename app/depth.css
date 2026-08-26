@@ -1941,3 +1941,259 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* ============ Course icon system ============ */
+.course-app .library-card-icon-badge {
+  align-items: center;
+  background: rgba(8, 8, 8, 0.86);
+  border: 1px solid #333330;
+  display: grid;
+  height: 52px;
+  justify-content: center;
+  left: 16px;
+  position: absolute;
+  top: 16px;
+  transition: border-color 0.24s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 52px;
+  z-index: 1;
+}
+.course-app .library-card:hover .library-card-icon-badge {
+  border-color: #7a7c78;
+  transform: translateY(-2px);
+}
+.course-app .library-card-icon {
+  color: #f2f2ef;
+  height: 26px;
+  width: 26px;
+}
+.course-app .library-detail-icon-badge {
+  align-items: center;
+  background: rgba(8, 8, 8, 0.86);
+  bottom: auto;
+  border: 1px solid #333330;
+  display: grid;
+  height: 78px;
+  justify-content: center;
+  left: 26px;
+  position: absolute;
+  top: 26px;
+  width: 78px;
+  z-index: 1;
+}
+.course-app .library-detail-icon {
+  color: #f2f2ef;
+  height: 38px;
+  width: 38px;
+}
+
+/* ============ Course sidebar: complete pass ============ */
+.course-app .course-sidebar-icon {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(222, 230, 214, 0.22);
+  display: inline-flex;
+  height: 52px;
+  justify-content: center;
+  margin-bottom: 26px;
+  width: 52px;
+}
+.course-app .course-sidebar-icon svg {
+  color: #f2f2ef;
+  height: 26px;
+  width: 26px;
+}
+.course-app .course-sidebar .mastery-block {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(222, 230, 214, 0.14) !important;
+  margin-top: 32px;
+  padding: 20px 20px 22px;
+}
+.course-app .course-sidebar .path-legend {
+  align-items: flex-start;
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 0;
+}
+.course-app .course-sidebar .path-legend span {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+.course-app .course-sidebar footer.diagnostic-status {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(222, 230, 214, 0.2) !important;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 9px;
+  margin-top: 32px;
+  padding: 10px 18px 10px 13px;
+  width: fit-content;
+}
+.course-app .diagnostic-status .status-dot {
+  background: var(--lime);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(var(--lime-rgb), 0.16);
+  display: block;
+  flex-shrink: 0;
+  height: 7px;
+  width: 7px;
+}
+.course-app .diagnostic-status .status-label {
+  color: #9a9b95;
+}
+.course-app .diagnostic-status b {
+  color: #f2f2ef;
+  font-weight: 700;
+  margin-left: 1px;
+}
+
+.course-app .skill-list {
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.course-app .skill-list button {
+  background: #0a0a09;
+  border-bottom: 1px solid #2a2a28;
+  border-left: 3px solid transparent;
+  border-radius: 2px;
+  border-right: 1px solid #2a2a28;
+  border-top: 1px solid #2a2a28;
+  padding: 20px 22px;
+}
+.course-app .skill-list button:not(:disabled):hover {
+  border-left-color: var(--lime);
+}
+.course-app .skill-list button:disabled {
+  background: transparent;
+}
+.course-app .skill-number {
+  align-items: center;
+  background: #111110;
+  border: 1px solid #333330;
+  border-radius: 50%;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  transition:
+    background 0.24s ease,
+    border-color 0.24s ease,
+    color 0.24s ease,
+    transform 0.24s ease;
+  width: 38px;
+}
+.course-app .skill-number.complete {
+  background: rgba(var(--lime-rgb), 0.12);
+  border-color: var(--lime);
+  color: var(--lime);
+}
+.course-app .skill-list em {
+  align-items: center;
+  border: 1px solid #333330;
+  display: inline-flex;
+  gap: 8px;
+  padding: 9px 15px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+.course-app .skill-list button:not(:disabled):hover em {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+.course-app .skill-list .locked em {
+  border-color: #242422;
+}
+
+/* ============ Concept panel: horizontal banner, not a tall block ============ */
+.course-app .concept-panel {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+  padding: 0 26px;
+}
+.course-app .lesson-visual .concept-panel {
+  height: 112px;
+}
+.course-app .media-visual .concept-panel {
+  height: 126px;
+}
+.course-app .concept-panel-icon {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #333330;
+  display: flex;
+  flex-shrink: 0;
+  height: 56px;
+  justify-content: center;
+  width: 56px;
+}
+.course-app .concept-panel-icon svg {
+  color: #f2f2ef;
+  height: 28px;
+  width: 28px;
+}
+.course-app .concept-panel-text {
+  align-items: baseline;
+  display: flex;
+  gap: 16px;
+}
+.course-app .concept-panel-unit {
+  color: #86877f;
+  font: 600 10px "DM Mono", monospace;
+  letter-spacing: 0.1em;
+}
+.course-app .concept-panel-number {
+  color: #f2f2ef;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.course-app .concept-panel-mark {
+  color: #55564f;
+  flex-shrink: 0;
+  font: 600 9px "DM Mono", monospace;
+  letter-spacing: 0.16em;
+  margin-left: auto;
+}
+@media (max-width: 760px) {
+  .course-app .lesson-visual .concept-panel,
+  .course-app .media-visual .concept-panel {
+    height: auto;
+    min-height: 96px;
+    padding: 18px;
+  }
+  .course-app .concept-panel-mark {
+    display: none;
+  }
+}
+
+/* ============ Library card footer: real CTA, not a cramped strip ============ */
+.course-app .library-card-copy footer {
+  gap: 12px;
+  padding-top: 16px;
+}
+.course-app .library-card-copy footer button {
+  flex: 1;
+  gap: 0;
+  justify-content: space-between;
+  padding: 0 15px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+  white-space: nowrap;
+}
+.course-app .library-card-copy footer button span {
+  transition: transform 0.2s ease;
+}
+.course-app .library-card-copy footer button:hover span {
+  transform: translateX(3px);
+}
