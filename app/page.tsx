@@ -762,52 +762,6 @@ type CourseProgram = {
   tutorScenarios: typeof tutorScenarios;
 };
 
-function makeQuestions(
-  prompt: string,
-  options: string[],
-  correct: number,
-  feedback: string,
-  hint: string,
-  transfer: string,
-): Question[] {
-  return [
-    { prompt, options, correct, feedback, hint },
-    {
-      prompt: `Which habit best supports this idea: ${transfer}`,
-      options: [
-        "State the claim, check the relevant evidence, then decide.",
-        "Choose the first answer that sounds familiar.",
-        "Skip the evidence when a result feels plausible.",
-        "Treat an output as proof without checking its assumptions.",
-      ],
-      correct: 0,
-      feedback:
-        "A defensible decision makes its claim and the evidence supporting it visible. That habit transfers across problems.",
-      hint: "Which choice keeps the evidence connected to the conclusion?",
-    },
-    {
-      prompt: `Apply the same principle: ${transfer}`,
-      options,
-      correct,
-      feedback,
-      hint,
-    },
-    {
-      prompt: "Before you finalize an answer, what is the strongest final check?",
-      options: [
-        "Compare the answer with the question, assumptions, and evidence.",
-        "Add more technical language.",
-        "Use a larger number because it looks more certain.",
-        "Avoid explaining the decision.",
-      ],
-      correct: 0,
-      feedback:
-        "A final check reconnects the result to the original question and exposes assumptions before they become conclusions.",
-      hint: "A good answer remains accountable to the question it was meant to answer.",
-    },
-  ];
-}
-
 function makeProgram(
   lessons: Lesson[],
   visual: string,
@@ -847,8 +801,8 @@ function makeProgram(
     tutorScenarios: lessons.map((lesson) => ({
       case: lesson.example,
       prompt: `Commit to a position: how would you approach this example using ${lesson.title.toLowerCase()}? Explain your first move.`,
-      probe: `What evidence would you seek before you felt confident in that decision?`,
-      transfer: `Now apply the idea to a new but similar situation. What would stay the same, and what would you re-check?`,
+      probe: `What evidence would let you confirm or rule out that ${lesson.concept.split(";")[0].replace(/\.$/, "").toLowerCase()}?`,
+      transfer: `Now apply ${lesson.title.toLowerCase()} to a new but similar case. What would stay the same, and what would you re-check?`,
       quizFocus: `The quiz asks you to independently apply the reasoning from ${lesson.title.toLowerCase()}.`,
     })),
   };
@@ -873,7 +827,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A script sets total = 8, then total = total + 3, then prints total.",
         why: "The printed value is 11 because the second assignment uses the old value and stores a new one.",
         takeaways: ["Variables hold current values, not permanent equations.", "Predict before you run.", "Trace state line by line."],
-        questions: makeQuestions("After x = 4; x = x + 2, what is x?", ["4", "6", "x + 2", "An error"], 1, "The second line evaluates 4 + 2 and stores 6 back in x.", "What value does x have just before the second line?", "A counter begins at 4 and is increased by 2."),
+        questions: [
+          { prompt: "After x = 4; x = x + 2, what is x?", options: ["4", "6", "x + 2", "An error"], correct: 1, feedback: "The second line evaluates 4 + 2 and stores 6 back in x.", hint: "What value does x have just before the second line?" },
+          { prompt: "total = 10; total = total - 3; total = total * 2. What is total at the end?", options: ["7", "14", "20", "17"], correct: 1, feedback: "Each line updates total using its current value: 10 - 3 is 7, then 7 * 2 is 14.", hint: "Apply each assignment in order, updating the value as you go." },
+          { prompt: "Two lines run in this order: y = y + 1, then y = 3, starting from y = 0. What is the final value of y?", options: ["3, because the last assignment overwrites the incremented value", "1, because increments always apply last", "4, because both lines add together", "0, because reordering has no effect"], correct: 0, feedback: "The final assignment replaces whatever value came before, so the increment is discarded.", hint: "Read the two lines in the order they actually execute." },
+          { prompt: "Before trusting a program's final printed value, what is the most reliable check?", options: ["Trace each assignment by hand and compare it to the printed result", "Assume the last line is correct because it ran last", "Rerun the program and hope for a different answer", "Skip tracing if the code looks simple"], correct: 0, feedback: "Manually tracing state catches assumptions that skimming the code would miss.", hint: "What actually verifies a predicted value?" },
+        ],
       },
       {
         id: "02", unit: "CONTROL FLOW", title: "Choose a path with evidence", description: "Use conditions and loops to make a program's choices explicit.",
@@ -882,7 +841,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A program labels a temperature at least 38 as fever; otherwise it labels it not fever.",
         why: "The boundary belongs to the condition. For 38 exactly, the at-least branch runs.",
         takeaways: ["Conditions express decision rules.", "Boundary values deserve explicit tests.", "Loops need a changing state or finite collection."],
-        questions: makeQuestions("If a condition is `score >= 70` and score is 70, which branch runs?", ["The true branch", "The false branch", "Both branches", "Neither branch"], 0, "Greater-than-or-equal includes the boundary value 70.", "Read >= as 'at least.'", "A threshold rule uses `>= 70` for a score of 70."),
+        questions: [
+          { prompt: "If a condition is `score >= 70` and score is 70, which branch runs?", options: ["The true branch", "The false branch", "Both branches", "Neither branch"], correct: 0, feedback: "Greater-than-or-equal includes the boundary value 70.", hint: "Read >= as 'at least.'" },
+          { prompt: "A loop uses `while i < 5` to process a 5-item list. If i starts at 0 and is never incremented inside the loop, what happens?", options: ["The loop runs exactly 5 times", "The loop never runs", "The loop runs forever, since i never reaches 5", "The loop raises a syntax error"], correct: 2, feedback: "Without incrementing i, the condition i < 5 stays true forever, producing an infinite loop.", hint: "What changes the loop's condition each pass?" },
+          { prompt: "A shipping rule charges an express fee `if weight > 20`. A package weighs exactly 20. Does it get the fee?", options: ["No, because > 20 excludes exactly 20", "Yes, because 20 is close to the limit", "Yes, because all packages get a fee", "No, because conditions ignore boundaries"], correct: 0, feedback: "Strict greater-than excludes the boundary value itself; 20 is not greater than 20.", hint: "Compare > to >= at the exact boundary." },
+          { prompt: "Before trusting a branch or loop's behavior, what is the most defensible check?", options: ["Test the exact boundary value the condition depends on", "Only test values far from any boundary", "Assume the condition matches your intent without testing", "Test only the first iteration"], correct: 0, feedback: "Boundary values are where off-by-one and inequality mistakes usually surface.", hint: "Where do inequality bugs most often hide?" },
+        ],
       },
       {
         id: "03", unit: "FUNCTIONS + TESTS", title: "Make a claim small enough to test", description: "Break a problem into focused functions and examples.",
@@ -891,7 +855,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A `mean(values)` function should be tested on [2, 4, 6], a one-item list, and an empty list policy.",
         why: "A clear policy for an empty list prevents a hidden assumption from becoming a silent bug.",
         takeaways: ["Functions make reasoning local.", "Tests include boundaries, not only happy paths.", "Specify behavior before implementation."],
-        questions: makeQuestions("Which is the strongest test set for a function that finds a maximum?", ["Only [4, 7, 2]", "A normal list, a one-item list, and an empty-list policy", "Only a list of positive numbers", "No tests if code runs once"], 1, "Representative, boundary, and defined edge cases test the contract rather than a single example.", "What cases might behave differently from the usual input?", "You are testing a function that receives a normal list, one item, or no items."),
+        questions: [
+          { prompt: "Which is the strongest test set for a function that finds a maximum?", options: ["Only [4, 7, 2]", "A normal list, a one-item list, and an empty-list policy", "Only a list of positive numbers", "No tests if code runs once"], correct: 1, feedback: "Representative, boundary, and defined edge cases test the contract rather than a single example.", hint: "What cases might behave differently from the usual input?" },
+          { prompt: "A `divide(a, b)` function is tested only with b = 2 and b = 5. What critical case is missing?", options: ["b = 0, to define behavior for division by zero", "A negative value for a", "A very large value for a", "Testing with floats"], correct: 0, feedback: "Division by zero is a boundary that must have a defined, tested behavior, not an assumed one.", hint: "What input makes division undefined?" },
+          { prompt: "A `mean(values)` function returns 0 for an empty list without documenting this. Why is this risky?", options: ["Callers may mistake a real zero average for an empty-list result", "Zero is always the mathematically correct answer", "Empty lists never occur in practice", "Returning 0 makes the function faster"], correct: 0, feedback: "An undocumented default can silently hide a meaningfully different case (no data) behind a valid-looking result (an average of zero).", hint: "Can two different situations produce the same output?" },
+          { prompt: "What is the best first step when specifying a new function?", options: ["Decide its expected behavior on ordinary, boundary, and invalid inputs before coding it", "Write the implementation, then guess what it should do", "Skip specification for short functions", "Copy a similar function without adjusting its contract"], correct: 0, feedback: "A clear specification, including edge cases, gives you something concrete to implement and test against.", hint: "What should exist before the first line of implementation?" },
+        ],
       },
       {
         id: "04", unit: "DATA + DEBUGGING", title: "Debug the assumption, not just the line", description: "Use evidence to locate a mismatch between expectation and program state.",
@@ -900,7 +869,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A program counts duplicate emails because it normalizes spaces after, rather than before, comparing strings.",
         why: "The bug is an assumption about equivalence; inspecting cleaned and raw values reveals it.",
         takeaways: ["Start with a reproducible small case.", "Inspect intermediate state.", "Change one hypothesis at a time."],
-        questions: makeQuestions("What is the best first debugging move when output is surprising?", ["Rewrite everything", "Use a small reproducible input and inspect intermediate values", "Add random delays", "Assume the language is broken"], 1, "A small case makes the program's state visible and lets you test a concrete hypothesis.", "What would make the mismatch easiest to observe?", "A list gives the wrong count only when two values differ by trailing spaces."),
+        questions: [
+          { prompt: "What is the best first debugging move when output is surprising?", options: ["Rewrite everything", "Use a small reproducible input and inspect intermediate values", "Add random delays", "Assume the language is broken"], correct: 1, feedback: "A small case makes the program's state visible and lets you test a concrete hypothesis.", hint: "What would make the mismatch easiest to observe?" },
+          { prompt: "A report undercounts unique visitors because 'Ana@x.com' and 'ana@x.com' are treated as different. What assumption failed?", options: ["That email comparison should be case-insensitive", "That every visitor has exactly one email", "That the report used the wrong database", "That case never matters in any comparison"], correct: 0, feedback: "The bug is a mismatched assumption about equivalence — the code assumed exact string equality was the right check for identity.", hint: "What made two equivalent emails count as different?" },
+          { prompt: "You suspect a function mishandles negative numbers. What is the most efficient next step?", options: ["Call the function directly with a single negative input and inspect the result", "Rewrite the whole program from scratch", "Add print statements to every function in the codebase", "Wait and see if the bug happens again"], correct: 0, feedback: "Testing the specific, isolated hypothesis is far faster than broad changes or waiting.", hint: "How do you test one hypothesis without changing everything else?" },
+          { prompt: "After fixing a bug caused by a bad assumption, what should you do next?", options: ["Add a test that would have caught it, so the same assumption can't fail silently again", "Delete the bug report so it isn't seen again", "Move on without recording what happened", "Assume the same mistake can't happen elsewhere"], correct: 0, feedback: "A regression test turns a one-time fix into a lasting guarantee about that assumption.", hint: "How do you make a fix permanent rather than temporary?" },
+        ],
       },
     ],
     "/python-reasoning.png", "A Python notebook and terminal in a warm editorial study composition.",
@@ -915,7 +889,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A clinic portal holds appointment data; reused passwords create an account-takeover path.",
         why: "Multi-factor authentication changes the attacker path, but it does not remove the need to protect recovery processes.",
         takeaways: ["Risk is contextual.", "Controls reduce specific paths.", "Start with assets and harm."],
-        questions: makeQuestions("Which is an asset in a risk analysis?", ["A patient appointment database", "A vague feeling of danger", "A random password", "A marketing slogan"], 0, "An asset is something valuable the organization needs to protect.", "What valuable thing could be affected?", "You are prioritizing security for records stored in a scheduling system."),
+        questions: [
+          { prompt: "Which is an asset in a risk analysis?", options: ["A patient appointment database", "A vague feeling of danger", "A random password", "A marketing slogan"], correct: 0, feedback: "An asset is something valuable the organization needs to protect.", hint: "What valuable thing could be affected?" },
+          { prompt: "A clinic's asset is patient records; the threat is phishing; the vulnerability is reused passwords. What is the impact if that path succeeds?", options: ["Unauthorized access to patient records", "A slower website", "A larger marketing budget", "An improved password policy"], correct: 0, feedback: "Impact describes the harm that results if the threat exploits the vulnerability against the asset.", hint: "What actually goes wrong if the attack works?" },
+          { prompt: "Why is it insufficient to name only the asset when doing risk analysis?", options: ["Because risk depends on how a specific threat could exploit a specific vulnerability, not the asset alone", "Because assets never change", "Because naming a threat is optional", "Because vulnerabilities are irrelevant if the asset is valuable"], correct: 0, feedback: "Risk is the combination of asset, threat, and vulnerability — an asset alone doesn't tell you what could go wrong or how.", hint: "What three things does a complete risk statement need?" },
+          { prompt: "A team wants to prioritize which risk to address first. What should they compare?", options: ["The likelihood and impact of each risk against the cost of the control", "Which risk was reported most recently", "Which system is oldest", "Which fix is easiest, regardless of risk"], correct: 0, feedback: "Proportionate prioritization weighs how likely and how damaging a risk is against what it costs to mitigate.", hint: "What makes one risk more urgent than another?" },
+        ],
       },
       {
         id: "02", unit: "SOCIAL ENGINEERING", title: "Read a message like evidence", description: "Evaluate phishing cues without trusting one superficial signal.",
@@ -924,7 +903,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "An email asks payroll staff to open a shared document immediately; the display name is familiar but the address is not.",
         why: "A familiar name is not proof. Independent verification breaks the attacker-controlled channel.",
         takeaways: ["Urgency is a cue, not proof.", "Verify out of band.", "Inspect destinations before entering credentials."],
-        questions: makeQuestions("What is the safest response to an urgent credential request from an unfamiliar sender address?", ["Use the link quickly", "Verify through a trusted, separate channel", "Forward credentials by reply", "Ignore every security message forever"], 1, "Independent verification avoids relying on the suspicious message itself.", "How can you verify without using the message's link or reply path?", "A message claims an account will be closed today unless you sign in."),
+        questions: [
+          { prompt: "What is the safest response to an urgent credential request from an unfamiliar sender address?", options: ["Use the link quickly", "Verify through a trusted, separate channel", "Forward credentials by reply", "Ignore every security message forever"], correct: 1, feedback: "Independent verification avoids relying on the suspicious message itself.", hint: "How can you verify without using the message's link or reply path?" },
+          { prompt: "A message's display name says 'IT Support' but the actual address is unrelated to the company domain. What does this mismatch suggest?", options: ["The display name may be spoofed and shouldn't be trusted alone", "Display names are always accurate", "The message is safe because it mentions IT", "Domain mismatches are irrelevant to phishing"], correct: 0, feedback: "Attackers can set any display name; the underlying address is a much stronger signal to inspect.", hint: "Which part of a message is easy to fake, and which is harder?" },
+          { prompt: "A colleague asks by unexpected text to buy gift cards immediately for a 'confidential' reason. What cue makes this suspicious?", options: ["Urgency and secrecy discourage the normal verification this request deserves", "Text messages are always untrustworthy", "Gift cards are inherently suspicious", "Confidential requests are always legitimate"], correct: 0, feedback: "Urgency and secrecy are classic pressure tactics designed to bypass a normal pause-and-verify response.", hint: "What is the request trying to prevent you from doing?" },
+          { prompt: "What single habit best defends against most social engineering attempts?", options: ["Pausing to verify unexpected or urgent requests through a separate, trusted channel", "Trusting every message that looks professionally formatted", "Responding as quickly as possible to avoid delay", "Never opening any email"], correct: 0, feedback: "A brief, independent verification step breaks the attacker's control over the communication channel.", hint: "What single action defeats most urgency-based attacks?" },
+        ],
       },
       {
         id: "03", unit: "ACCESS CONTROL", title: "Make access proportionate", description: "Use authentication and authorization for a defined purpose.",
@@ -933,7 +917,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A student worker needs to update contact details but should not approve refunds or export the entire customer table.",
         why: "Least privilege reduces the harm from mistakes, compromised accounts, and unnecessary access.",
         takeaways: ["Authentication and authorization differ.", "Least privilege is task-specific.", "Review access as roles change."],
-        questions: makeQuestions("Which choice is authorization rather than authentication?", ["Checking a password", "Allowing a verified user to approve refunds", "Sending a login code", "Confirming a device"], 1, "Authorization decides what an authenticated identity may do.", "Which action controls permissions after identity is known?", "A verified user needs permission to export a sensitive report."),
+        questions: [
+          { prompt: "Which choice is authorization rather than authentication?", options: ["Checking a password", "Allowing a verified user to approve refunds", "Sending a login code", "Confirming a device"], correct: 1, feedback: "Authorization decides what an authenticated identity may do.", hint: "Which action controls permissions after identity is known?" },
+          { prompt: "A former employee's account is disabled the day they leave, but their access had never been reviewed while employed. What risk does this create?", options: ["Overly broad permissions may have gone unnoticed and unused for a long time before being disabled", "Disabling the account is unnecessary", "Permissions never need review once granted", "This process is already fully secure"], correct: 0, feedback: "Access should be reviewed periodically, not just revoked at departure — unused broad permissions are risk sitting quietly the whole time.", hint: "What happens to permissions that are granted but never re-checked?" },
+          { prompt: "A new intern is given administrator access 'to be safe' even though the task only needs read access to one folder. What principle does this violate?", options: ["Least privilege", "Two-factor authentication", "Password complexity", "Data encryption"], correct: 0, feedback: "Least privilege means granting only the access a task actually requires, not more.", hint: "What principle limits access to what's needed?" },
+          { prompt: "What is the strongest justification for reviewing access permissions on a schedule rather than only at hiring?", options: ["Roles and responsibilities change over time, so granted access can become mismatched with current need", "Scheduled reviews are required by law everywhere", "Permissions never change once granted", "Reviewing access is only useful for large organizations"], correct: 0, feedback: "As roles shift, previously appropriate access can become excessive; regular review keeps permissions matched to current need.", hint: "Why might access that was correct on day one become wrong later?" },
+        ],
       },
       {
         id: "04", unit: "INCIDENT RESPONSE", title: "Contain, preserve, and learn", description: "Turn an alert into a proportionate evidence-guided response.",
@@ -942,7 +931,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A workstation begins encrypting shared files and an alert reports unusual file activity.",
         why: "Disconnecting the affected system can limit spread while logs and timestamps support later analysis.",
         takeaways: ["Containment comes before convenience.", "Preserve evidence.", "Recovery includes improvement."],
-        questions: makeQuestions("A workstation appears to be encrypting shared files. What is the strongest immediate priority?", ["Contain the affected system using the response plan", "Delete all logs", "Wait for the next day", "Post details publicly"], 0, "Containment limits additional harm while preserving the path for investigation and recovery.", "Which action reduces spread without destroying evidence?", "An alert suggests active ransomware behavior on a shared drive."),
+        questions: [
+          { prompt: "A workstation appears to be encrypting shared files. What is the strongest immediate priority?", options: ["Contain the affected system using the response plan", "Delete all logs", "Wait for the next day", "Post details publicly"], correct: 0, feedback: "Containment limits additional harm while preserving the path for investigation and recovery.", hint: "Which action reduces spread without destroying evidence?" },
+          { prompt: "During containment, why should logs and timestamps be preserved rather than immediately deleted?", options: ["They provide evidence needed to understand and recover from the incident", "Logs are never useful after an incident", "Deleting logs speeds up recovery", "Timestamps are only relevant for billing"], correct: 0, feedback: "Preserved evidence lets responders reconstruct what happened and confirm the incident is actually contained.", hint: "What would investigators need after the incident is contained?" },
+          { prompt: "After an incident is resolved, a team skips a post-incident review to save time. What is the main cost of skipping this step?", options: ["The same gap that allowed the incident may go unaddressed and recur", "Post-incident reviews are purely ceremonial", "Skipping review has no real downside", "Reviews only matter for large incidents"], correct: 0, feedback: "Learning from the incident is what prevents the same root cause from producing a repeat incident.", hint: "What does a review actually accomplish that containment alone doesn't?" },
+          { prompt: "Which sequence best reflects a proportionate incident response?", options: ["Confirm the signal, contain it, preserve evidence, communicate, then recover and review", "Recover immediately, then decide later whether it was real", "Communicate publicly first, then investigate", "Delete affected systems immediately without investigation"], correct: 0, feedback: "Response should verify first, then limit harm, protect evidence, coordinate communication, and close with recovery and learning.", hint: "What comes before containment, and what comes after recovery?" },
+        ],
       },
     ],
     "/cybersecurity.png", "Security tokens and a response checklist arranged on a charcoal desk.",
@@ -957,7 +951,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "To find a name in an unsorted list, a scan checks items one by one until it finds a match or reaches the end.",
         why: "The worst case grows with the list length because every item may need inspection.",
         takeaways: ["Algorithms are procedures.", "Trace the repeated operation.", "Separate hardware from growth."],
-        questions: makeQuestions("For an unsorted list, what is the worst-case work of scanning for a name?", ["Check one item", "Check every item", "Sort instantly", "No comparison is needed"], 1, "If the name is last or absent, a linear scan may inspect each item.", "What happens when the target is absent?", "You search an unsorted list of 1,000 names and the target is not present."),
+        questions: [
+          { prompt: "For an unsorted list, what is the worst-case work of scanning for a name?", options: ["Check one item", "Check every item", "Sort instantly", "No comparison is needed"], correct: 1, feedback: "If the name is last or absent, a linear scan may inspect each item.", hint: "What happens when the target is absent?" },
+          { prompt: "Algorithm A always takes 100 steps; Algorithm B takes between 5 and 100,000 steps depending on input. Why report worst case for B?", options: ["It gives a guarantee that holds no matter what input arrives", "It's always the number of steps that actually happens", "Best case is more useful for guarantees", "Average case requires no assumptions about input"], correct: 0, feedback: "Worst-case analysis promises a bound that holds under any input, which is what a reliability guarantee needs.", hint: "Which measure protects you from the least convenient input?" },
+          { prompt: "A search checks every item in a 10-item list and never finds a match. How many comparisons did the worst case require?", options: ["10", "1", "5", "0"], correct: 0, feedback: "A full scan with no match inspects every item, so the worst case here is exactly 10 comparisons.", hint: "If nothing matches, how many items get skipped?" },
+          { prompt: "Before comparing two algorithms' speed, what should you specify first?", options: ["The size and structure of the input they'll run on", "Which programming language looks nicer", "The programmer's typing speed", "The color of the code editor"], correct: 0, feedback: "Growth claims are only meaningful relative to how input size and structure change.", hint: "What does 'faster' actually depend on?" },
+        ],
       },
       {
         id: "02", unit: "GROWTH RATES", title: "See what scales", description: "Use Big-O to compare how work grows with input size.",
@@ -966,7 +965,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "Checking every pair among n student projects requires roughly n times n comparisons.",
         why: "Doubling n makes a quadratic workload roughly four times larger, not merely twice as large.",
         takeaways: ["Growth matters at scale.", "Nested independent loops often multiply work.", "Halving is a distinctive pattern."],
-        questions: makeQuestions("A process compares every item with every other item. Which growth rate best fits?", ["O(1)", "O(log n)", "O(n)", "O(n²)"], 3, "Independent nested comparisons produce about n × n work.", "How many pairs are considered as the list grows?", "A program compares every student record with every other student record."),
+        questions: [
+          { prompt: "A process compares every item with every other item. Which growth rate best fits?", options: ["O(1)", "O(log n)", "O(n)", "O(n²)"], correct: 3, feedback: "Independent nested comparisons produce about n × n work.", hint: "How many pairs are considered as the list grows?" },
+          { prompt: "An algorithm's work stays exactly the same regardless of input size. Which growth rate describes it?", options: ["O(1)", "O(n)", "O(n²)", "O(log n)"], correct: 0, feedback: "Constant time work, O(1), does not grow as input size increases.", hint: "What does 'constant' mean for growth?" },
+          { prompt: "Doubling the input size roughly doubles an algorithm's running time. Which growth rate is most consistent with this?", options: ["O(n)", "O(n²)", "O(1)", "O(2ⁿ)"], correct: 0, feedback: "Linear growth, O(n), scales work proportionally with input size — doubling input roughly doubles work.", hint: "What growth rate scales proportionally, not multiplicatively?" },
+          { prompt: "Why is Big-O described using large inputs rather than small ones?", options: ["Because growth differences hidden at small sizes become decisive at large sizes", "Because small inputs are never tested", "Because Big-O only applies to sorting", "Because constant factors matter most at small sizes"], correct: 0, feedback: "At small sizes constant factors can dominate; at large sizes the growth rate itself determines performance.", hint: "When does the shape of growth start to matter most?" },
+        ],
       },
       {
         id: "03", unit: "SEARCH + SORT", title: "Use structure to reduce work", description: "Choose a search method that matches what is already known.",
@@ -975,7 +979,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A sorted phone directory lets you compare a target with the midpoint and discard one half repeatedly.",
         why: "Binary search is fast because it uses the order; it is not valid on an arbitrary unsorted list.",
         takeaways: ["Binary search needs sorted data.", "Order is an investment.", "Match the method to the representation."],
-        questions: makeQuestions("What condition is required before binary search is valid?", ["The data are sorted by the search key", "The list is random", "There are exactly two items", "Every item is unique"], 0, "Binary search relies on order to justify discarding half the remaining values.", "What evidence lets you discard one half safely?", "You want to use binary search for last names in a directory."),
+        questions: [
+          { prompt: "What condition is required before binary search is valid?", options: ["The data are sorted by the search key", "The list is random", "There are exactly two items", "Every item is unique"], correct: 0, feedback: "Binary search relies on order to justify discarding half the remaining values.", hint: "What evidence lets you discard one half safely?" },
+          { prompt: "A list of 1,000 sorted numbers is searched with binary search. Roughly how many comparisons are needed in the worst case?", options: ["About 10", "About 1,000", "About 500", "About 1"], correct: 0, feedback: "Binary search roughly halves the remaining space each step; log₂(1000) is about 10.", hint: "How many times can 1,000 be halved before reaching 1?" },
+          { prompt: "A dataset is updated frequently and rarely searched. Is maintaining sorted order worth it just to enable binary search?", options: ["Not necessarily — the cost of keeping it sorted may outweigh the rare benefit", "Yes, sorted order is always worth maintaining", "No, sorting a list has no cost", "Yes, because binary search is required by law"], correct: 0, feedback: "Sorting and re-sorting has a real cost; it should be weighed against how often the resulting order is actually used.", hint: "What does keeping data sorted cost, and how often would that investment pay off here?" },
+          { prompt: "What is the strongest reason to check whether data is sorted before choosing binary search?", options: ["Binary search on unsorted data can silently return wrong or missing results", "Binary search works the same regardless of order", "Sorting is never necessary for search", "Unsorted data always searches faster"], correct: 0, feedback: "Binary search's correctness depends entirely on order; using it on unsorted data breaks its guarantees without necessarily raising an error.", hint: "What happens to binary search's guarantee if its assumption is false?" },
+        ],
       },
       {
         id: "04", unit: "TRADEOFFS", title: "Defend the tradeoff", description: "Choose for time, memory, accuracy, and maintainability—not speed alone.",
@@ -984,7 +993,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A hash table speeds repeated lookups but requires extra storage and a strategy for collisions.",
         why: "The right choice changes if memory is scarce, ordering matters, or records are constantly updated.",
         takeaways: ["There is rarely one universal best method.", "State the workload.", "Include costs beyond running time."],
-        questions: makeQuestions("Why might a faster lookup structure not always be the best choice?", ["It may use more memory or make other operations harder", "Speed never matters", "Algorithms have no constraints", "All structures cost the same"], 0, "Choosing a structure means balancing multiple costs against the actual workload.", "What resource or operation might be traded for faster lookup?", "A mobile device needs fast lookup but has tight memory limits."),
+        questions: [
+          { prompt: "Why might a faster lookup structure not always be the best choice?", options: ["It may use more memory or make other operations harder", "Speed never matters", "Algorithms have no constraints", "All structures cost the same"], correct: 0, feedback: "Choosing a structure means balancing multiple costs against the actual workload.", hint: "What resource or operation might be traded for faster lookup?" },
+          { prompt: "A system needs to preserve insertion order, but a hash table doesn't guarantee order. What should guide the choice here?", options: ["Whether preserving insertion order matters more than the hash table's lookup speed", "Always choose the fastest lookup regardless of ordering needs", "Order never matters in any system", "Hash tables always preserve order"], correct: 0, feedback: "The right structure depends on which property the task actually needs — speed and ordering guarantees can conflict.", hint: "What does this specific task require that a hash table doesn't promise?" },
+          { prompt: "A mobile app has very limited memory but performs lookups constantly. Which factor should weigh most heavily in choosing a data structure?", options: ["The memory footprint of each candidate structure relative to its lookup speed", "Only how fast the structure looks in a benchmark", "The structure's popularity in tutorials", "Whichever structure requires the least code to write"], correct: 0, feedback: "Under a tight memory constraint, memory cost becomes a decisive factor alongside speed.", hint: "What resource is scarce here, and how does that limit the options?" },
+          { prompt: "What makes a tradeoff decision defensible to a skeptical reviewer?", options: ["Naming the workload, constraints, and costs that were weighed, not just the final choice", "Picking the structure everyone else uses", "Avoiding any explanation of the reasoning", "Choosing based on which name sounds more advanced"], correct: 0, feedback: "A defensible choice makes its reasoning inspectable: what was needed, what was traded, and why.", hint: "What turns a guess into a defensible decision?" },
+        ],
       },
     ],
     "/algorithms.png", "A tabletop study of branching paths, sorting tiles, and a maze grid.",
@@ -999,7 +1013,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "Students belong in a Students table, courses in Courses, and enrollments in a table that links one student to one course.",
         why: "The enrollment relationship has its own facts, such as term and grade, which do not belong to either entity alone.",
         takeaways: ["One table has one row meaning.", "Keys identify rows.", "Relationships can hold their own facts."],
-        questions: makeQuestions("What does a row in an Enrollments table most naturally represent?", ["One student taking one course", "All courses at a university", "A random list of names", "One entire department"], 0, "An enrollment is a relationship between a particular student and a particular course.", "What two entities does an enrollment connect?", "You need to record a student's course, term, and grade."),
+        questions: [
+          { prompt: "What does a row in an Enrollments table most naturally represent?", options: ["One student taking one course", "All courses at a university", "A random list of names", "One entire department"], correct: 0, feedback: "An enrollment is a relationship between a particular student and a particular course.", hint: "What two entities does an enrollment connect?" },
+          { prompt: "A table stores a student's three phone numbers in one comma-separated cell. What modeling problem does this create?", options: ["It violates the idea that one cell should hold one atomic value, making the data hard to query and update", "It is the correct way to store multiple values", "It has no downsides for querying", "It automatically creates a related table"], correct: 0, feedback: "Repeating groups in one cell make filtering, updating, and joining on individual values difficult; each fact belongs in its own row or related table.", hint: "What happens when you need to search for just one of those phone numbers?" },
+          { prompt: "A Courses table and an Instructors table both need to reference each other reliably. What should connect specific rows between them?", options: ["A stable key, such as an instructor ID, referenced as a foreign key", "Matching on instructor name text", "Row order in each table", "The table's file size"], correct: 0, feedback: "Names can repeat or change; a stable key reliably identifies which specific row is meant.", hint: "What happens if two instructors share the same name?" },
+          { prompt: "Before creating a new table, what question most directly clarifies its design?", options: ["What does exactly one row in this table represent?", "What color should the table's header be?", "How many total tables does the database have?", "Which table was created first?"], correct: 0, feedback: "Naming the row's meaning clarifies which attributes belong in the table and which belong elsewhere.", hint: "What must be true about every single row for the table to make sense?" },
+        ],
       },
       {
         id: "02", unit: "QUERY MEANING", title: "Ask exactly the question you mean", description: "Use selection, projection, and conditions deliberately.",
@@ -1008,7 +1027,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "SELECT name FROM Students WHERE major = 'Biology' asks for names only among biology students.",
         why: "Moving a condition or omitting it changes the population behind the answer.",
         takeaways: ["Filters define the population.", "Columns define the output.", "Translate SQL into a sentence."],
-        questions: makeQuestions("What does a WHERE clause primarily control?", ["Which rows are included", "The font of results", "The database password", "The table's physical location"], 0, "WHERE filters the rows that satisfy the stated condition.", "Which part decides who belongs in the result?", "You only want orders created after January 1."),
+        questions: [
+          { prompt: "What does a WHERE clause primarily control?", options: ["Which rows are included", "The font of results", "The database password", "The table's physical location"], correct: 0, feedback: "WHERE filters the rows that satisfy the stated condition.", hint: "Which part decides who belongs in the result?" },
+          { prompt: "`SELECT name FROM Students` (no WHERE clause) runs instead of the intended query filtered to Biology majors. What changes?", options: ["It returns names from every major, not just Biology", "It returns an error", "It returns only Biology students anyway", "It returns no rows"], correct: 0, feedback: "Omitting the WHERE clause removes the filter, so the population expands to every row in the table.", hint: "What happens to the population when the filter is missing?" },
+          { prompt: "A query selects `name, department` but the analyst only meant to report names. Why might the extra column still matter?", options: ["Extra columns can reveal or imply information beyond what was intended to be shared", "Extra columns never affect anything", "SQL requires exactly one column per query", "More columns always mean better analysis"], correct: 0, feedback: "The columns returned define what the output actually reveals; unintended columns can leak more than intended.", hint: "What does the output actually expose to whoever reads it?" },
+          { prompt: "What is the best way to check that a query answers the intended question?", options: ["Translate the query into a plain-language sentence and compare it to the original question", "Run it and assume the result is correct if it doesn't error", "Check that the syntax is valid and stop there", "Compare the query's length to similar queries"], correct: 0, feedback: "Restating a query in plain language exposes mismatches between what was asked and what was actually written.", hint: "How do you catch a mismatch between intent and syntax?" },
+        ],
       },
       {
         id: "03", unit: "JOINS", title: "Join without changing the population", description: "Check keys and cardinality before trusting a combined table.",
@@ -1017,7 +1041,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "Joining one order to multiple order-line rows will create multiple rows for that order.",
         why: "A total can be inflated if an order-level amount is repeated once for every line item.",
         takeaways: ["Joins can multiply rows.", "Match grain to the question.", "Audit row counts after joins."],
-        questions: makeQuestions("Why can a join inflate an order-level total?", ["One order can match several line items, repeating the order amount", "Joins always remove rows", "SQL ignores duplicate keys", "Tables cannot be related"], 0, "One-to-many joins repeat the one-side values across the many-side rows.", "How many line items might match one order?", "You join order totals to individual order lines and then sum order totals."),
+        questions: [
+          { prompt: "Why can a join inflate an order-level total?", options: ["One order can match several line items, repeating the order amount", "Joins always remove rows", "SQL ignores duplicate keys", "Tables cannot be related"], correct: 0, feedback: "One-to-many joins repeat the one-side values across the many-side rows.", hint: "How many line items might match one order?" },
+          { prompt: "Before trusting a join's output, what is the most useful audit step?", options: ["Compare row counts before and after the join to check for unexpected multiplication", "Assume the join is correct if the query runs without error", "Skip auditing if the tables are small", "Check only that column names match"], correct: 0, feedback: "A join can run successfully and still multiply or drop rows silently; comparing counts catches this.", hint: "What kind of error produces no syntax error at all?" },
+          { prompt: "A join between Students and Enrollments is meant to list each student once, but a student who took 3 courses appears 3 times. What caused this?", options: ["The join is at the enrollment grain, not the student grain, so each enrollment produces a row", "The database has a bug", "Students cannot take multiple courses", "The join used the wrong table names"], correct: 0, feedback: "Joining to a many-side table changes the row grain; each matching enrollment produces its own row for that student.", hint: "What does each row in the joined result actually represent now?" },
+          { prompt: "What should you check before joining two tables on a key column?", options: ["Whether that key is unique in at least one of the two tables", "Whether the tables have the same number of columns", "Whether the tables were created on the same day", "Whether the column names are capitalized the same way"], correct: 0, feedback: "If the key isn't unique on either side, the join can multiply rows in ways that are easy to miss.", hint: "What property of the key determines whether rows get multiplied?" },
+        ],
       },
       {
         id: "04", unit: "AGGREGATES + AUDIT", title: "Aggregate, then audit", description: "Summarize groups while checking denominator and duplicates.",
@@ -1026,7 +1055,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "Counting rows in a visit table answers visits, not necessarily unique patients.",
         why: "A patient with three visits contributes three rows unless the query explicitly counts distinct patient IDs.",
         takeaways: ["Counts depend on row grain.", "Distinct changes the unit counted.", "Audit the denominator."],
-        questions: makeQuestions("When should you use COUNT(DISTINCT patient_id)?", ["When the question is how many unique patients", "When counting every visit", "To sort a table", "To create a password"], 0, "DISTINCT removes repeated patient IDs before counting, matching a unique-patient question.", "Does the question ask about events or people?", "A patient appears in the Visits table three times, and you need the number of patients."),
+        questions: [
+          { prompt: "When should you use COUNT(DISTINCT patient_id)?", options: ["When the question is how many unique patients", "When counting every visit", "To sort a table", "To create a password"], correct: 0, feedback: "DISTINCT removes repeated patient IDs before counting, matching a unique-patient question.", hint: "Does the question ask about events or people?" },
+          { prompt: "A report says '200 patients were seen' but it actually counted visit rows, not unique patient IDs. What is the risk?", options: ["The number may overstate unique patients if some patients had multiple visits", "The number is always accurate regardless of grain", "Visit counts and patient counts are always equal", "This mistake cannot happen with SQL"], correct: 0, feedback: "If any patient had more than one visit, counting rows overstates the number of unique patients.", hint: "What happens to the count if one patient shows up in three rows?" },
+          { prompt: "A GROUP BY query averages wait time per clinic. One clinic has only 2 recorded visits, but it's reported the same way as a clinic with 5,000. What's missing?", options: ["The sample size behind each average, since small denominators are less stable", "The clinic's name", "The database's version number", "The time zone of the server"], correct: 0, feedback: "An average from 2 visits is far less reliable than one from 5,000; the denominator should accompany the summary.", hint: "Which average is more likely to swing wildly with one unusual visit?" },
+          { prompt: "What is the best habit before reporting any aggregated number (count, average, sum)?", options: ["State what is being counted or averaged, over what population, and check the denominator", "Round the number to look cleaner", "Report it without further explanation if it seems reasonable", "Always prefer the largest number available"], correct: 0, feedback: "An aggregate is only meaningful alongside its definition, population, and denominator.", hint: "What three things make a number interpretable rather than just impressive?" },
+        ],
       },
     ],
     "/sql-modeling.png", "Linked relational data cards, a database token, and key-shaped markers.",
@@ -1041,7 +1075,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "To compare infection rates across six units, a sorted bar chart makes magnitude differences easier to read than a pie chart.",
         why: "Human comparison of aligned lengths is more reliable than comparison of many angles and areas.",
         takeaways: ["Start with the decision question.", "Choose a perceptually direct comparison.", "Reduce decoration that competes with evidence."],
-        questions: makeQuestions("Which chart is usually clearest for comparing values across six named units?", ["A sorted bar chart", "A pie chart with six similar slices", "A decorative 3D chart", "A table with no labels"], 0, "Aligned bar lengths make comparisons across named groups easy to judge.", "What chart lets the reader compare magnitudes on a common baseline?", "You need to compare rates across six hospital units."),
+        questions: [
+          { prompt: "Which chart is usually clearest for comparing values across six named units?", options: ["A sorted bar chart", "A pie chart with six similar slices", "A decorative 3D chart", "A table with no labels"], correct: 0, feedback: "Aligned bar lengths make comparisons across named groups easy to judge.", hint: "What chart lets the reader compare magnitudes on a common baseline?" },
+          { prompt: "A dataset tracks one metric changing over 24 months. Which chart form best matches this question?", options: ["A line chart showing the trend over time", "A pie chart", "A single bar", "A word cloud"], correct: 0, feedback: "A line chart makes a trend over a continuous sequence, like months, easy to follow.", hint: "What visual form is built to show change across an ordered sequence?" },
+          { prompt: "A designer chooses a 3D exploded pie chart because it 'looks more impressive' for comparing 4 categories. What is the main risk?", options: ["3D distortion makes slice sizes harder to compare accurately, favoring decoration over clarity", "3D charts are always more accurate", "Pie charts are required for any categorical data", "There is no risk; visual appeal is the main goal"], correct: 0, feedback: "3D effects distort perceived area and angle, making comparisons less accurate — the opposite of what a chart should do.", hint: "What does the 3D effect do to how slice sizes are perceived?" },
+          { prompt: "What should be decided first when choosing a chart form?", options: ["The specific comparison, trend, or relationship the reader needs to evaluate", "Which chart type looks most modern", "The color scheme", "The size of the image file"], correct: 0, feedback: "The chart's purpose — what comparison it must support — should drive the choice of form, not aesthetics alone.", hint: "What must be true about a chart before it can be judged well- or poorly-chosen?" },
+        ],
       },
       {
         id: "02", unit: "SCALE + BASELINE", title: "Interrogate the visual claim", description: "Recognize how axes, ranges, and design choices change perceived difference.",
@@ -1050,7 +1089,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "Two satisfaction scores of 92% and 94% look dramatically different when a bar chart axis starts at 90%.",
         why: "The numbers differ by two percentage points; the chart's cropped range makes that modest difference look much larger.",
         takeaways: ["Check baselines.", "Separate absolute from visual difference.", "Use context when a truncated scale is justified."],
-        questions: makeQuestions("What is the main risk of a truncated axis on a bar chart?", ["It can exaggerate a modest difference", "It always improves accuracy", "It removes all labels", "It makes data categorical"], 0, "A narrow range can make small changes appear visually enormous relative to their actual magnitude.", "Where does the displayed scale begin?", "A bar chart begins at 90% and compares values of 92% and 94%."),
+        questions: [
+          { prompt: "What is the main risk of a truncated axis on a bar chart?", options: ["It can exaggerate a modest difference", "It always improves accuracy", "It removes all labels", "It makes data categorical"], correct: 0, feedback: "A narrow range can make small changes appear visually enormous relative to their actual magnitude.", hint: "Where does the displayed scale begin?" },
+          { prompt: "Two bar charts show the same data: one y-axis starts at 0, the other at 90. Why might a reader reach different conclusions from each?", options: ["The truncated axis makes the same absolute difference look proportionally larger", "The data itself is different between the two charts", "Axis starting point never affects perception", "Only the color changes between the charts"], correct: 0, feedback: "The underlying numbers are identical; only the visual scale changes, which can mislead a reader about the size of the difference.", hint: "What actually differs between the two charts if the data is the same?" },
+          { prompt: "When is a non-zero baseline potentially justified rather than misleading?", options: ["When the meaningful range of the data is narrow and the choice is clearly labeled", "Whenever it makes the trend look more dramatic", "Only for pie charts", "Never — all charts must start at zero"], correct: 0, feedback: "A narrow, clearly labeled range can be legitimate for genuinely small but meaningful variation; the key is transparency, not the baseline itself.", hint: "What makes a scale choice honest rather than deceptive?" },
+          { prompt: "What should a careful reader check immediately when a chart shows a dramatic visual gap?", options: ["The axis baseline, range, and units before reacting to the visual size of the gap", "Only the chart's title", "The font used for the labels", "Whether the chart has a border"], correct: 0, feedback: "The scale determines how a real difference is visually represented; checking it first prevents being misled by design choices.", hint: "What determines how large a real difference looks on the page?" },
+        ],
       },
       {
         id: "03", unit: "UNCERTAINTY", title: "Show what the estimate cannot say", description: "Present uncertainty, sample size, and variation as part of the evidence.",
@@ -1059,7 +1103,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A clinic rate rises from 2% to 4%, but the underlying sample is only 50 patients and the interval is wide.",
         why: "The change may matter, but the small denominator means the estimate needs careful contextual interpretation.",
         takeaways: ["Denominators matter.", "Uncertainty belongs in the story.", "Precision is not the same as certainty."],
-        questions: makeQuestions("Why should a reader see the denominator alongside a rate?", ["It helps judge how stable and meaningful the estimate is", "It makes the chart prettier", "It removes uncertainty", "It guarantees causation"], 0, "The same percentage can reflect very different evidence when based on 10 versus 10,000 observations.", "How many observations produced the rate?", "A rate changes from 2% to 4% in a sample of 50 people."),
+        questions: [
+          { prompt: "Why should a reader see the denominator alongside a rate?", options: ["It helps judge how stable and meaningful the estimate is", "It makes the chart prettier", "It removes uncertainty", "It guarantees causation"], correct: 0, feedback: "The same percentage can reflect very different evidence when based on 10 versus 10,000 observations.", hint: "How many observations produced the rate?" },
+          { prompt: "A chart shows a point estimate with no error bars or confidence interval. What can the reader NOT conclude from it alone?", options: ["How much the true value might plausibly vary around that point", "The exact numeric value shown", "The units being measured", "The time period covered"], correct: 0, feedback: "A single point hides how precise or uncertain that estimate actually is; uncertainty needs to be shown separately.", hint: "What does a point estimate alone fail to communicate?" },
+          { prompt: "A rate rises from 10% to 15% in a sample of 8 people. What is the most defensible framing?", options: ["The change is based on a very small sample and should be interpreted cautiously", "The 5-point increase is a large, certain effect", "Small samples are just as reliable as large ones", "The rate change proves a causal relationship"], correct: 0, feedback: "With only 8 people, a shift from 10% to 15% may reflect the change of a single person, not a stable trend.", hint: "How many people would need to change status to move this rate?" },
+          { prompt: "What is the strongest way to present uncertainty responsibly in a chart?", options: ["Show the estimate alongside its sample size and, where possible, a range of plausible values", "Omit uncertainty so the chart looks cleaner", "Only show uncertainty when the news is good", "Replace numbers with vague verbal descriptions"], correct: 0, feedback: "Pairing the estimate with sample size and a plausible range lets the reader judge confidence honestly.", hint: "What two things does a reader need alongside a single number?" },
+        ],
       },
       {
         id: "04", unit: "DESIGN DEFENSE", title: "Defend an honest comparison", description: "Explain a chart choice to a skeptical reader.",
@@ -1068,7 +1117,12 @@ const coursePrograms: Record<string, CourseProgram> = {
         example: "A line chart shows monthly wait time with a clearly labeled median, sample size, and a note describing an outlier month.",
         why: "Readers can see what changed, how it was summarized, and what context limits the conclusion.",
         takeaways: ["Make the claim explicit.", "Label the measure and population.", "Invite inspection, not persuasion by decoration."],
-        questions: makeQuestions("Which addition most improves the defensibility of a trend chart?", ["A labeled measure, population, time period, and relevant context", "A stronger gradient", "A 3D effect", "Fewer labels regardless of audience"], 0, "Context lets a reader evaluate what the trend actually represents and how far the claim can go.", "What information would a skeptical reader need to evaluate the claim?", "You are charting monthly wait time after a major workflow change."),
+        questions: [
+          { prompt: "Which addition most improves the defensibility of a trend chart?", options: ["A labeled measure, population, time period, and relevant context", "A stronger gradient", "A 3D effect", "Fewer labels regardless of audience"], correct: 0, feedback: "Context lets a reader evaluate what the trend actually represents and how far the claim can go.", hint: "What information would a skeptical reader need to evaluate the claim?" },
+          { prompt: "A skeptical reader asks 'compared to what?' about a chart showing '20% improvement.' What is missing from the chart?", options: ["A clearly labeled baseline or comparison group that the 20% is measured against", "A brighter color palette", "A larger font size", "An animated transition"], correct: 0, feedback: "A percentage change is only meaningful relative to a stated baseline; without it, the claim can't be evaluated.", hint: "What does 'improvement' need to be measured against?" },
+          { prompt: "Before publishing a chart, the designer writes a one-sentence claim it is meant to support. What is this practice meant to catch?", options: ["Visual choices that don't actually support, or that overstate, the stated claim", "Whether the file size is small enough", "Whether the chart uses the company's brand colors", "How long the chart took to build"], correct: 0, feedback: "Writing the claim first gives a concrete standard to check every visual decision against, catching overstatement or mismatch.", hint: "What does having an explicit claim let you check every design choice against?" },
+          { prompt: "What distinguishes an honest visualization from a persuasive one, in this framework?", options: ["It invites inspection of its population, measure, and uncertainty rather than hiding them behind polish", "It uses more colors and animation", "It never shows any negative results", "It is always simpler than a persuasive chart"], correct: 0, feedback: "Honesty here means transparency — every element that would let a skeptical reader check the claim is visible, not hidden.", hint: "What does an honest chart let the reader do that a purely persuasive one avoids?" },
+        ],
       },
     ],
     "/data-visualization.png", "Clear and misleading chart cards arranged with a ruler and annotation pencil.",
@@ -1111,8 +1165,18 @@ export default function Home() {
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [quickNote, setQuickNote] = useState("");
   const [savedNotes, setSavedNotes] = useState<string[]>([]);
-  const activeCourse = coursePrograms[activeCourseId] ?? coursePrograms["data-literacy"];
-  const activeCourseMeta = courseLibrary.find((course) => course.id === activeCourseId) ?? courseLibrary[0];
+  const [customTitle, setCustomTitle] = useState("");
+  const [customText, setCustomText] = useState("");
+  const [customLoading, setCustomLoading] = useState(false);
+  const [customError, setCustomError] = useState<string | null>(null);
+  const [customProgram, setCustomProgram] = useState<CourseProgram | null>(null);
+  const [customMeta, setCustomMeta] = useState<(typeof courseLibrary)[number] | null>(null);
+  const mergedCoursePrograms = customProgram
+    ? { ...coursePrograms, custom: customProgram }
+    : coursePrograms;
+  const mergedCourseLibrary = customMeta ? [...courseLibrary, customMeta] : courseLibrary;
+  const activeCourse = mergedCoursePrograms[activeCourseId] ?? coursePrograms["data-literacy"];
+  const activeCourseMeta = mergedCourseLibrary.find((course) => course.id === activeCourseId) ?? mergedCourseLibrary[0];
   const completed = progressByCourse[activeCourseId]?.completed ?? [];
   const unlocked = progressByCourse[activeCourseId]?.unlocked ?? 0;
   const lesson = activeCourse.lessons[lessonIndex];
@@ -1127,9 +1191,60 @@ export default function Home() {
   const briefingScript = activeCourse.briefingScripts[lessonIndex];
   const tutorScenario = activeCourse.tutorScenarios[lessonIndex];
   const libraryCourse =
-    courseLibrary.find((course) => course.id === libraryCourseId) ??
-    courseLibrary[0];
+    mergedCourseLibrary.find((course) => course.id === libraryCourseId) ??
+    mergedCourseLibrary[0];
   const mastery = Math.round((completed.length / activeCourse.lessons.length) * 100);
+  async function generateCustomLesson() {
+    if (customText.trim().length < 200) {
+      setCustomError("Paste at least a paragraph or two (about 200 characters) so the tutor has enough to work with.");
+      return;
+    }
+    setCustomLoading(true);
+    setCustomError(null);
+    try {
+      const response = await fetch("/api/source-lesson", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: customText, title: customTitle }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Could not build a lesson from that material.");
+      const apiLessons: Lesson[] = payload.lessons.map((l: Lesson) => ({
+        id: l.id,
+        unit: l.unit,
+        title: l.title,
+        description: l.description,
+        concept: l.concept,
+        teaching: l.teaching,
+        example: l.example,
+        why: l.why,
+        takeaways: l.takeaways,
+        questions: l.questions,
+      }));
+      const program = makeProgram(apiLessons, "/course-library-hero.png", "An editorial composition representing your own study material.", {
+        label: "Your pasted material",
+        href: "#",
+      });
+      setCustomProgram(program);
+      setCustomMeta({
+        id: "custom",
+        subject: payload.subject || "YOUR MATERIAL",
+        title: payload.title || customTitle || "Your material",
+        description: "A Socratic lesson generated from the material you pasted.",
+        level: "Custom",
+        format: `${apiLessons.length} lesson${apiLessons.length === 1 ? "" : "s"} · from your material`,
+        visual: "/course-library-hero.png",
+        visualAlt: "An editorial composition representing your own study material.",
+        available: true,
+        modules: apiLessons.map((l) => l.title),
+        outcomes: ["Learn from your own source", "Defend your reasoning about it"],
+      });
+    } catch (error) {
+      setCustomError(error instanceof Error ? error.message : "Could not build a lesson from that material.");
+    } finally {
+      setCustomLoading(false);
+    }
+  }
   function openCourse(courseId: string) {
     setActiveCourseId(courseId);
     setLibraryCourseId(courseId);
@@ -1485,7 +1600,7 @@ export default function Home() {
                 reasoning, then an independent mastery check.
               </p>
               <div className="library-hero-meta">
-                <span>6 course pathways</span>
+                <span>{mergedCourseLibrary.length} course pathways</span>
                 <span>Visual + audio learning</span>
                 <span>Required reasoning before quizzes</span>
               </div>
@@ -1496,6 +1611,77 @@ export default function Home() {
                 alt="An editorial study composition representing computing, data, algorithms, and cybersecurity."
               />
             </figure>
+          </section>
+
+          <section className="library-import">
+            <div className="library-import-copy">
+              <p className="question-type">BRING YOUR OWN MATERIAL</p>
+              <h2>Paste a textbook chapter, or your own notes.</h2>
+              <p>
+                Drop in an assigned reading, a paper abstract, or your own
+                notes. The tutor builds a lesson from exactly that
+                material—same teaching, tutor dialogue, and quiz flow as
+                every other course.
+              </p>
+            </div>
+            <div className="library-import-form">
+              <label>
+                Give it a name <span>(optional)</span>
+                <input
+                  type="text"
+                  value={customTitle}
+                  onChange={(event) => setCustomTitle(event.target.value)}
+                  placeholder="e.g. Chapter 4: Cellular Respiration"
+                  maxLength={80}
+                />
+              </label>
+              <label>
+                Paste your material
+                <textarea
+                  value={customText}
+                  onChange={(event) => {
+                    setCustomText(event.target.value);
+                    if (customError) setCustomError(null);
+                  }}
+                  placeholder="Paste a textbook chapter, article, or your own notes here..."
+                  rows={7}
+                />
+              </label>
+              <div className="library-import-actions">
+                <span>
+                  {
+                    customText.trim().split(/\s+/).filter(Boolean).length
+                  }{" "}
+                  words
+                </span>
+                <button
+                  type="button"
+                  className="primary-button"
+                  disabled={customLoading || customText.trim().length < 200}
+                  onClick={generateCustomLesson}
+                >
+                  {customLoading ? "Building your lesson…" : "Generate my lesson"}{" "}
+                  <span>&rarr;</span>
+                </button>
+              </div>
+              {customError && <p className="library-import-error">{customError}</p>}
+              {customProgram && customMeta && (
+                <div className="library-import-ready">
+                  <p>
+                    ✦ &ldquo;{customMeta.title}&rdquo; is ready — {customProgram.lessons.length}{" "}
+                    lesson{customProgram.lessons.length === 1 ? "" : "s"} built from your
+                    material.
+                  </p>
+                  <button
+                    type="button"
+                    className="primary-button"
+                    onClick={() => openCourse("custom")}
+                  >
+                    Start your lesson <span>&rarr;</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </section>
 
           <section className="library-body">
@@ -1510,7 +1696,7 @@ export default function Home() {
               </p>
             </div>
             <div className="library-grid">
-              {courseLibrary.map((course) => (
+              {mergedCourseLibrary.map((course) => (
                 <article
                   key={course.id}
                   className={`library-card ${libraryCourse.id === course.id ? "selected" : ""}`}
@@ -1575,7 +1761,7 @@ export default function Home() {
                 ))}
               </ol>
               <div className="library-detail-footer">
-                <span>4 lessons · audio, visual, tutor, quiz</span>
+                <span>{libraryCourse.modules.length} lessons · audio, visual, tutor, quiz</span>
                 <button
                   className="primary-button"
                   onClick={() => openCourse(libraryCourse.id)}
@@ -1710,7 +1896,10 @@ export default function Home() {
             </p>
             <div className="module-meta">
               <span>{activeCourse.lessons.length} teaching lessons</span>
-              <span>{activeCourse.lessons.length * 4} mastery questions</span>
+              <span>
+                {activeCourse.lessons.reduce((sum, item) => sum + item.questions.length, 0)}{" "}
+                mastery questions
+              </span>
               <span>Adaptive level: {level}</span>
             </div>
             <div className="skill-list">

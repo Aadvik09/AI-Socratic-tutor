@@ -167,6 +167,111 @@
   letter-spacing: 0.03em;
   padding: 9px 11px;
 }
+.course-app .library-import {
+  background: #e9ede2;
+  border-bottom: 1px solid #d3d9c9;
+  display: grid;
+  gap: clamp(28px, 5vw, 64px);
+  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr);
+  margin: 0 auto;
+  max-width: 1500px;
+  padding: clamp(40px, 6vw, 72px) clamp(24px, 6vw, 90px);
+}
+.course-app .library-import-copy h2 {
+  color: #1f2720;
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(27px, 3vw, 38px);
+  font-weight: 560;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin: 8px 0 14px;
+}
+.course-app .library-import-copy p:not(.question-type) {
+  color: #4a5346;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 420px;
+}
+.course-app .library-import-form {
+  background: #fffefa;
+  border: 1px solid #d8dbd2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 26px;
+}
+.course-app .library-import-form label {
+  color: #3c473a;
+  display: flex;
+  flex-direction: column;
+  font:
+    600 10px "DM Mono",
+    monospace;
+  gap: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.course-app .library-import-form label span {
+  color: #8a9481;
+  text-transform: none;
+}
+.course-app .library-import-form input,
+.course-app .library-import-form textarea {
+  background: #f8f9f4;
+  border: 1px solid #cdd2c4;
+  color: #1a211a;
+  font: 14px/1.6 "Inter", system-ui, sans-serif;
+  padding: 11px 12px;
+  resize: vertical;
+}
+.course-app .library-import-form input:focus,
+.course-app .library-import-form textarea:focus {
+  border-color: #8c9b80;
+  outline: none;
+}
+.course-app .library-import-actions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.course-app .library-import-actions > span {
+  color: #6b7961;
+  font:
+    10px "DM Mono",
+    monospace;
+  letter-spacing: 0.04em;
+}
+.course-app .library-import-error {
+  background: #fbeceb;
+  border: 1px solid #e3b9b5;
+  color: #7a2e28;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 10px 12px;
+}
+.course-app .library-import-ready {
+  align-items: center;
+  background: #eef2e5;
+  border: 1px solid #cbd6bd;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+.course-app .library-import-ready p {
+  color: #2d382d;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 320px;
+}
+@media (max-width: 860px) {
+  .course-app .library-import {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .course-app .library-body {
   margin: 0 auto;
   max-width: 1500px;
