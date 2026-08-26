@@ -19,6 +19,7 @@ type Lesson = {
   why: string;
   takeaways: string[];
   questions: Question[];
+  checkpoint?: string;
 };
 const lessons: Lesson[] = [
   {
@@ -794,7 +795,9 @@ function makeProgram(
       { title: "How to use it", copy: lesson.teaching, example: lesson.why },
       {
         title: "A defensible move",
-        copy: "Name the assumption you are making, then identify the evidence that would change your mind.",
+        copy:
+          lesson.checkpoint ??
+          "Name the assumption you are making, then identify the evidence that would change your mind.",
         example: "This is the bridge between a correct-looking answer and a reasoned one.",
       },
     ]),
@@ -821,7 +824,7 @@ const coursePrograms: Record<string, CourseProgram> = {
   "python-reasoning": makeProgram(
     [
       {
-        id: "01", unit: "PROGRAM STATE", title: "Trace values before trusting output", description: "Follow assignments and expressions one step at a time.",
+        id: "01", unit: "PROGRAM STATE", title: "Trace values before trusting output", description: "Follow assignments and expressions one step at a time.", checkpoint: "Before trusting a printed value, redo the trace on paper and compare it line by line against the program's actual output.",
         concept: "A variable names a value at a particular moment; an assignment changes what that name refers to.",
         teaching: "Trace short programs with a table: write each line, update the value, and predict output before running code.",
         example: "A script sets total = 8, then total = total + 3, then prints total.",
@@ -835,7 +838,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "02", unit: "CONTROL FLOW", title: "Choose a path with evidence", description: "Use conditions and loops to make a program's choices explicit.",
+        id: "02", unit: "CONTROL FLOW", title: "Choose a path with evidence", description: "Use conditions and loops to make a program's choices explicit.", checkpoint: "Test your branch or loop specifically at its boundary value, not just with a comfortable middle-of-the-range example.",
         concept: "A conditional evaluates a true-or-false expression; a loop repeats a clearly defined action over a changing state.",
         teaching: "Read the condition in plain language, then test it with a concrete value before predicting the branch or repetition.",
         example: "A program labels a temperature at least 38 as fever; otherwise it labels it not fever.",
@@ -849,7 +852,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "03", unit: "FUNCTIONS + TESTS", title: "Make a claim small enough to test", description: "Break a problem into focused functions and examples.",
+        id: "03", unit: "FUNCTIONS + TESTS", title: "Make a claim small enough to test", description: "Break a problem into focused functions and examples.", checkpoint: "Write down the ordinary, boundary, and invalid cases a function must handle before you write its body.",
         concept: "A function gives a named task explicit inputs and an output; tests check its behavior on representative cases.",
         teaching: "Write one function for one job, specify the expected result, then test ordinary, boundary, and unusual cases.",
         example: "A `mean(values)` function should be tested on [2, 4, 6], a one-item list, and an empty list policy.",
@@ -863,7 +866,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "04", unit: "DATA + DEBUGGING", title: "Debug the assumption, not just the line", description: "Use evidence to locate a mismatch between expectation and program state.",
+        id: "04", unit: "DATA + DEBUGGING", title: "Debug the assumption, not just the line", description: "Use evidence to locate a mismatch between expectation and program state.", checkpoint: "State your hypothesis for the bug in one sentence, then find the smallest input that would prove or disprove it.",
         concept: "Debugging is an investigation: compare expected and actual values, isolate the smallest failing case, and test a hypothesis.",
         teaching: "Use a small input, inspect intermediate values, and change one plausible cause at a time.",
         example: "A program counts duplicate emails because it normalizes spaces after, rather than before, comparing strings.",
@@ -883,7 +886,7 @@ const coursePrograms: Record<string, CourseProgram> = {
   cybersecurity: makeProgram(
     [
       {
-        id: "01", unit: "RISK MODELING", title: "Map what needs protection", description: "Connect assets, threats, and likely harm before selecting a control.",
+        id: "01", unit: "RISK MODELING", title: "Map what needs protection", description: "Connect assets, threats, and likely harm before selecting a control.", checkpoint: "Name the asset, the threat, and the vulnerability separately before proposing any control.",
         concept: "Risk reasoning begins with an asset, a threat, a vulnerability, and the impact if that path succeeds.",
         teaching: "Name the asset and the harm first; then ask who could affect it, through which weakness, and how a control changes the risk.",
         example: "A clinic portal holds appointment data; reused passwords create an account-takeover path.",
@@ -897,7 +900,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "02", unit: "SOCIAL ENGINEERING", title: "Read a message like evidence", description: "Evaluate phishing cues without trusting one superficial signal.",
+        id: "02", unit: "SOCIAL ENGINEERING", title: "Read a message like evidence", description: "Evaluate phishing cues without trusting one superficial signal.", checkpoint: "Verify an unexpected or urgent request through a channel the message itself did not provide.",
         concept: "Phishing attempts exploit urgency, authority, and look-alike context to obtain credentials or trigger unsafe actions.",
         teaching: "Pause, verify the request using a separate trusted channel, and inspect the actual sender and destination before acting.",
         example: "An email asks payroll staff to open a shared document immediately; the display name is familiar but the address is not.",
@@ -911,7 +914,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "03", unit: "ACCESS CONTROL", title: "Make access proportionate", description: "Use authentication and authorization for a defined purpose.",
+        id: "03", unit: "ACCESS CONTROL", title: "Make access proportionate", description: "Use authentication and authorization for a defined purpose.", checkpoint: "Ask what task this access is actually for, and grant nothing beyond it.",
         concept: "Authentication establishes who is requesting access; authorization limits what that identity may do.",
         teaching: "Give people the minimum access needed for their task and review high-impact permissions regularly.",
         example: "A student worker needs to update contact details but should not approve refunds or export the entire customer table.",
@@ -925,7 +928,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "04", unit: "INCIDENT RESPONSE", title: "Contain, preserve, and learn", description: "Turn an alert into a proportionate evidence-guided response.",
+        id: "04", unit: "INCIDENT RESPONSE", title: "Contain, preserve, and learn", description: "Turn an alert into a proportionate evidence-guided response.", checkpoint: "Confirm the signal and contain the system before you touch anything that could destroy evidence.",
         concept: "Incident response balances containment, evidence preservation, communication, and recovery rather than treating every alert as a single fix.",
         teaching: "Follow the response plan: confirm the signal, limit further harm, preserve relevant evidence, communicate through designated channels, and learn after recovery.",
         example: "A workstation begins encrypting shared files and an alert reports unusual file activity.",
@@ -945,7 +948,7 @@ const coursePrograms: Record<string, CourseProgram> = {
   algorithms: makeProgram(
     [
       {
-        id: "01", unit: "ALGORITHMIC THINKING", title: "Count the work, not the vibe", description: "Describe an algorithm as explicit steps before comparing it.",
+        id: "01", unit: "ALGORITHMIC THINKING", title: "Count the work, not the vibe", description: "Describe an algorithm as explicit steps before comparing it.", checkpoint: "Trace the algorithm's worst case explicitly instead of trusting how fast it feels on a small example.",
         concept: "An algorithm is a precise procedure; comparison starts by identifying the work it performs as input grows.",
         teaching: "Trace a small input, count the repeated operation, and separate the algorithm from the speed of one computer.",
         example: "To find a name in an unsorted list, a scan checks items one by one until it finds a match or reaches the end.",
@@ -959,7 +962,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "02", unit: "GROWTH RATES", title: "See what scales", description: "Use Big-O to compare how work grows with input size.",
+        id: "02", unit: "GROWTH RATES", title: "See what scales", description: "Use Big-O to compare how work grows with input size.", checkpoint: "Ask what happens to the work when you double the input, not just how it performs on the input you have.",
         concept: "Asymptotic analysis focuses on growth for large inputs, ignoring constant factors that depend on a particular machine.",
         teaching: "Identify nesting and halving: one pass is linear, a pairwise comparison can be quadratic, and repeated halving is logarithmic.",
         example: "Checking every pair among n student projects requires roughly n times n comparisons.",
@@ -973,7 +976,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "03", unit: "SEARCH + SORT", title: "Use structure to reduce work", description: "Choose a search method that matches what is already known.",
+        id: "03", unit: "SEARCH + SORT", title: "Use structure to reduce work", description: "Choose a search method that matches what is already known.", checkpoint: "Confirm the data actually satisfies the assumption, like sorted order, an algorithm depends on before using it.",
         concept: "Binary search gains speed by discarding half a sorted search space at each comparison.",
         teaching: "Ask first whether the collection is sorted and whether maintaining that order is worth its cost for the task.",
         example: "A sorted phone directory lets you compare a target with the midpoint and discard one half repeatedly.",
@@ -987,7 +990,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "04", unit: "TRADEOFFS", title: "Defend the tradeoff", description: "Choose for time, memory, accuracy, and maintainability—not speed alone.",
+        id: "04", unit: "TRADEOFFS", title: "Defend the tradeoff", description: "Choose for time, memory, accuracy, and maintainability—not speed alone.", checkpoint: "Name the resource you are willing to spend more of before claiming one structure is simply 'better'.",
         concept: "A good algorithmic choice considers constraints: input size, update frequency, memory, correctness needs, and implementation risk.",
         teaching: "Name the workload and constraints before declaring a method best; a faster lookup may cost memory or update time.",
         example: "A hash table speeds repeated lookups but requires extra storage and a strategy for collisions.",
@@ -1007,7 +1010,7 @@ const coursePrograms: Record<string, CourseProgram> = {
   "sql-modeling": makeProgram(
     [
       {
-        id: "01", unit: "RELATIONAL THINKING", title: "Model what the facts are about", description: "Separate entities, attributes, and relationships before writing queries.",
+        id: "01", unit: "RELATIONAL THINKING", title: "Model what the facts are about", description: "Separate entities, attributes, and relationships before writing queries.", checkpoint: "State what one row represents before adding a single column to the table.",
         concept: "A relational model stores facts about entities in tables and connects them through meaningful keys.",
         teaching: "Ask what one row represents. Give each entity a stable key, and avoid placing repeating groups in one cell.",
         example: "Students belong in a Students table, courses in Courses, and enrollments in a table that links one student to one course.",
@@ -1021,7 +1024,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "02", unit: "QUERY MEANING", title: "Ask exactly the question you mean", description: "Use selection, projection, and conditions deliberately.",
+        id: "02", unit: "QUERY MEANING", title: "Ask exactly the question you mean", description: "Use selection, projection, and conditions deliberately.", checkpoint: "Translate the query into a plain-language sentence and check it matches the actual question.",
         concept: "A SQL query is a claim about a defined set of rows and columns; filters determine who is included.",
         teaching: "Read a query in plain language: which table, which rows, which columns, and which grouping does it request?",
         example: "SELECT name FROM Students WHERE major = 'Biology' asks for names only among biology students.",
@@ -1035,7 +1038,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "03", unit: "JOINS", title: "Join without changing the population", description: "Check keys and cardinality before trusting a combined table.",
+        id: "03", unit: "JOINS", title: "Join without changing the population", description: "Check keys and cardinality before trusting a combined table.", checkpoint: "Compare row counts before and after a join to catch silent duplication or loss.",
         concept: "A join combines rows through a matching condition; duplicate keys or mismatched grain can multiply or drop records.",
         teaching: "State the expected row grain before the join, inspect key uniqueness, and compare counts before and after.",
         example: "Joining one order to multiple order-line rows will create multiple rows for that order.",
@@ -1049,7 +1052,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "04", unit: "AGGREGATES + AUDIT", title: "Aggregate, then audit", description: "Summarize groups while checking denominator and duplicates.",
+        id: "04", unit: "AGGREGATES + AUDIT", title: "Aggregate, then audit", description: "Summarize groups while checking denominator and duplicates.", checkpoint: "State the denominator behind any rate or average before reporting it.",
         concept: "Aggregate functions summarize the rows currently present; GROUP BY defines which rows are summarized together.",
         teaching: "Before reporting a count or average, inspect the unit of analysis, missing values, duplicate records, and denominator.",
         example: "Counting rows in a visit table answers visits, not necessarily unique patients.",
@@ -1069,7 +1072,7 @@ const coursePrograms: Record<string, CourseProgram> = {
   "data-visualization": makeProgram(
     [
       {
-        id: "01", unit: "CHART CHOICE", title: "Match the chart to the question", description: "Select a visual encoding that lets the comparison be seen.",
+        id: "01", unit: "CHART CHOICE", title: "Match the chart to the question", description: "Select a visual encoding that lets the comparison be seen.", checkpoint: "Name the comparison the reader needs to make before picking a chart form to make it.",
         concept: "A chart is an argument: its form should match the comparison, trend, distribution, or relationship the reader must evaluate.",
         teaching: "Name the question first, then choose an encoding that makes the relevant values easy to compare without decorative noise.",
         example: "To compare infection rates across six units, a sorted bar chart makes magnitude differences easier to read than a pie chart.",
@@ -1083,7 +1086,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "02", unit: "SCALE + BASELINE", title: "Interrogate the visual claim", description: "Recognize how axes, ranges, and design choices change perceived difference.",
+        id: "02", unit: "SCALE + BASELINE", title: "Interrogate the visual claim", description: "Recognize how axes, ranges, and design choices change perceived difference.", checkpoint: "Check the axis baseline and range before reacting to how big a difference looks.",
         concept: "A truncated axis can visually amplify a small absolute difference; scale choices must be clear and appropriate to the claim.",
         teaching: "Read the baseline, range, units, and interval before reacting to a dramatic visual gap.",
         example: "Two satisfaction scores of 92% and 94% look dramatically different when a bar chart axis starts at 90%.",
@@ -1097,7 +1100,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "03", unit: "UNCERTAINTY", title: "Show what the estimate cannot say", description: "Present uncertainty, sample size, and variation as part of the evidence.",
+        id: "03", unit: "UNCERTAINTY", title: "Show what the estimate cannot say", description: "Present uncertainty, sample size, and variation as part of the evidence.", checkpoint: "Pair every estimate with the sample size it came from before treating it as precise.",
         concept: "A point estimate is incomplete when its uncertainty, variability, or denominator changes how confidently it should be interpreted.",
         teaching: "Label the population and time period, show uncertainty where appropriate, and avoid claiming a precise difference the data do not support.",
         example: "A clinic rate rises from 2% to 4%, but the underlying sample is only 50 patients and the interval is wide.",
@@ -1111,7 +1114,7 @@ const coursePrograms: Record<string, CourseProgram> = {
         ],
       },
       {
-        id: "04", unit: "DESIGN DEFENSE", title: "Defend an honest comparison", description: "Explain a chart choice to a skeptical reader.",
+        id: "04", unit: "DESIGN DEFENSE", title: "Defend an honest comparison", description: "Explain a chart choice to a skeptical reader.", checkpoint: "Write the one-sentence claim your chart is meant to support, then check every visual choice against it.",
         concept: "An honest visualization makes its population, measure, comparison, scale, and uncertainty inspectable rather than hiding them behind polish.",
         teaching: "Write a one-sentence claim, then check that every visual choice supports that claim without overstating it.",
         example: "A line chart shows monthly wait time with a clearly labeled median, sample size, and a note describing an outlier month.",
