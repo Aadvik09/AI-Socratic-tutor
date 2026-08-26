@@ -751,6 +751,82 @@ const courseLibrary = [
     ],
     outcomes: ["Read charts critically", "Design honestly"],
   },
+  {
+    id: "statistical-inference",
+    subject: "DATA + STATISTICS",
+    title: "Statistical Inference & Uncertainty",
+    description:
+      "Learn to read p-values, intervals, and samples the way a careful analyst does—skeptically.",
+    level: "College + professional",
+    format: "4 modules · cases, tutor, applied checks",
+    visual: "/course-library-hero.png",
+    visualAlt: "An editorial composition representing statistical reasoning.",
+    available: true,
+    modules: [
+      "Read a p-value for what it actually says",
+      "Judge a confidence interval, not just a point estimate",
+      "Question a sample before trusting its conclusion",
+      "Tell a real effect from noise",
+    ],
+    outcomes: ["Judge evidence honestly", "Avoid common inference errors"],
+  },
+  {
+    id: "ml-foundations",
+    subject: "DATA + ML",
+    title: "Machine Learning Foundations",
+    description:
+      "Build the judgment to question a model's score before you trust its prediction.",
+    level: "College intermediate",
+    format: "4 modules · cases, tutor, applied checks",
+    visual: "/course-library-hero.png",
+    visualAlt: "An editorial composition representing machine learning reasoning.",
+    available: true,
+    modules: [
+      "Judge a model on data it hasn't seen",
+      "Trust the data before you trust the model",
+      "Choose a metric that matches the real cost of errors",
+      "Watch a model after it ships, not just before",
+    ],
+    outcomes: ["Evaluate models skeptically", "Spot common ML pitfalls"],
+  },
+  {
+    id: "systems-design",
+    subject: "COMPUTER SCIENCE",
+    title: "Systems Design Thinking",
+    description:
+      "Reason about scale, caching, and failure before you reach for a bigger server.",
+    level: "College intermediate",
+    format: "4 modules · diagrams, tutor, applied checks",
+    visual: "/course-library-hero.png",
+    visualAlt: "An editorial composition representing systems design reasoning.",
+    available: true,
+    modules: [
+      "Name the bottleneck before scaling anything",
+      "Cache what's expensive and stable, not everything",
+      "Design for the failure, not just the happy path",
+      "Defend a design tradeoff with the actual constraints",
+    ],
+    outcomes: ["Reason about tradeoffs at scale", "Design for failure"],
+  },
+  {
+    id: "critical-thinking",
+    subject: "REASONING",
+    title: "Critical Thinking & Argument Evaluation",
+    description:
+      "Separate a claim from its evidence, and learn to change your mind on purpose.",
+    level: "College foundation",
+    format: "4 modules · cases, tutor, applied checks",
+    visual: "/course-library-hero.png",
+    visualAlt: "An editorial composition representing critical thinking.",
+    available: true,
+    modules: [
+      "Separate the claim from the evidence for it",
+      "Name the reasoning error before dismissing an argument",
+      "Weigh a source's evidence, not just its confidence",
+      "Decide in advance what would change your mind",
+    ],
+    outcomes: ["Evaluate arguments rigorously", "Recognize common reasoning errors"],
+  },
 ];
 
 type CourseProgram = {
@@ -1130,6 +1206,270 @@ const coursePrograms: Record<string, CourseProgram> = {
     ],
     "/data-visualization.png", "Clear and misleading chart cards arranged with a ruler and annotation pencil.",
     { label: "NIST: Exploratory Data Analysis", href: "https://www.itl.nist.gov/div898/handbook/eda/section1/eda11.htm" },
+  ),
+  "statistical-inference": makeProgram(
+    [
+      {
+        id: "01", unit: "SIGNIFICANCE", title: "Read a p-value for what it actually says", description: "Separate 'unlikely by chance' from 'important' or 'true'.",
+        concept: "A p-value is the probability of seeing data this extreme (or more) if the null hypothesis were true; it is not the probability the hypothesis is true.",
+        teaching: "Before citing a p-value, state the null hypothesis it tests, and remember a small p-value describes surprise under that hypothesis, not the size or importance of an effect.",
+        example: "A new triage script produces p = 0.03 for reducing wait time compared with the old script, in a trial of 40,000 patients.",
+        why: "With a very large sample, even a trivially small, practically meaningless difference can produce a small p-value.",
+        takeaways: ["A p-value is conditional on the null hypothesis.", "Statistical significance is not the same as practical importance.", "Always check the effect size alongside the p-value."],
+        checkpoint: "Ask what practical difference the effect represents before treating a small p-value as important.",
+        questions: [
+          { prompt: "A trial finds p = 0.04 for a new drug's effect on blood pressure. What does this p-value most directly tell you?", options: ["How likely the drug's effect would be if it truly had no effect on blood pressure", "The probability the drug works", "The size of the drug's effect", "The probability the null hypothesis is true"], correct: 0, feedback: "A p-value describes how surprising the observed data would be under the null hypothesis, not the probability that hypothesis is true.", hint: "What is being tested, and what is a p-value conditional on?" },
+          { prompt: "A study of 500,000 users finds a 0.01% increase in click rate with p = 0.001. What should a skeptical reader ask next?", options: ["Whether a 0.01% difference is practically meaningful for the business", "Nothing, since p < 0.05 proves the change matters", "Whether the p-value could be even smaller", "Whether the sample was randomly assigned only"], correct: 0, feedback: "Extremely large samples can make tiny, practically irrelevant differences statistically significant.", hint: "What does sample size do to how small a real difference needs to be to reach significance?" },
+          { prompt: "Which best distinguishes practical significance from statistical significance?", options: ["Practical significance asks whether the effect size matters for a real decision; statistical significance asks whether it's likely due to chance", "They are two names for the same concept", "Statistical significance is always the stronger claim", "Practical significance requires a smaller p-value"], correct: 0, feedback: "A statistically significant effect can still be too small to matter, and a practically important effect can fail to reach significance in a small sample.", hint: "What question does each type of significance actually answer?" },
+          { prompt: "Before reporting a significant result, what is the most defensible next step?", options: ["State the effect size and its real-world implication alongside the p-value", "Round the p-value to make it look more convincing", "Omit the sample size to keep the report simple", "Repeat the test until a smaller p-value appears"], correct: 0, feedback: "Reporting effect size and context lets readers judge whether a statistically significant result is also practically meaningful.", hint: "What number, besides the p-value, tells a reader how much the result matters?" },
+        ],
+      },
+      {
+        id: "02", unit: "INTERVALS", title: "Judge a confidence interval, not just a point estimate", description: "Use the width and range of an interval, not only its midpoint.",
+        concept: "A confidence interval describes a range of plausible values for a parameter, and its width reflects the precision of the estimate.",
+        teaching: "Look at where the interval falls and how wide it is—a wide interval crossing a meaningful threshold means the estimate cannot rule out that possibility.",
+        example: "A poll estimates approval at 52%, with a 95% confidence interval of 47% to 57%.",
+        why: "The interval includes values below 50%, so the poll cannot rule out that true approval is actually a minority.",
+        takeaways: ["A point estimate alone hides uncertainty.", "A wide interval signals low precision.", "Check whether a meaningful threshold falls inside the interval."],
+        checkpoint: "Check whether a decision-relevant threshold falls inside the confidence interval before treating the point estimate as settled.",
+        questions: [
+          { prompt: "A poll shows 52% approval with a 95% CI of 47%–57%. What is the most defensible conclusion?", options: ["The true approval could plausibly be below 50%, so a majority is not confirmed", "Approval is definitely above 50%", "The poll is invalid because the interval is wide", "Approval is exactly 52%"], correct: 0, feedback: "Since 50% falls inside the interval, the data cannot rule out that true approval is below a majority.", hint: "Does the interval include values below the threshold that matters?" },
+          { prompt: "Two studies estimate the same effect: Study A gives a CI of 2%–4%; Study B gives a CI of -3%–9%. Which is more precise?", options: ["Study A, because its interval is narrower", "Study B, because its interval is wider", "They are equally precise", "Precision cannot be judged from intervals"], correct: 0, feedback: "A narrower interval reflects a more precise estimate of the true value.", hint: "What does interval width tell you about precision?" },
+          { prompt: "Why is reporting only a point estimate (like '52% approval') potentially misleading?", options: ["It hides how much the estimate could plausibly vary", "Point estimates are always wrong", "It always overstates the true value", "Point estimates cannot be calculated accurately"], correct: 0, feedback: "Without the interval, a reader cannot judge how confident to be in the exact number.", hint: "What information does a single number fail to communicate?" },
+          { prompt: "A confidence interval for a new treatment's effect is -1 to +8 (in units of improvement). What is the most defensible interpretation?", options: ["The data cannot rule out that the treatment has no effect or even a slightly negative one", "The treatment definitely works", "The treatment definitely does not work", "The interval proves the effect is exactly 3.5"], correct: 0, feedback: "Because the interval includes zero and negative values, a true zero or negative effect cannot be ruled out.", hint: "Does the interval include zero?" },
+        ],
+      },
+      {
+        id: "03", unit: "SAMPLING", title: "Question a sample before trusting its conclusion", description: "Check who was included, and who was left out, before generalizing.",
+        concept: "A sample's conclusions only generalize to the population it was actually drawn from, using the method it was actually drawn by.",
+        teaching: "Ask who could have been included, who opted in or was excluded, and whether the sampling method could systematically favor certain outcomes.",
+        example: "An online survey about commute times only reaches people who use the survey app, likely skewing toward tech-comfortable, younger respondents.",
+        why: "The result may describe app users' commutes, not the commute times of the general population.",
+        takeaways: ["Ask who was excluded from the sample.", "A large sample does not fix a biased sampling method.", "Match the population you're generalizing to the population you sampled."],
+        checkpoint: "Name the population the sample actually represents before generalizing its conclusion further.",
+        questions: [
+          { prompt: "An online survey about commute times reaches only users of a specific ride-sharing app. What is the main risk in generalizing its results?", options: ["The sample may not represent people who don't use that app", "Online surveys are always inaccurate", "The sample size is definitely too small", "Commute times never vary by group"], correct: 0, feedback: "Convenience samples like this systematically exclude people outside the app's user base, biasing the result.", hint: "Who was never able to be included in this sample?" },
+          { prompt: "A study surveys 100,000 people but only through a single social media platform popular with one age group. Why doesn't the large sample size fix the bias?", options: ["A large sample from a biased source is still biased, just biased with more precision", "100,000 is always enough to represent any population", "Sample size and bias are unrelated to sampling method", "Bias only matters in small samples"], correct: 0, feedback: "Increasing sample size reduces random error but does not correct a systematic sampling bias.", hint: "What kind of error does a bigger sample size actually reduce?" },
+          { prompt: "A hospital study only includes patients who returned for a follow-up visit. What population does this sample actually represent?", options: ["Patients well enough or motivated enough to return for follow-up, not all treated patients", "All patients treated at the hospital", "A random sample of the general public", "Every patient equally, regardless of outcome"], correct: 0, feedback: "Patients who don't return (possibly due to worse or better outcomes) are systematically excluded, changing what the sample represents.", hint: "Who is missing from a 'returned for follow-up' sample?" },
+          { prompt: "Before generalizing a sample's finding to a broader population, what is the most important check?", options: ["Whether the sampling method could systematically exclude or favor certain groups", "Whether the sample size is over 1,000", "Whether the study used a computer to collect data", "Whether the result matches expectations"], correct: 0, feedback: "A representative sampling method matters more than raw sample size for valid generalization.", hint: "What determines whether a sample represents the population you care about?" },
+        ],
+      },
+      {
+        id: "04", unit: "EFFECT SIZE", title: "Tell a real effect from noise", description: "Use replication and effect size to judge whether a result is trustworthy.",
+        concept: "A single significant result can arise from chance, especially when many comparisons are tested; replication and consistent effect size build confidence.",
+        teaching: "Be cautious of a single striking result from many tested comparisons, and look for replication or a plausible mechanism before trusting it.",
+        example: "Out of 20 unrelated snack-food comparisons, one shows a 'significant' link to test scores at p < 0.05.",
+        why: "Testing 20 comparisons at the 5% significance level makes finding at least one 'significant' result by chance alone likely, even if nothing is really related.",
+        takeaways: ["Multiple comparisons inflate the chance of a false positive.", "Replication is stronger evidence than a single result.", "A plausible mechanism strengthens a statistical finding."],
+        checkpoint: "Ask how many comparisons were tested before trusting a single significant finding among them.",
+        questions: [
+          { prompt: "Out of 20 unrelated comparisons tested at p < 0.05, one comes back significant. What is the most defensible interpretation?", options: ["This could easily be a false positive from testing many comparisons", "This one result is definitely real", "Statistical significance guarantees a true finding", "None of the 20 comparisons should ever be tested"], correct: 0, feedback: "Testing many comparisons at the same threshold makes at least one false positive likely by chance alone.", hint: "How many 'rolls of the dice' happened before this result appeared?" },
+          { prompt: "What is the strongest way to build confidence in a surprising significant finding?", options: ["Successfully replicate it in an independent study or sample", "Lower the significance threshold after seeing the result", "Report only the significant comparison and omit the others", "Repeat the same test on the same data until it's significant"], correct: 0, feedback: "Independent replication is much stronger evidence than a single significant result, especially one found among many tests.", hint: "What kind of evidence is hardest to produce by chance?" },
+          { prompt: "A researcher tests 50 comparisons and reports only the 3 that were significant, without mentioning the other 47. What problem does this create?", options: ["It hides how likely those 3 findings were to occur by chance among 50 tests", "It has no effect on how the results should be interpreted", "It only matters if the sample size is small", "It makes the findings more trustworthy"], correct: 0, feedback: "Selectively reporting significant results without disclosing the total number tested hides the true likelihood of chance findings.", hint: "What context does a reader need to judge how surprising 3 out of 50 significant results really is?" },
+          { prompt: "Which factor most increases confidence that an effect is real rather than noise?", options: ["A plausible mechanism plus a result that replicates across independent studies", "A single study with a very small p-value", "A large number of comparisons tested at once", "A dramatic-looking chart"], correct: 0, feedback: "A plausible explanation combined with independent replication is much stronger evidence than one low p-value.", hint: "What two things together make a finding hard to explain away as chance?" },
+        ],
+      },
+    ],
+    "/course-library-hero.png", "An editorial composition representing statistical reasoning.",
+    { label: "NIST/SEMATECH e-Handbook of Statistical Methods", href: "https://www.itl.nist.gov/div898/handbook/" },
+  ),
+  "ml-foundations": makeProgram(
+    [
+      {
+        id: "01", unit: "TRAIN VS TEST", title: "Judge a model on data it hasn't seen", description: "Training accuracy alone proves nothing about new data.",
+        concept: "A model's performance on the data it was trained on does not indicate how it will perform on new data; held-out test data is required to estimate real-world performance.",
+        teaching: "Always separate training data from testing data, and be suspicious of any accuracy reported only on the training set.",
+        example: "A model reaches 99% accuracy on its training data but only 62% on a held-out test set.",
+        why: "The gap reveals the model memorized specifics of the training data rather than learning a generalizable pattern—overfitting.",
+        takeaways: ["Training accuracy alone proves nothing about new data.", "A large train-test gap signals overfitting.", "Held-out data estimates real-world performance."],
+        checkpoint: "Check the gap between training and test performance before trusting a model's reported accuracy.",
+        questions: [
+          { prompt: "A model scores 99% on training data and 62% on held-out test data. What does this gap suggest?", options: ["The model has likely overfit the training data", "The model is performing excellently", "The test set must be broken", "Higher training accuracy always means a better model"], correct: 0, feedback: "A large gap between training and test performance is the classic signature of overfitting.", hint: "What does it mean when a model does far better on data it has already seen?" },
+          { prompt: "Why is it misleading to report a model's accuracy using only its training data?", options: ["It cannot show how the model performs on data it hasn't seen", "Training accuracy is always inaccurate to calculate", "Test data is optional for any real evaluation", "Training data is always larger than test data"], correct: 0, feedback: "A model can memorize training data without learning a pattern that generalizes; test data is needed to check that.", hint: "What is training accuracy unable to reveal about future predictions?" },
+          { prompt: "A team improves training accuracy by making the model larger and more complex, but test accuracy gets worse. What does this suggest?", options: ["The added complexity is helping the model memorize rather than generalize", "The model is now definitely better", "Test accuracy is irrelevant if training accuracy improves", "Larger models are always more accurate on new data"], correct: 0, feedback: "Increasing complexity can let a model fit noise in the training data, hurting generalization to new data.", hint: "What tends to happen to generalization when a model grows more complex without more diverse data?" },
+          { prompt: "What is the most defensible way to estimate how a model will perform in production?", options: ["Evaluate it on data it was not trained on, ideally similar to what it will see in production", "Report its accuracy on the training set", "Ask the model how confident it is", "Assume higher training accuracy transfers directly"], correct: 0, feedback: "Held-out, production-like data gives the most honest estimate of real-world performance.", hint: "What data best mimics the conditions the model will actually face?" },
+        ],
+      },
+      {
+        id: "02", unit: "DATA QUALITY", title: "Trust the data before you trust the model", description: "A model can only learn what its training data actually shows it.",
+        concept: "A model can only learn patterns present in its training data; biased, mislabeled, or unrepresentative data produces a biased or unreliable model.",
+        teaching: "Before evaluating a model's algorithm, examine who and what is represented in its training data, and how labels were assigned.",
+        example: "A hiring model trained mostly on resumes from past hires, who were disproportionately from a few universities, learns to favor those universities.",
+        why: "The model reproduces and can amplify the historical pattern in its training data, not some neutral notion of merit.",
+        takeaways: ["A model reflects its training data's patterns, including biases.", "Check who is represented and how labels were created.", "A biased dataset produces a biased model regardless of algorithm quality."],
+        checkpoint: "Ask who is represented, and how, in the training data before trusting what the model has learned.",
+        questions: [
+          { prompt: "A hiring model trained on past hires, mostly from a few universities, ends up favoring applicants from those same schools. What is the root cause?", options: ["The training data reflected a historical pattern the model learned to reproduce", "The algorithm itself is inherently flawed", "This always happens regardless of training data", "The model is malfunctioning"], correct: 0, feedback: "The model faithfully learned the pattern present in its training data, including its historical skew.", hint: "Where did the model's preference actually come from?" },
+          { prompt: "Why might mislabeled training data be more damaging than a small training set?", options: ["A model can learn confidently wrong patterns from bad labels, not just uncertain ones from a small set", "Mislabeled data has no effect on model performance", "Small training sets are never a problem", "Mislabeled data only matters at very large scale"], correct: 0, feedback: "Wrong labels teach the model incorrect patterns with apparent confidence, which can be more misleading than sparse but correct data.", hint: "What's the difference between a model that has too little data and one trained on wrong answers?" },
+          { prompt: "Before trusting a model's predictions about a new population, what should you check?", options: ["Whether the training data actually represents that population", "Only the model's reported accuracy number", "How fast the model makes predictions", "How many parameters the model has"], correct: 0, feedback: "A model trained on one population may not generalize to a different population it wasn't trained on.", hint: "What does a model actually 'know' about besides its own training data?" },
+          { prompt: "A company removes a protected attribute like gender from its hiring model's inputs, but the model still shows a similar bias. What is the likely explanation?", options: ["Other features (like university or zip code) may act as proxies correlated with the removed attribute", "Removing the attribute should have completely eliminated any bias", "Bias in models is impossible to reduce", "The remaining features must be broken"], correct: 0, feedback: "Correlated proxy variables can reintroduce the same pattern even after removing the explicit attribute.", hint: "Could another feature be quietly standing in for the one that was removed?" },
+        ],
+      },
+      {
+        id: "03", unit: "METRICS", title: "Choose a metric that matches the real cost of errors", description: "Accuracy alone can hide poor performance on rare outcomes.",
+        concept: "Accuracy alone can be misleading, especially with imbalanced classes; the right metric depends on the relative cost of false positives and false negatives.",
+        teaching: "Before accepting an accuracy number, ask how common the outcome is and what a false positive costs versus a false negative.",
+        example: "A rare-disease screening model that always predicts 'no disease' can still score 99% accuracy if only 1% of patients actually have the disease.",
+        why: "That model is useless for its purpose—it catches zero real cases—despite a seemingly excellent accuracy score.",
+        takeaways: ["Accuracy can hide poor performance on rare but important outcomes.", "Match the metric to the cost of each error type.", "Check the base rate of the outcome being predicted."],
+        checkpoint: "Check the base rate of the outcome and the relative cost of each error type before trusting an accuracy score.",
+        questions: [
+          { prompt: "A rare-disease model predicts 'no disease' for everyone and scores 99% accuracy, since only 1% of patients are actually sick. Is this a good model?", options: ["No, it catches zero real cases despite the high accuracy score", "Yes, 99% accuracy is excellent by definition", "Yes, because accuracy is always the right metric", "It cannot be evaluated without more computing power"], correct: 0, feedback: "With a 1% base rate, always predicting the majority class scores high accuracy while being completely useless at its actual task.", hint: "How many real disease cases does this model actually catch?" },
+          { prompt: "For a spam filter, a false positive (blocking a real email) is far more costly to the user than a false negative (missing one spam email). What should this influence?", options: ["The metric and threshold chosen should weigh false positives more heavily than false negatives", "Accuracy is still the only metric that matters", "False positives and false negatives should always be weighed equally", "The model should be tuned to minimize training time instead"], correct: 0, feedback: "When error costs are asymmetric, the evaluation metric and decision threshold should reflect that asymmetry.", hint: "Should a model treat both kinds of mistakes as equally bad here?" },
+          { prompt: "What question should come before choosing a model evaluation metric?", options: ["What does a false positive cost, and what does a false negative cost, in this specific use case?", "Which metric produces the highest-looking number?", "Which metric is fastest to compute?", "Which metric was used in the original research paper?"], correct: 0, feedback: "The right metric depends on the real-world consequences of each type of error for this specific application.", hint: "What should actually drive the choice of metric?" },
+          { prompt: "A model for detecting fraud has 99.5% accuracy but misses 80% of actual fraud cases. What does this reveal?", options: ["Accuracy alone hid poor performance on the rare, important outcome (fraud)", "The model must be excellent since accuracy is so high", "This is impossible if accuracy is that high", "Fraud detection doesn't need metrics beyond accuracy"], correct: 0, feedback: "Because fraud is rare, a model can achieve high overall accuracy while still failing at detecting most real fraud cases.", hint: "How does a rare positive class affect what accuracy alone can hide?" },
+        ],
+      },
+      {
+        id: "04", unit: "DEPLOYMENT", title: "Watch a model after it ships, not just before", description: "Deployed models need ongoing monitoring, not a one-time check.",
+        concept: "A model's performance can degrade over time as real-world data drifts away from its training data; deployed models need ongoing monitoring.",
+        teaching: "Treat model deployment as the start of an ongoing evaluation, not the end of the project—monitor real predictions against real outcomes.",
+        example: "A demand-forecasting model trained on pre-pandemic shopping data performs progressively worse as shopping habits shift.",
+        why: "Without monitoring, the model's declining accuracy would go unnoticed until its recommendations caused real business harm.",
+        takeaways: ["Real-world data can drift away from training data over time.", "Monitoring after deployment is not optional.", "A model that was accurate at launch can degrade silently."],
+        checkpoint: "Set up monitoring that compares the model's live predictions against real outcomes, not just its launch-day accuracy.",
+        questions: [
+          { prompt: "A demand-forecasting model trained on pre-pandemic data performs progressively worse as shopping habits shift. What does this illustrate?", options: ["Real-world data can drift away from training data over time, degrading performance", "Once trained, a model's accuracy never changes", "The original training was necessarily flawed", "This only happens to forecasting models"], correct: 0, feedback: "Data drift means the patterns a model learned can become outdated as real-world conditions change.", hint: "What changed between when the model was trained and when it was being used?" },
+          { prompt: "Why is monitoring a model after deployment necessary, even if it performed well in testing?", options: ["Real-world conditions can drift away from the test data, silently degrading performance", "A model that passed testing can never fail in production", "Monitoring is only needed for models that failed testing", "Testing performance guarantees permanent production performance"], correct: 0, feedback: "Good test performance reflects conditions at one point in time; ongoing monitoring catches drift that testing cannot predict.", hint: "Does passing a test once guarantee performance forever?" },
+          { prompt: "A fraud-detection model's accuracy silently drops over 6 months as fraud tactics evolve, but no one is monitoring live performance. What is the main risk?", options: ["The degradation goes unnoticed until it causes real financial harm", "The model will automatically fix itself over time", "This is not a real risk if the model tested well initially", "Fraud tactics never actually change"], correct: 0, feedback: "Without monitoring, a gradually degrading model can cause significant harm before anyone notices the problem.", hint: "What happens when performance decline has no one watching for it?" },
+          { prompt: "What is the most defensible practice for a model already in production?", options: ["Continuously compare its predictions against real outcomes and retrain when performance drifts", "Deploy it once and revisit only if users complain", "Assume launch-day performance holds indefinitely", "Retrain on a fixed yearly schedule regardless of performance"], correct: 0, feedback: "Active monitoring against real outcomes catches drift early, rather than waiting for a fixed schedule or user complaints.", hint: "What signal should actually trigger a retrain?" },
+        ],
+      },
+    ],
+    "/course-library-hero.png", "An editorial composition representing machine learning reasoning.",
+    { label: "Google: Machine Learning Crash Course", href: "https://developers.google.com/machine-learning/crash-course" },
+  ),
+  "systems-design": makeProgram(
+    [
+      {
+        id: "01", unit: "SCALE", title: "Name the bottleneck before scaling anything", description: "A system is only as fast as its most constrained resource.",
+        concept: "A system slows down at its bottleneck—the single most constrained resource—and scaling unrelated parts does not help.",
+        teaching: "Measure where time is actually spent before adding capacity; adding servers to a part of the system that isn't the bottleneck wastes effort.",
+        example: "A web app is slow because every request waits on a single database connection, but the team adds more web servers.",
+        why: "More web servers just means more requests waiting on the same single database bottleneck—no improvement.",
+        takeaways: ["Identify the bottleneck before scaling.", "Scaling a non-bottleneck resource does not help.", "Measure, don't guess, where time is spent."],
+        checkpoint: "Measure where requests actually spend their time before deciding what to scale.",
+        questions: [
+          { prompt: "A slow web app has every request waiting on one shared database connection, but the team adds more web servers. Why doesn't this help?", options: ["The bottleneck is the database connection, not the web servers", "Adding servers always fixes performance issues", "The database was never actually the problem", "Web servers and database connections scale identically"], correct: 0, feedback: "Since every request still waits on the same single database bottleneck, adding web servers doesn't relieve the actual constraint.", hint: "What is every request actually waiting on?" },
+          { prompt: "What is the most reliable way to find a system's bottleneck?", options: ["Measure where requests actually spend their time", "Guess based on which component seems most complex", "Add more resources everywhere until it's fast", "Assume the newest component is the problem"], correct: 0, feedback: "Measurement reveals where time is actually spent, rather than relying on assumptions about complexity or age.", hint: "How do you know where time is going without measuring it?" },
+          { prompt: "A team doubles their server count but response time barely improves. What does this suggest?", options: ["The bottleneck is likely somewhere else, such as a database or external service", "Doubling servers should always double performance", "The measurement tools must be broken", "The application code is definitely the only issue"], correct: 0, feedback: "If scaling a resource doesn't improve performance, that resource probably wasn't the actual bottleneck.", hint: "What does it mean when scaling one resource has little effect?" },
+          { prompt: "Before recommending a scaling solution, what should a systems designer establish first?", options: ["Which specific resource is the limiting factor under real load", "Which solution is cheapest regardless of the actual bottleneck", "Which vendor offers the newest hardware", "How many total servers the company currently owns"], correct: 0, feedback: "A scaling recommendation is only useful if it targets the actual bottleneck identified under real load.", hint: "What must be true about a fix for it to actually help?" },
+        ],
+      },
+      {
+        id: "02", unit: "CACHING", title: "Cache what's expensive and stable, not everything", description: "Caching trades freshness for speed—choose carefully.",
+        concept: "Caching trades staleness for speed; it works best for data that's expensive to compute and doesn't change too often.",
+        teaching: "Before caching something, ask how expensive it is to recompute and how often it changes—caching fast-changing data risks serving stale results.",
+        example: "A dashboard caches a user's account balance for 10 minutes to reduce database load.",
+        why: "If the balance changes (a payment posts) within that window, the user sees a stale, incorrect number—an unacceptable tradeoff for financial data.",
+        takeaways: ["Caching trades freshness for speed.", "Cache expensive, slow-changing data.", "Some data (like financial balances) may be too sensitive to cache without careful invalidation."],
+        checkpoint: "Ask what happens if a user sees stale data before caching something that changes frequently or matters urgently.",
+        questions: [
+          { prompt: "A dashboard caches a user's account balance for 10 minutes. What is the main risk?", options: ["A user could see a stale, incorrect balance after a recent transaction", "Caching always makes data more accurate", "The cache will never expire", "Balances never change within 10 minutes"], correct: 0, feedback: "Any change within the cache window won't be reflected, so the user may see outdated financial data.", hint: "What happens if the real balance changes before the cache expires?" },
+          { prompt: "Which is the best candidate for caching?", options: ["A product description that rarely changes and is expensive to render", "A live stock price during trading hours", "A user's current account balance", "A one-time payment confirmation"], correct: 0, feedback: "Stable, expensive-to-compute data is the ideal caching candidate; frequently changing or sensitive data is risky to cache.", hint: "Which of these changes least often and costs the most to regenerate?" },
+          { prompt: "Why is caching described as a tradeoff rather than a pure win?", options: ["It trades data freshness for speed, risking staleness", "It has no downsides once implemented", "It always makes data more accurate", "It only affects storage costs"], correct: 0, feedback: "Caching improves speed but risks serving outdated data until the cache is refreshed or invalidated.", hint: "What do you give up in exchange for faster responses?" },
+          { prompt: "Before adding a cache to a fast-changing data source, what should a designer plan for first?", options: ["A clear invalidation strategy so stale data doesn't linger", "Nothing—caching is always safe to add", "The largest possible cache size", "Removing the original data source entirely"], correct: 0, feedback: "Without a plan to invalidate or refresh the cache, fast-changing data can become misleadingly stale.", hint: "What mechanism keeps a cache from serving outdated data indefinitely?" },
+        ],
+      },
+      {
+        id: "03", unit: "FAILURE MODES", title: "Design for the failure, not just the happy path", description: "Resilient systems assume components will fail.",
+        concept: "Distributed systems fail partially and unpredictably; resilient design assumes components will fail and limits the damage when they do.",
+        teaching: "Ask what happens to the rest of the system when one dependency becomes slow or unavailable, not just whether the happy path works.",
+        example: "A checkout page calls a recommendation service; when that service times out, the entire checkout page fails to load instead of just omitting recommendations.",
+        why: "A non-critical dependency was allowed to take down a critical path, when a graceful fallback (skip recommendations) would have preserved checkout.",
+        takeaways: ["Assume dependencies will fail.", "Separate critical paths from non-critical ones.", "Design graceful fallbacks for non-critical failures."],
+        checkpoint: "Ask what should happen to the rest of the system if this one dependency fails or times out.",
+        questions: [
+          { prompt: "A checkout page fails entirely when a non-critical recommendation service times out. What is the design flaw?", options: ["A non-critical dependency was allowed to break a critical path", "Recommendation services should never be used", "Timeouts should never be allowed to occur", "Checkout pages should never call external services"], correct: 0, feedback: "A resilient design would let checkout proceed without recommendations rather than fail entirely.", hint: "Was the recommendation service actually necessary for checkout to succeed?" },
+          { prompt: "What is the best way to prevent one failing dependency from taking down an entire page?", options: ["Design a graceful fallback so non-critical failures don't block critical functionality", "Ensure no dependency ever fails", "Remove all external dependencies from every page", "Retry the failing dependency indefinitely before giving up"], correct: 0, feedback: "Graceful fallbacks let critical functionality continue even when a non-critical dependency is unavailable.", hint: "What should happen to the rest of the page when one non-critical piece fails?" },
+          { prompt: "Why should resilient system design assume components will fail, rather than hoping they won't?", options: ["In distributed systems, partial and unpredictable failures are common and must be planned for", "Well-built systems never fail", "Assuming failure is unnecessarily pessimistic and wastes engineering time", "Failure only matters for very large systems"], correct: 0, feedback: "Distributed systems experience partial failures regularly; planning for them prevents cascading outages.", hint: "How often do real distributed systems actually experience partial failures?" },
+          { prompt: "Which practice best reflects designing for failure rather than just the happy path?", options: ["Identifying which failures are survivable and building fallbacks for them", "Testing only the scenario where everything works correctly", "Assuming failures are rare enough to ignore", "Adding more features instead of handling edge cases"], correct: 0, feedback: "Deliberately identifying and planning for failure scenarios is the core practice of resilient design.", hint: "What should a designer actively look for, beyond the success case?" },
+        ],
+      },
+      {
+        id: "04", unit: "TRADEOFFS", title: "Defend a design tradeoff with the actual constraints", description: "There is rarely one universally 'correct' architecture.",
+        concept: "System design decisions trade off consistency, availability, latency, and cost; there is rarely a single 'correct' architecture independent of the actual requirements.",
+        teaching: "Name the specific constraints (traffic pattern, consistency needs, budget, team size) before defending one architecture over another.",
+        example: "A team debates a complex microservices architecture for a product with three engineers and a few hundred daily users.",
+        why: "The operational complexity of microservices may cost more in coordination overhead than it saves, given the actual scale and team size.",
+        takeaways: ["Match architecture complexity to actual scale and team size.", "Name specific constraints before defending a design.", "The 'best' architecture depends on context, not fashion."],
+        checkpoint: "Name the actual scale, team size, and constraints before defending one architecture over another.",
+        questions: [
+          { prompt: "A team of three engineers building a product with a few hundred daily users debates adopting a complex microservices architecture. What is the strongest concern?", options: ["The operational complexity may cost more than it saves at this scale and team size", "Microservices are always the best choice for any team", "A monolith can never scale later if needed", "Three engineers is always enough for any architecture"], correct: 0, feedback: "Microservices add coordination and operational overhead that may not be justified for a small team and modest scale.", hint: "Does the complexity of this architecture match the team's size and actual traffic?" },
+          { prompt: "What should drive an architecture decision, according to defensible systems design?", options: ["The system's actual constraints: traffic pattern, consistency needs, budget, and team size", "Whichever architecture is most popular in the industry", "Whichever architecture is most technically impressive", "The architecture used by the largest company in the field"], correct: 0, feedback: "Defensible design decisions are grounded in the specific constraints of the system being built, not trends.", hint: "What should actually determine the right architecture for a given system?" },
+          { prompt: "A system needs strong consistency for financial transactions but the team proposes an architecture optimized for maximum availability during network partitions. What tension does this reveal?", options: ["A tradeoff between consistency and availability that needs to be resolved based on the transaction requirements", "There is no real tradeoff between consistency and availability", "Availability should always be prioritized over consistency", "This tension only matters for very large systems"], correct: 0, feedback: "Consistency and availability often trade off directly; financial transactions typically require prioritizing consistency.", hint: "What do financial transactions typically need more than uptime during a network split?" },
+          { prompt: "What makes a system design decision defensible to a skeptical reviewer?", options: ["Naming the specific constraints considered and how the chosen design addresses them", "Choosing the same architecture as a well-known tech company", "Avoiding any explanation of the reasoning behind the choice", "Picking the design that took the least time to describe"], correct: 0, feedback: "A defensible decision makes its reasoning about actual constraints visible and inspectable.", hint: "What turns a design choice from a guess into a defensible decision?" },
+        ],
+      },
+    ],
+    "/course-library-hero.png", "An editorial composition representing systems design reasoning.",
+    { label: "Google SRE Book: Introduction", href: "https://sre.google/sre-book/introduction/" },
+  ),
+  "critical-thinking": makeProgram(
+    [
+      {
+        id: "01", unit: "CLAIMS + EVIDENCE", title: "Separate the claim from the evidence for it", description: "State the claim precisely before evaluating what supports it.",
+        concept: "An argument consists of a claim and the evidence offered to support it; strong evaluation examines whether the evidence actually supports the specific claim made.",
+        teaching: "Restate the claim in one sentence, then list the evidence separately, and check whether the evidence actually supports that specific claim, not a nearby one.",
+        example: "An ad claims a supplement 'supports immune health' and cites a study showing it increased a certain blood marker in a lab dish.",
+        why: "A change in a lab marker does not establish that the supplement improves immune health in actual people—the evidence doesn't match the claim's scope.",
+        takeaways: ["State the claim precisely before evaluating it.", "Check whether evidence matches the claim's actual scope.", "Lab or indirect evidence doesn't always support a real-world claim."],
+        checkpoint: "Restate the exact claim being made, then check whether the evidence offered actually matches that scope.",
+        questions: [
+          { prompt: "An ad claims a supplement 'supports immune health,' citing a lab study showing it changed a blood marker in a dish. What is the gap?", options: ["A lab marker change doesn't establish real-world immune health benefits in people", "The study proves the claim completely", "Lab studies are always irrelevant to health claims", "The claim and evidence match exactly"], correct: 0, feedback: "The evidence (a lab marker change) is far narrower than the claim (supports immune health in people), leaving a real gap.", hint: "Does a change in a dish prove something about a living person's immune system?" },
+          { prompt: "What is the first step in evaluating any argument?", options: ["State the specific claim being made in one clear sentence", "Assume the claim is true if it sounds scientific", "Look only at how confident the speaker sounds", "Search for evidence that supports the claim, ignoring the claim's exact wording"], correct: 0, feedback: "Precisely restating the claim prevents evaluating evidence against a vaguer or different claim than what was actually made.", hint: "What must you know exactly before you can check if evidence supports it?" },
+          { prompt: "A company claims its app 'improves productivity' and cites a survey where users said they 'felt busier.' What is the mismatch?", options: ["Feeling busier is not the same as being more productive", "The survey proves the productivity claim", "Feelings and productivity are always the same thing", "No evidence is needed for this kind of claim"], correct: 0, feedback: "Subjective busyness doesn't establish an objective productivity improvement—the evidence doesn't match the claim.", hint: "Is 'feeling busier' the same thing as actually getting more done?" },
+          { prompt: "Why is it important to check evidence against the exact scope of a claim?", options: ["Evidence that supports a narrower or different claim can be mistaken for supporting the broader one", "All evidence supports all related claims equally", "Claims never need evidence if they sound reasonable", "Scope doesn't affect whether evidence is relevant"], correct: 0, feedback: "Evidence for a narrow or related claim is often presented as if it supports a broader claim it doesn't actually establish.", hint: "What happens when evidence for a small claim gets used to support a much bigger one?" },
+        ],
+      },
+      {
+        id: "02", unit: "REASONING ERRORS", title: "Name the reasoning error before dismissing an argument", description: "Naming the specific flaw is stronger than a vague objection.",
+        concept: "Common reasoning errors—like attacking the person instead of the argument, or presenting only two options when more exist—can make weak arguments look strong or strong arguments look weak.",
+        teaching: "When an argument feels off, name the specific pattern (attacking the source, a false choice, a slippery slope) rather than just feeling unconvinced.",
+        example: "A debate participant says, 'You can't trust his opinion on the budget—he's not even a numbers person,' instead of addressing the budget argument itself.",
+        why: "This attacks the person rather than evaluating the argument's actual merits—the budget claim itself was never addressed.",
+        takeaways: ["Attacking the person isn't the same as refuting the argument.", "Naming the specific error clarifies why an argument is weak.", "A false choice hides other real options."],
+        checkpoint: "Name the specific reasoning error at work, rather than just noting that an argument feels unconvincing.",
+        questions: [
+          { prompt: "In a debate, someone says 'You can't trust his budget opinion—he's not a numbers person,' without addressing the budget claim itself. What error is this?", options: ["Attacking the person instead of the argument (ad hominem)", "A valid rebuttal of the budget claim", "A false choice", "A slippery slope argument"], correct: 0, feedback: "This attacks the source's credibility instead of engaging with the actual content of the budget argument.", hint: "Does this response address the budget claim, or the person making it?" },
+          { prompt: "A politician says, 'Either we cut this program completely, or the budget collapses.' What reasoning error does this likely commit?", options: ["A false choice that ignores other possible options, like partial cuts", "A valid, complete list of all options", "An attack on the person", "A statement that requires no evidence"], correct: 0, feedback: "Presenting only two extreme options while ignoring middle-ground alternatives is a false choice (false dilemma).", hint: "Are 'cut completely' and 'total collapse' really the only two possibilities?" },
+          { prompt: "Why is naming a specific reasoning error more useful than just saying an argument 'feels wrong'?", options: ["It identifies exactly what is flawed, making the critique clear and checkable", "Naming errors is never actually useful", "Feelings are always a more reliable guide than analysis", "It guarantees the argument is completely false"], correct: 0, feedback: "A named, specific error can be checked and explained, while a vague feeling of doubt cannot.", hint: "Which is easier to explain and verify: a specific named pattern, or a vague feeling?" },
+          { prompt: "'If we allow students to retake one quiz, soon everyone will demand unlimited retakes on everything.' What reasoning error is this?", options: ["A slippery slope that assumes an extreme outcome without justifying each step", "A well-supported prediction", "An attack on the person", "A false choice"], correct: 0, feedback: "This assumes one small change inevitably leads to an extreme outcome, without evidence for each step in between.", hint: "Does allowing one retake actually guarantee the extreme outcome described?" },
+        ],
+      },
+      {
+        id: "03", unit: "SOURCE EVALUATION", title: "Weigh a source's evidence, not just its confidence", description: "Confidence is not evidence for a claim.",
+        concept: "The confidence or authority with which a claim is stated is not evidence for the claim; source evaluation requires checking expertise, potential bias, and the underlying evidence.",
+        teaching: "Ask what expertise the source actually has on this specific topic, what they might gain from a particular conclusion, and what evidence they cite.",
+        example: "A celebrity endorses a financial investment strategy on social media with great confidence and no cited data.",
+        why: "Fame and confidence are not evidence of financial expertise or the strategy's actual performance.",
+        takeaways: ["Confidence is not evidence.", "Check a source's relevant expertise on the specific topic.", "Consider what a source might gain from a particular conclusion."],
+        checkpoint: "Check what specific expertise and evidence back a source's claim, not just how confidently it's delivered.",
+        questions: [
+          { prompt: "A celebrity confidently endorses a financial strategy on social media, citing no data. What should a critical reader question?", options: ["Whether the celebrity has relevant financial expertise and what evidence supports the strategy", "Nothing, since confident delivery is convincing enough", "Whether the celebrity is likeable", "How many followers the celebrity has"], correct: 0, feedback: "Fame and confidence are not evidence of financial expertise or a strategy's real performance.", hint: "Does confidence in delivery say anything about whether a claim is true?" },
+          { prompt: "A study on a new food product's health benefits is funded entirely by that product's manufacturer. What should this prompt a reader to check?", options: ["Whether the funding source could have influenced the study's design or reported conclusions", "Nothing, since funding source never affects research", "The study must be entirely fabricated", "The color scheme of the manufacturer's website"], correct: 0, feedback: "Funding sources with a stake in the outcome can introduce bias in design, analysis, or reporting, so it's worth scrutinizing.", hint: "Does the funder have an interest in a particular result?" },
+          { prompt: "Which question best evaluates a source's credibility on a specific claim?", options: ["Does this source have relevant expertise and evidence for this particular topic?", "Does this source have a large following?", "Does this source speak with confidence?", "Does this source agree with what I already believe?"], correct: 0, feedback: "Relevant expertise and cited evidence are what actually establish credibility on a specific claim, not popularity or confidence.", hint: "What actually qualifies someone to make a credible claim on a topic?" },
+          { prompt: "A doctor is quoted on a topic outside their specialty (e.g., a cardiologist commenting on rare genetic disorders). What should a careful reader consider?", options: ["Whether this doctor's expertise actually extends to this specific specialty", "Any doctor's opinion is equally credible on any medical topic", "Titles alone always establish relevant expertise", "This concern only matters outside of medicine"], correct: 0, feedback: "Expertise is often topic-specific; a credential in one area doesn't necessarily transfer authority to an unrelated specialty.", hint: "Does a medical degree make someone an expert on every medical topic equally?" },
+        ],
+      },
+      {
+        id: "04", unit: "CHANGING YOUR MIND", title: "Decide in advance what would change your mind", description: "A defensible position specifies what would count against it.",
+        concept: "A defensible position specifies what evidence would count against it; a claim that can't be falsified by any possible evidence is difficult to evaluate rationally.",
+        teaching: "Before committing to a position, state what observation or evidence would make you reconsider it—if nothing could, the position may not be a reasoned one.",
+        example: "A person claims a psychic's vague prediction 'came true,' reinterpreting the vague wording to fit whatever happened afterward.",
+        why: "If any outcome can be reinterpreted as confirmation, the prediction was never actually testable or falsifiable to begin with.",
+        takeaways: ["A good position specifies what would count as counter-evidence.", "An unfalsifiable claim can't be rationally evaluated.", "Being willing to update your view under new evidence is a strength, not a weakness."],
+        checkpoint: "Name the specific evidence that would change your mind before committing fully to a position.",
+        questions: [
+          { prompt: "A person claims a psychic's vague prediction 'came true,' reinterpreting the wording to match whatever happened. What is the core problem?", options: ["If any outcome can count as confirmation, the prediction was never actually testable", "This shows the prediction was accurate", "Vague predictions are always more reliable", "This is a normal and valid way to evaluate predictions"], correct: 0, feedback: "A claim that fits any possible outcome cannot be meaningfully tested or falsified.", hint: "Could any outcome at all have been made to fit this prediction?" },
+          { prompt: "What makes a position more defensible and rational?", options: ["Being able to specify what evidence would change your mind about it", "Refusing to ever reconsider it, no matter the evidence", "Holding it as strongly as possible regardless of evidence", "Avoiding stating any specific claim at all"], correct: 0, feedback: "Specifying what would count as counter-evidence makes a position testable and open to honest evaluation.", hint: "What distinguishes a reasoned position from an unfalsifiable one?" },
+          { prompt: "A colleague says, 'Nothing could ever convince me this policy is wrong.' What does this reveal about their position?", options: ["Their position may not be based on evidence that could be reasonably evaluated", "This shows strong, well-reasoned confidence", "This is the ideal way to hold any position", "This means the policy is definitely correct"], correct: 0, feedback: "A position immune to any possible evidence is difficult to evaluate rationally and may not be evidence-based at all.", hint: "Can a position that no evidence could ever challenge really be called reasoned?" },
+          { prompt: "Why is updating a position based on new, credible evidence considered a strength in critical thinking, not a weakness?", options: ["It shows the position is grounded in evidence rather than fixed belief", "Changing your mind is always a sign of weak reasoning", "A good thinker should never update their views", "Consistency is always more important than accuracy"], correct: 0, feedback: "Being responsive to genuine evidence is what distinguishes reasoned belief from stubborn or unfounded belief.", hint: "What does refusing to ever update a view, regardless of evidence, suggest about how that view was formed?" },
+        ],
+      },
+    ],
+    "/course-library-hero.png", "An editorial composition representing critical thinking.",
+    { label: "Stanford Encyclopedia of Philosophy: Critical Thinking", href: "https://plato.stanford.edu/entries/critical-thinking/" },
   ),
 };
 export default function Home() {
@@ -1608,12 +1948,15 @@ export default function Home() {
                 <span>Required reasoning before quizzes</span>
               </div>
             </div>
-            <figure>
-              <img
-                src="/course-library-hero.png"
-                alt="An editorial study composition representing computing, data, algorithms, and cybersecurity."
-              />
-            </figure>
+            <div className="library-hero-stat">
+              <strong>{mergedCourseLibrary.length}</strong>
+              <span>COURSE PATHWAYS</span>
+              <div className="library-hero-stat-tags">
+                {mergedCourseLibrary.map((course) => (
+                  <em key={course.id}>{course.subject}</em>
+                ))}
+              </div>
+            </div>
           </section>
 
           <section className="library-import">
@@ -1699,7 +2042,7 @@ export default function Home() {
               </p>
             </div>
             <div className="library-grid">
-              {mergedCourseLibrary.map((course) => (
+              {mergedCourseLibrary.map((course, index) => (
                 <article
                   key={course.id}
                   className={`library-card ${libraryCourse.id === course.id ? "selected" : ""}`}
@@ -1713,9 +2056,12 @@ export default function Home() {
                   role="button"
                   tabIndex={0}
                 >
-                  <div className="library-card-image">
-                    <img src={course.visual} alt={course.visualAlt} />
-                    <span>OPEN NOW</span>
+                  <div className="library-card-image" aria-hidden="true">
+                    <span className="course-panel-letter">
+                      {course.title.replace(/[^A-Za-z]/g, "")[0]}
+                    </span>
+                    <span className="course-panel-index">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="library-card-tag">OPEN NOW</span>
                   </div>
                   <div className="library-card-copy">
                     <small>{course.subject}</small>
@@ -1742,8 +2088,10 @@ export default function Home() {
           </section>
 
           <section className="library-detail" aria-live="polite">
-            <div className="library-detail-visual">
-              <img src={libraryCourse.visual} alt={libraryCourse.visualAlt} />
+            <div className="library-detail-visual" aria-hidden="true">
+              <span className="course-panel-letter">
+                {libraryCourse.title.replace(/[^A-Za-z]/g, "")[0]}
+              </span>
               <span>{libraryCourse.subject}</span>
             </div>
             <div className="library-detail-copy">
@@ -2045,7 +2393,10 @@ export default function Home() {
                     <p className="lesson-lead">{lesson.concept}</p>
                     <p className="lesson-body">{lesson.teaching}</p>
                     <figure className="lesson-visual">
-                      <img src={visual.src} alt={visual.alt} />
+                      <div className="concept-panel" aria-hidden="true">
+                        <span className="concept-panel-unit">{lesson.unit}</span>
+                        <strong className="concept-panel-number">{lesson.id}</strong>
+                      </div>
                       <figcaption>{visual.caption}</figcaption>
                     </figure>
                     <button
@@ -2112,7 +2463,10 @@ export default function Home() {
                       Socratic case.
                     </p>
                     <figure className="media-visual">
-                      <img src={briefingVisual.src} alt={briefingVisual.alt} />
+                      <div className="concept-panel" aria-hidden="true">
+                        <span className="concept-panel-unit">{lesson.unit}</span>
+                        <strong className="concept-panel-number">{lesson.id}</strong>
+                      </div>
                       <figcaption>{briefingVisual.caption}</figcaption>
                     </figure>
                     <section
