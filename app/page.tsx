@@ -1,5 +1,9 @@
 "use client";
 import { useRef, useState } from "react";
+import { LessonDiagram } from "./diagrams";
+import { fallbackDiagram, lessonDiagrams } from "./lesson-diagrams";
+import { lessonDepth } from "./lesson-depth";
+import { Narrator, splitSentences } from "./narration";
 
 type ThemeId = "light" | "dark";
 type Question = {
@@ -799,6 +803,74 @@ function UIIcon({ name, className }: { name: UIIconName; className?: string }) {
         </svg>
       );
   }
+}
+
+function NarrationPlayer({
+  label,
+  lines,
+  playing,
+  activeIndex,
+  rate,
+  onToggle,
+  onRate,
+}: {
+  label: string;
+  lines: string[];
+  playing: boolean;
+  activeIndex: number;
+  rate: number;
+  onToggle: () => void;
+  onRate: (rate: number) => void;
+}) {
+  return (
+    <section className={`narration${playing ? " is-playing" : ""}`}>
+      <div className="narration-bar">
+        <button className="narration-play" onClick={onToggle}>
+          <UIIcon name={playing ? "close" : "play"} />
+          {playing ? "Stop" : "Listen"}
+        </button>
+        <div className="narration-meta">
+          <span className="narration-label">{label}</span>
+          <span className="narration-wave" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+        <div className="narration-rate" role="group" aria-label="Playback speed">
+          {[0.85, 1, 1.25].map((value) => (
+            <button
+              key={value}
+              className={rate === value ? "selected" : ""}
+              aria-pressed={rate === value}
+              onClick={() => onRate(value)}
+            >
+              {value}&times;
+            </button>
+          ))}
+        </div>
+      </div>
+      <ol className="narration-script">
+        {lines.map((line, index) => (
+          <li
+            key={`${index}-${line}`}
+            className={index === activeIndex ? "active" : ""}
+            ref={
+              index === activeIndex
+                ? (el) => {
+                    el?.scrollIntoView({ block: "nearest" });
+                  }
+                : undefined
+            }
+          >
+            {line}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
 }
 
 function CourseIcon({ id, className }: { id: string; className?: string }) {
@@ -1754,6 +1826,8 @@ export default function Home() {
     "learn" | "media" | "tutor" | "practice" | "complete"
   >("learn");
   const [learnStep, setLearnStep] = useState(0);
+  const [recallText, setRecallText] = useState("");
+  const [recallShown, setRecallShown] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [choice, setChoice] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "incorrect">(
@@ -1768,7 +1842,9 @@ export default function Home() {
   const [tutorInput, setTutorInput] = useState("");
   const [tutorTurns, setTutorTurns] = useState<string[]>([]);
   const [isReading, setIsReading] = useState(false);
-  const narrationAudio = useRef<HTMLAudioElement | null>(null);
+  const [spokenLine, setSpokenLine] = useState(-1);
+  const [narrationRate, setNarrationRate] = useState(1);
+  const narratorRef = useRef<Narrator | null>(null);
   const [mediaPlayed, setMediaPlayed] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [diagIndex, setDiagIndex] = useState(0);
@@ -1780,15 +1856,15 @@ export default function Home() {
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [quickNote, setQuickNote] = useState("");
   const [savedNotes, setSavedNotes] = useState<string[]>([]);
-  const [theme, setTheme] = useState<ThemeId>(() => {
-    if (typeof window === "undefined") return "light";
-    const saved = window.localStorage.getItem("socratic-theme");
-    return saved === "dark" ? "dark" : "light";
-  });
   function toggleTheme() {
-    const next: ThemeId = theme === "light" ? "dark" : "light";
-    setTheme(next);
-    window.localStorage.setItem("socratic-theme", next);
+    const root = document.documentElement;
+    const next: ThemeId = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try {
+      window.localStorage.setItem("socratic-theme", next);
+    } catch {
+      // Private browsing can refuse storage; the toggle still works this session.
+    }
   }
   const [customTitle, setCustomTitle] = useState("");
   const [customText, setCustomText] = useState("");
@@ -1831,6 +1907,23 @@ export default function Home() {
     { key: "takeaways", label: "Key takeaways" },
   ];
   const learnPage = learnPages[Math.min(learnStep, learnPages.length - 1)];
+  const diagram = lessonDiagrams[activeCourseId]?.[lessonIndex] ?? fallbackDiagram;
+  const depth = lessonDepth[activeCourseId]?.[lessonIndex];
+  const lessonNarration = splitSentences(
+    [
+      `${lesson.title}.`,
+      lesson.concept,
+      lesson.teaching,
+      depth?.detail ?? "",
+      lesson.example,
+      lesson.why,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+  const briefingNarration = splitSentences(
+    [`${lesson.title}.`, ...briefingScript].join(" "),
+  );
   const stageOrder = ["learn", "media", "tutor", "practice", "complete"];
   const stageRank = stageOrder.indexOf(stage);
   const journeyProgress =
@@ -1844,6 +1937,7 @@ export default function Home() {
             ? 46
             : ((learnStep + 1) / learnPages.length) * 44;
   function goToLearnStep(index: number) {
+    stopNarration();
     setLearnStep(Math.max(0, Math.min(index, learnPages.length - 1)));
     if (stage !== "learn") setStage("learn");
     if (typeof window !== "undefined") window.scrollTo({ top: 0 });
@@ -1925,6 +2019,9 @@ export default function Home() {
     setLessonIndex(index);
     setStage("learn");
     setLearnStep(0);
+    setRecallText("");
+    setRecallShown(false);
+    stopNarration();
     setQuestionIndex(0);
     setChoice(null);
     setFeedback("idle");
@@ -1935,6 +2032,7 @@ export default function Home() {
     setScreen("lesson");
   }
   function startPractice() {
+    stopNarration();
     setStage("practice");
     setQuestionIndex(0);
     setChoice(null);
@@ -1975,71 +2073,42 @@ export default function Home() {
     setHint(false);
   }
   function startMedia() {
+    stopNarration();
     setStage("media");
     setMediaPlayed(false);
   }
   function startTutor() {
+    stopNarration();
     setStage("tutor");
     setTutorReply("");
     setTutorInput("");
     setTutorTurns([]);
   }
+  function getNarrator() {
+    if (!narratorRef.current) {
+      narratorRef.current = new Narrator({
+        onSentence: (index) => setSpokenLine(index),
+        onStateChange: (playing) => setIsReading(playing),
+      });
+    }
+    return narratorRef.current;
+  }
   function stopNarration() {
-    if (narrationAudio.current) {
-      narrationAudio.current.pause();
-      narrationAudio.current = null;
-    }
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-    setIsReading(false);
+    narratorRef.current?.stop();
+    setSpokenLine(-1);
   }
-  function playBrowserFallback(text: string) {
-    if (!("speechSynthesis" in window)) {
-      setIsReading(false);
-      return;
-    }
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find((voice) =>
-      /marin|jenny|aria|samantha|google us english|ava|zira/i.test(voice.name),
-    );
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.voice = preferredVoice ?? null;
-    utterance.rate = 0.92;
-    utterance.pitch = 1;
-    utterance.onend = () => setIsReading(false);
-    utterance.onerror = () => setIsReading(false);
-    window.speechSynthesis.speak(utterance);
-  }
-  async function toggleLessonAudio() {
-    if (isReading) {
+  function toggleNarration(lines: string[]) {
+    const narrator = getNarrator();
+    if (narrator.playing) {
       stopNarration();
       return;
     }
-    const narration = [lesson.title, ...briefingScript].join(". ");
-    setIsReading(true);
-    try {
-      const response = await fetch("/api/narration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: narration }),
-      });
-      if (!response.ok) throw new Error("Natural narration unavailable.");
-      const url = URL.createObjectURL(await response.blob());
-      const audio = new Audio(url);
-      narrationAudio.current = audio;
-      audio.onended = () => {
-        URL.revokeObjectURL(url);
-        narrationAudio.current = null;
-        setIsReading(false);
-      };
-      audio.onerror = () => {
-        URL.revokeObjectURL(url);
-        narrationAudio.current = null;
-        playBrowserFallback(narration);
-      };
-      await audio.play();
-    } catch {
-      playBrowserFallback(narration);
-    }
+    narrator.setRate(narrationRate);
+    void narrator.speak(lines);
+  }
+  function changeNarrationRate(rate: number) {
+    setNarrationRate(rate);
+    narratorRef.current?.setRate(rate);
   }
   function saveQuickNote() {
     const note = quickNote.trim();
@@ -2129,23 +2198,20 @@ export default function Home() {
       id: "media" as const,
       icon: "play" as const,
       label: "Audio + visual briefing",
-      onOpen: startMedia,
     },
     {
       id: "tutor" as const,
       icon: "chat" as const,
       label: "Socratic tutor session",
-      onOpen: startTutor,
     },
     {
       id: "practice" as const,
       icon: "target" as const,
       label: `Mastery check · ${questions.length} questions`,
-      onOpen: startPractice,
     },
   ];
   return (
-    <main className="course-app" data-theme={theme}>
+    <main className="course-app">
       <header className="app-header">
         <div className="app-header-inner">
           <button className="app-brand" onClick={() => setScreen("home")}>
@@ -2196,14 +2262,13 @@ export default function Home() {
               </i>
             </div>
             <button
-              className="icon-button"
+              className="icon-button theme-toggle"
               onClick={toggleTheme}
-              aria-label={
-                theme === "light" ? "Switch to dark theme" : "Switch to light theme"
-              }
-              title={theme === "light" ? "Dark theme" : "Light theme"}
+              aria-label="Switch between light and dark theme"
+              title="Switch theme"
             >
-              <UIIcon name={theme === "light" ? "moon" : "sun"} />
+              <UIIcon name="moon" className="when-light" />
+              <UIIcon name="sun" className="when-dark" />
             </button>
             <span className="profile-dot" aria-hidden="true">
               AK
@@ -2784,7 +2849,11 @@ export default function Home() {
                           ? "done"
                           : ""
                     }
-                    onClick={step.onOpen}
+                    onClick={() => {
+                      if (step.id === "media") startMedia();
+                      else if (step.id === "tutor") startTutor();
+                      else startPractice();
+                    }}
                   >
                     <span className="rail-step-icon">
                       {stageRank > rank ? (
@@ -2822,7 +2891,7 @@ export default function Home() {
 
           <div className="lesson-main">
             {stage === "learn" && (
-              <article className="lesson-card">
+              <article className="lesson-card" key={learnPage.key}>
                 <div className="lesson-card-head">
                   <span className="pill">
                     Teaching · step {learnStep + 1} of {learnPages.length}
@@ -2834,22 +2903,26 @@ export default function Home() {
                   <>
                     <h1>{lesson.title}</h1>
                     <p className="lead">{lesson.concept}</p>
-                    <div className="concept-strip">
-                      <span className="icon-tile">
-                        <CourseIcon id={activeCourseMeta.id} />
-                      </span>
-                      <div>
-                        <small>{lesson.unit}</small>
-                        <b>
-                          Skill {lessonIndex + 1} of {lessonCount}
-                        </b>
-                      </div>
-                      <button className="btn btn-quiet" onClick={toggleLessonAudio}>
-                        <UIIcon name="play" />
-                        {isReading ? "Stop audio" : "Listen"}
-                      </button>
-                    </div>
+                    <NarrationPlayer
+                      label="Lesson narration"
+                      lines={lessonNarration}
+                      playing={isReading}
+                      activeIndex={spokenLine}
+                      rate={narrationRate}
+                      onToggle={() => toggleNarration(lessonNarration)}
+                      onRate={changeNarrationRate}
+                    />
+                    <LessonDiagram spec={diagram} />
                     <p className="body">{lesson.teaching}</p>
+                    {depth && (
+                      <section className="depth-block">
+                        <span className="panel-label">
+                          <UIIcon name="compass" />
+                          How this actually works
+                        </span>
+                        <p className="body">{depth.detail}</p>
+                      </section>
+                    )}
                     <p className="figure-note">{visual.caption}</p>
                   </>
                 )}
@@ -2868,8 +2941,18 @@ export default function Home() {
                       </span>
                       <p>{lesson.example}</p>
                     </div>
+                    <LessonDiagram spec={diagram} compact />
                     <h2>Why it matters</h2>
                     <p className="body">{lesson.why}</p>
+                    {depth && (
+                      <section className="pitfall">
+                        <span className="callout-label">
+                          <UIIcon name="close" />
+                          The mistake people actually make
+                        </span>
+                        <p>{depth.pitfall}</p>
+                      </section>
+                    )}
                   </>
                 )}
 
@@ -2884,6 +2967,7 @@ export default function Home() {
                         </p>
                         <h1>{item.title}</h1>
                         <p className="body">{item.copy}</p>
+                        <LessonDiagram spec={diagram} focus={buildIndex} />
                         <div className="callout">
                           <span className="callout-label">
                             <UIIcon name="spark" />
@@ -2899,19 +2983,58 @@ export default function Home() {
                   <>
                     <h1>Keep these in mind</h1>
                     <ul className="takeaway-list">
-                      {lesson.takeaways.map((takeaway) => (
-                        <li key={takeaway}>
+                      {lesson.takeaways.map((takeaway, index) => (
+                        <li key={`${index}-${takeaway}`}>
                           <UIIcon name="check" />
                           {takeaway}
                         </li>
                       ))}
                     </ul>
+                    <section className="recall">
+                      <span className="panel-label">
+                        <UIIcon name="note" />
+                        Say it in your own words
+                      </span>
+                      <p className="recall-prompt">
+                        Before the briefing, write one sentence explaining
+                        &ldquo;{lesson.title}&rdquo; as you would to a colleague.
+                      </p>
+                      <textarea
+                        aria-label="Explain this idea in your own words"
+                        value={recallText}
+                        onChange={(event) => setRecallText(event.target.value)}
+                        placeholder="In my own words..."
+                      />
+                      <div className="recall-actions">
+                        <button
+                          className="btn btn-quiet"
+                          disabled={!recallText.trim()}
+                          onClick={() => setRecallShown(true)}
+                        >
+                          Compare with a model answer
+                        </button>
+                        {recallShown && (
+                          <span className="recall-hint">
+                            Yours is not graded — the point is noticing the gap.
+                          </span>
+                        )}
+                      </div>
+                      {recallShown && (
+                        <div className="callout">
+                          <span className="callout-label">
+                            <UIIcon name="check" />
+                            One good answer
+                          </span>
+                          <p>{lesson.checkpoint ?? lesson.concept}</p>
+                        </div>
+                      )}
+                    </section>
                     <div className="split-panels">
                       <div className="panel">
                         <span className="panel-label">Use this in practice</span>
                         <ol>
-                          {extra.steps.map((step) => (
-                            <li key={step}>{step}</li>
+                          {extra.steps.map((step, index) => (
+                            <li key={`${index}-${step}`}>{step}</li>
                           ))}
                         </ol>
                       </div>
@@ -2968,31 +3091,20 @@ export default function Home() {
                   A short recap that connects the written idea, the visual, and
                   the example before you enter the Socratic case.
                 </p>
-                <div className="concept-strip">
-                  <span className="icon-tile">
-                    <CourseIcon id={activeCourseMeta.id} />
-                  </span>
-                  <div>
-                    <small>{lesson.unit}</small>
-                    <b>{lesson.title}</b>
-                  </div>
-                  <button
-                    className="btn btn-quiet"
-                    onClick={() => {
-                      toggleLessonAudio();
-                      setMediaPlayed(true);
-                    }}
-                  >
-                    <UIIcon name="play" />
-                    {isReading ? "Stop briefing" : "Play briefing"}
-                  </button>
-                </div>
+                <NarrationPlayer
+                  label="Spoken briefing"
+                  lines={briefingNarration}
+                  playing={isReading}
+                  activeIndex={spokenLine}
+                  rate={narrationRate}
+                  onToggle={() => {
+                    toggleNarration(briefingNarration);
+                    setMediaPlayed(true);
+                  }}
+                  onRate={changeNarrationRate}
+                />
+                <LessonDiagram spec={diagram} />
                 <p className="figure-note">{briefingVisual.caption}</p>
-                <ol className="numbered-list">
-                  {briefingScript.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ol>
                 {lessonIndex === 0 && (
                   <a
                     className="inline-link"

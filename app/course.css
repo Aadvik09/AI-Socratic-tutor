@@ -35,6 +35,14 @@
   --shadow-md: 0 6px 20px rgba(16, 18, 22, 0.08);
   --shadow-lg: 0 20px 48px rgba(16, 18, 22, 0.14);
 
+  --dg-bar: #b9cbef;
+  --dg-tail: #d2ddf2;
+  --dg-strong: #1b56c4;
+  --dg-warn: #b3711c;
+  --dg-alert: #ad3025;
+  --dg-line: #c9c9c1;
+  --dg-node: #ffffff;
+
   --r-sm: 8px;
   --r: 12px;
   --r-lg: 16px;
@@ -55,7 +63,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.course-app[data-theme="dark"] {
+.course-app[data-theme="dark"],
+[data-theme="dark"] .course-app {
   --bg: #0c0d10;
   --bg-soft: #101217;
   --surface: #15171c;
@@ -82,6 +91,14 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.6);
+
+  --dg-bar: #3a4d75;
+  --dg-tail: #262d3d;
+  --dg-strong: #8cb2ff;
+  --dg-warn: #e3a45c;
+  --dg-alert: #ff9086;
+  --dg-line: #414855;
+  --dg-node: #1b1e24;
 }
 
 .course-app *,
@@ -1483,32 +1500,6 @@
   font-size: 20px;
   margin-top: 4px;
 }
-.course-app .concept-strip {
-  align-items: center;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  display: flex;
-  gap: 14px;
-  padding: 14px 16px;
-}
-.course-app .concept-strip > div {
-  margin-right: auto;
-  min-width: 0;
-}
-.course-app .concept-strip small {
-  color: var(--text-4);
-  display: block;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-.course-app .concept-strip b {
-  display: block;
-  font-size: 14.5px;
-  margin-top: 2px;
-}
 .course-app .callout {
   background: var(--accent-soft);
   border-radius: var(--r);
@@ -1607,37 +1598,6 @@
 }
 .course-app .inline-link {
   justify-content: flex-start;
-}
-.course-app .numbered-list {
-  counter-reset: step;
-  display: grid;
-  gap: 10px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.course-app .numbered-list li {
-  align-items: flex-start;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-2);
-  counter-increment: step;
-  display: flex;
-  font-size: 14.5px;
-  gap: 14px;
-  line-height: 1.65;
-  padding-bottom: 12px;
-}
-.course-app .numbered-list li:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
-}
-.course-app .numbered-list li::before {
-  color: var(--text-4);
-  content: "0" counter(step);
-  flex: none;
-  font-family: var(--mono);
-  font-size: 12px;
-  padding-top: 2px;
 }
 .course-app .lesson-nav {
   align-items: center;
@@ -1962,4 +1922,573 @@
     bottom: 16px;
     right: 16px;
   }
+}
+
+/* ============================ Lesson diagrams ============================ */
+.course-app .diagram {
+  display: grid;
+  gap: 12px;
+  margin: 4px 0;
+}
+.course-app .diagram-frame {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-inline: auto;
+  max-width: 560px;
+  overflow: hidden;
+  padding: 14px 12px;
+  width: 100%;
+}
+.course-app .diagram svg {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+.course-app .diagram-compact .diagram-frame {
+  max-width: 440px;
+  padding: 10px;
+}
+.course-app .diagram figcaption {
+  color: var(--text-3);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.course-app .diagram[data-focus] figcaption {
+  border-left: 2px solid var(--accent);
+  color: var(--text-2);
+  padding-left: 12px;
+}
+.course-app .diagram [data-part] {
+  transition: opacity 0.35s ease;
+}
+.course-app .diagram[data-focus="0"] [data-part]:not([data-part="0"]),
+.course-app .diagram[data-focus="1"] [data-part]:not([data-part="1"]),
+.course-app .diagram[data-focus="2"] [data-part]:not([data-part="2"]) {
+  opacity: 0.2;
+}
+
+.course-app .dg-bar {
+  animation: dg-grow 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  fill: var(--dg-bar);
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+.course-app .dg-bar-tail {
+  fill: var(--dg-tail);
+}
+.course-app .dg-bar-warn {
+  fill: var(--dg-warn);
+}
+.course-app .dg-axis line,
+.course-app .dg-baseline {
+  stroke: var(--dg-line);
+  stroke-width: 1.2;
+}
+.course-app .dg-divider {
+  stroke: var(--border);
+  stroke-dasharray: 3 3;
+}
+.course-app .dg-label {
+  fill: var(--text-3);
+  font: 500 9px var(--mono);
+  letter-spacing: 0.04em;
+}
+.course-app .dg-label-strong {
+  fill: var(--text-2);
+}
+.course-app .dg-tick,
+.course-app .dg-step-no {
+  fill: var(--text-4);
+  font: 500 8px var(--mono);
+}
+.course-app .dg-median {
+  stroke: var(--dg-strong);
+  stroke-dasharray: 4 3;
+  stroke-width: 2;
+  animation: dg-draw 0.7s 0.25s ease both;
+}
+.course-app .dg-mean {
+  stroke: var(--dg-warn);
+  stroke-width: 2;
+  animation: dg-draw 0.7s 0.35s ease both;
+}
+.course-app .dg-tag {
+  font: 600 8.5px var(--mono);
+  letter-spacing: 0.04em;
+}
+.course-app .dg-tag-median {
+  fill: var(--dg-strong);
+}
+.course-app .dg-tag-mean {
+  fill: var(--dg-warn);
+}
+.course-app .dg-tag-alert {
+  fill: var(--dg-alert);
+}
+.course-app .dg-tag-accent {
+  fill: var(--accent);
+}
+.course-app .dg-gap {
+  fill: none;
+  stroke: var(--text-4);
+  stroke-width: 1.2;
+}
+.course-app .dg-arrowhead {
+  fill: var(--text-4);
+}
+.course-app .dg-chip {
+  fill: var(--dg-node);
+  stroke: var(--border-strong);
+}
+.course-app .dg-chip-accent {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+.course-app .dg-chip-text {
+  fill: var(--text-2);
+  font: 500 9px var(--sans);
+}
+.course-app .dg-chip-text-strong {
+  fill: var(--text);
+  font-weight: 600;
+}
+.course-app .dg-dot {
+  fill: var(--dg-bar);
+}
+.course-app .dg-dot-alert {
+  fill: var(--dg-alert);
+}
+.course-app .dg-ring {
+  fill: none;
+  stroke: var(--dg-alert);
+  stroke-dasharray: 3 3;
+  animation: dg-pulse 2.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.course-app .dg-cell {
+  fill: var(--surface-3);
+}
+.course-app .dg-cell-accent {
+  fill: var(--accent-soft);
+}
+.course-app .dg-cell-missing {
+  fill: var(--danger-soft);
+  stroke: var(--dg-alert);
+  stroke-dasharray: 3 2;
+}
+.course-app .dg-cell-mark {
+  fill: var(--dg-alert);
+  font: 600 11px var(--mono);
+}
+.course-app .dg-code {
+  fill: var(--text-2);
+  font: 500 9.5px var(--mono);
+}
+.course-app .dg-code-accent {
+  fill: var(--accent);
+}
+.course-app .dg-node {
+  fill: var(--dg-node);
+  stroke: var(--border-strong);
+}
+.course-app .dg-node-accent {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+.course-app .dg-node-dot {
+  fill: var(--dg-node);
+  stroke: var(--dg-line);
+  stroke-width: 1.4;
+  animation: dg-in 0.5s ease both;
+}
+.course-app .dg-node-dot-accent {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+}
+.course-app .dg-edge {
+  stroke: var(--dg-line);
+  stroke-width: 0.9;
+}
+.course-app .dg-edges {
+  animation: dg-in 0.9s 0.2s ease both;
+}
+.course-app .dg-edge-strong {
+  fill: none;
+  stroke: var(--text-4);
+  stroke-width: 1.4;
+}
+.course-app .dg-curve {
+  fill: none;
+  stroke: var(--dg-strong);
+  stroke-width: 2.2;
+  stroke-dasharray: 900;
+  animation: dg-trace 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.course-app .dg-band {
+  fill: var(--accent-soft);
+  animation: dg-in 0.6s 0.4s ease both;
+}
+.course-app .dg-beam {
+  stroke: var(--text-4);
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+.course-app .dg-pop {
+  animation: dg-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dg-grow {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes dg-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes dg-draw {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes dg-trace {
+  from {
+    stroke-dashoffset: 900;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dg-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.12);
+  }
+}
+
+/* ============================ Narration player ============================ */
+.course-app .narration {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+}
+.course-app .narration-bar {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  padding: 12px 14px;
+}
+.course-app .narration-play {
+  align-items: center;
+  background: var(--btn-bg);
+  border: 0;
+  border-radius: var(--r-sm);
+  color: var(--btn-fg);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13.5px;
+  font-weight: 600;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 16px;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.course-app .narration-play:hover {
+  background: var(--btn-bg-hover);
+}
+.course-app .narration-play .ui-icon {
+  height: 16px;
+  width: 16px;
+}
+.course-app .narration-meta {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-right: auto;
+  min-width: 0;
+}
+.course-app .narration-label {
+  color: var(--text-3);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.course-app .narration-wave {
+  align-items: flex-end;
+  display: flex;
+  gap: 3px;
+  height: 16px;
+}
+.course-app .narration-wave i {
+  background: var(--border-strong);
+  border-radius: 2px;
+  display: block;
+  height: 4px;
+  transition: background 0.2s ease;
+  width: 3px;
+}
+.course-app .narration.is-playing .narration-wave i {
+  animation: wave 1s ease-in-out infinite;
+  background: var(--accent);
+}
+.course-app .narration.is-playing .narration-wave i:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.course-app .narration.is-playing .narration-wave i:nth-child(3) {
+  animation-delay: 0.24s;
+}
+.course-app .narration.is-playing .narration-wave i:nth-child(4) {
+  animation-delay: 0.36s;
+}
+.course-app .narration.is-playing .narration-wave i:nth-child(5) {
+  animation-delay: 0.48s;
+}
+@keyframes wave {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 15px;
+  }
+}
+.course-app .narration-rate {
+  display: flex;
+  gap: 2px;
+}
+.course-app .narration-rate button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  color: var(--text-3);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 8px;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.course-app .narration-rate button:hover {
+  color: var(--text);
+}
+.course-app .narration-rate button.selected {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+  font-weight: 600;
+}
+.course-app .narration-script {
+  border-top: 1px solid var(--border);
+  display: grid;
+  list-style: none;
+  margin: 0;
+  mask-image: linear-gradient(to bottom, #000 0, #000 84%, transparent 100%);
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 8px 8px 16px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+.course-app .narration-script li {
+  border-radius: var(--r-sm);
+  color: var(--text-3);
+  font-size: 13.5px;
+  line-height: 1.6;
+  padding: 7px 10px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.course-app .narration-script li.active {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ============================ Depth blocks ============================ */
+.course-app .depth-block {
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r);
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
+}
+.course-app .depth-block .panel-label {
+  align-items: center;
+  color: var(--accent);
+  display: flex;
+  gap: 8px;
+}
+.course-app .depth-block .panel-label .ui-icon {
+  height: 15px;
+  width: 15px;
+}
+.course-app .depth-block .body {
+  max-width: none;
+}
+.course-app .pitfall {
+  background: var(--danger-soft);
+  border-radius: var(--r);
+  display: grid;
+  gap: 9px;
+  padding: 18px 20px;
+}
+.course-app .pitfall .callout-label {
+  color: var(--danger);
+}
+.course-app .pitfall p {
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* ============================ Active recall ============================ */
+.course-app .recall {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r);
+  display: grid;
+  gap: 12px;
+  padding: 18px 20px;
+}
+.course-app .recall .panel-label {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+.course-app .recall .panel-label .ui-icon {
+  height: 15px;
+  width: 15px;
+}
+.course-app .recall-prompt {
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.course-app .recall textarea {
+  min-height: 84px;
+}
+.course-app .recall-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.course-app .recall-hint {
+  color: var(--text-4);
+  font-size: 12.5px;
+}
+
+/* ============================ Celebration ============================ */
+.course-app .complete-card .icon-tile {
+  position: relative;
+}
+.course-app .complete-card .icon-tile::before,
+.course-app .complete-card .icon-tile::after {
+  animation: halo 2.4s ease-out infinite;
+  border: 2px solid var(--success);
+  border-radius: var(--r-lg);
+  content: "";
+  inset: -6px;
+  opacity: 0;
+  position: absolute;
+}
+.course-app .complete-card .icon-tile::after {
+  animation-delay: 1.2s;
+}
+@keyframes halo {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Theme toggle shows one glyph, chosen by the document attribute rather than by
+   React state, so server and client markup are identical. */
+.course-app .theme-toggle .when-dark {
+  display: none;
+}
+[data-theme="dark"] .course-app .theme-toggle .when-dark {
+  display: block;
+}
+[data-theme="dark"] .course-app .theme-toggle .when-light {
+  display: none;
+}
+
+/* ============================ Motion polish ============================ */
+/* Teaching pages reveal their blocks in sequence, so paging forward reads as a
+   turn rather than a swap. */
+.course-app .lesson-card > * {
+  animation: rise 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.course-app .lesson-card > *:nth-child(1) { animation-delay: 0.02s; }
+.course-app .lesson-card > *:nth-child(2) { animation-delay: 0.06s; }
+.course-app .lesson-card > *:nth-child(3) { animation-delay: 0.1s; }
+.course-app .lesson-card > *:nth-child(4) { animation-delay: 0.14s; }
+.course-app .lesson-card > *:nth-child(5) { animation-delay: 0.18s; }
+.course-app .lesson-card > *:nth-child(6) { animation-delay: 0.22s; }
+.course-app .lesson-card > *:nth-child(7) { animation-delay: 0.26s; }
+.course-app .lesson-card > *:nth-child(n + 8) { animation-delay: 0.3s; }
+
+.course-app .rail-steps button .rail-step-icon {
+  transform: scale(1);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.course-app .rail-steps button.active .rail-step-icon {
+  transform: scale(1.12);
+}
+.course-app .rail-steps button:not(:disabled):hover .rail-step-icon {
+  transform: scale(1.08);
+}
+.course-app .narration-play:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.course-app .lesson-dots i.on {
+  animation: dot-grow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes dot-grow {
+  from {
+    width: 7px;
+  }
+}
+.course-app .takeaway-list li,
+.course-app .choice-list button,
+.course-app .skill-list li {
+  animation: rise 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.course-app .takeaway-list li:nth-child(2),
+.course-app .choice-list button:nth-child(2),
+.course-app .skill-list li:nth-child(2) { animation-delay: 0.05s; }
+.course-app .takeaway-list li:nth-child(3),
+.course-app .choice-list button:nth-child(3),
+.course-app .skill-list li:nth-child(3) { animation-delay: 0.1s; }
+.course-app .takeaway-list li:nth-child(4),
+.course-app .choice-list button:nth-child(4),
+.course-app .skill-list li:nth-child(4) { animation-delay: 0.15s; }
+.course-app .takeaway-list li:nth-child(n + 5),
+.course-app .choice-list button:nth-child(n + 5),
+.course-app .skill-list li:nth-child(n + 5) { animation-delay: 0.2s; }
+.course-app .verdict {
+  animation: rise 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
