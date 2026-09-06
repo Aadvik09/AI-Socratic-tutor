@@ -1,14 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 
-const THEMES = [
-  { id: "noir", label: "Noir", swatch: "#ffffff" },
-  { id: "signal", label: "Signal", swatch: "#5eebA0" },
-  { id: "arctic", label: "Arctic", swatch: "#6fb8ff" },
-  { id: "ember", label: "Ember", swatch: "#ffb454" },
-  { id: "bloom", label: "Bloom", swatch: "#e08fff" },
-] as const;
-type ThemeId = (typeof THEMES)[number]["id"];
+type ThemeId = "light" | "dark";
 type Question = {
   prompt: string;
   options: string[];
@@ -645,6 +638,169 @@ const diagnostic: Question[] = [
     hint: "What could pull one summary away from the other?",
   },
 ];
+type UIIconName =
+  | "read"
+  | "play"
+  | "chat"
+  | "target"
+  | "check"
+  | "lock"
+  | "arrow-right"
+  | "arrow-left"
+  | "chevron-left"
+  | "chevron-right"
+  | "sun"
+  | "moon"
+  | "note"
+  | "spark"
+  | "external"
+  | "menu"
+  | "close"
+  | "trophy"
+  | "compass";
+
+function UIIcon({ name, className }: { name: UIIconName; className?: string }) {
+  const common = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.6,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    className: className ? `ui-icon ${className}` : "ui-icon",
+    "aria-hidden": true,
+  };
+  switch (name) {
+    case "read":
+      return (
+        <svg {...common}>
+          <path d="M4 5.5h6a2.5 2.5 0 0 1 2 2.5v11a2 2 0 0 0-1.6-1.6L4 16.5z" />
+          <path d="M20 5.5h-6a2.5 2.5 0 0 0-2 2.5v11a2 2 0 0 1 1.6-1.6L20 16.5z" />
+        </svg>
+      );
+    case "play":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.6" />
+          <path d="M10.2 8.9 15.4 12l-5.2 3.1z" />
+        </svg>
+      );
+    case "chat":
+      return (
+        <svg {...common}>
+          <path d="M20 13.4a2.6 2.6 0 0 1-2.6 2.6H9.7L5 19.4V6.6A2.6 2.6 0 0 1 7.6 4h9.8A2.6 2.6 0 0 1 20 6.6z" />
+          <path d="M9.2 10h6.2M9.2 13h3.6" />
+        </svg>
+      );
+    case "target":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.4" />
+          <circle cx="12" cy="12" r="4.4" />
+          <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "check":
+      return (
+        <svg {...common}>
+          <path d="M5.2 12.6 9.6 17 18.8 7.4" />
+        </svg>
+      );
+    case "lock":
+      return (
+        <svg {...common}>
+          <rect x="5" y="10.4" width="14" height="9.4" rx="2" />
+          <path d="M8.4 10.4V8a3.6 3.6 0 0 1 7.2 0v2.4" />
+        </svg>
+      );
+    case "arrow-right":
+      return (
+        <svg {...common}>
+          <path d="M4.5 12h15M13.4 6l6 6-6 6" />
+        </svg>
+      );
+    case "arrow-left":
+      return (
+        <svg {...common}>
+          <path d="M19.5 12h-15M10.6 6l-6 6 6 6" />
+        </svg>
+      );
+    case "chevron-left":
+      return (
+        <svg {...common}>
+          <path d="M14.5 5.5 8 12l6.5 6.5" />
+        </svg>
+      );
+    case "chevron-right":
+      return (
+        <svg {...common}>
+          <path d="M9.5 5.5 16 12l-6.5 6.5" />
+        </svg>
+      );
+    case "sun":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="4.2" />
+          <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6" />
+        </svg>
+      );
+    case "moon":
+      return (
+        <svg {...common}>
+          <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" />
+        </svg>
+      );
+    case "note":
+      return (
+        <svg {...common}>
+          <path d="M6 3.8h8.4L19 8.4V20a1.2 1.2 0 0 1-1.2 1.2H6A1.2 1.2 0 0 1 4.8 20V5a1.2 1.2 0 0 1 1.2-1.2Z" />
+          <path d="M14 3.8v5h5M8.4 13h7M8.4 16.5h4.6" />
+        </svg>
+      );
+    case "spark":
+      return (
+        <svg {...common}>
+          <path d="M12 3.4l1.9 5.3 5.3 1.9-5.3 1.9L12 17.8l-1.9-5.3-5.3-1.9 5.3-1.9z" />
+        </svg>
+      );
+    case "external":
+      return (
+        <svg {...common}>
+          <path d="M14 4.8h5.2V10" />
+          <path d="M19.2 4.8 10.6 13.4" />
+          <path d="M17 14v4.4a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 18.4V8.6A1.6 1.6 0 0 1 5.6 7H10" />
+        </svg>
+      );
+    case "menu":
+      return (
+        <svg {...common}>
+          <path d="M4.5 7h15M4.5 12h15M4.5 17h15" />
+        </svg>
+      );
+    case "close":
+      return (
+        <svg {...common}>
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      );
+    case "trophy":
+      return (
+        <svg {...common}>
+          <path d="M8 4.6h8v4.6a4 4 0 0 1-8 0z" />
+          <path d="M8 6H5.4v1.4A3 3 0 0 0 8 10.3M16 6h2.6v1.4a3 3 0 0 1-2.6 2.9" />
+          <path d="M10 13.4h4l.5 2.6h-5zM7.6 19.4h8.8" />
+        </svg>
+      );
+    case "compass":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="8.4" />
+          <path d="M15.2 8.8 13.6 13.6 8.8 15.2l1.6-4.8z" />
+        </svg>
+      );
+  }
+}
+
 function CourseIcon({ id, className }: { id: string; className?: string }) {
   const common = {
     viewBox: "0 0 24 24",
@@ -700,7 +856,11 @@ function CourseIcon({ id, className }: { id: string; className?: string }) {
       return (
         <svg {...common}>
           <circle cx="12" cy="12" r="8.5" />
-          <path d="M12 3.5V12l7 4" />
+          <path
+            d="M12 3.5A8.5 8.5 0 0 1 20.5 12H12Z"
+            fill="currentColor"
+            stroke="none"
+          />
         </svg>
       );
     case "statistical-inference":
@@ -1593,6 +1753,7 @@ export default function Home() {
   const [stage, setStage] = useState<
     "learn" | "media" | "tutor" | "practice" | "complete"
   >("learn");
+  const [learnStep, setLearnStep] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [choice, setChoice] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "incorrect">(
@@ -1620,15 +1781,14 @@ export default function Home() {
   const [quickNote, setQuickNote] = useState("");
   const [savedNotes, setSavedNotes] = useState<string[]>([]);
   const [theme, setTheme] = useState<ThemeId>(() => {
-    if (typeof window === "undefined") return "noir";
+    if (typeof window === "undefined") return "light";
     const saved = window.localStorage.getItem("socratic-theme");
-    return saved && THEMES.some((t) => t.id === saved) ? (saved as ThemeId) : "noir";
+    return saved === "dark" ? "dark" : "light";
   });
-  const [themePickerOpen, setThemePickerOpen] = useState(false);
-  function chooseTheme(id: ThemeId) {
-    setTheme(id);
-    setThemePickerOpen(false);
-    window.localStorage.setItem("socratic-theme", id);
+  function toggleTheme() {
+    const next: ThemeId = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    window.localStorage.setItem("socratic-theme", next);
   }
   const [customTitle, setCustomTitle] = useState("");
   const [customText, setCustomText] = useState("");
@@ -1659,6 +1819,42 @@ export default function Home() {
     mergedCourseLibrary.find((course) => course.id === libraryCourseId) ??
     mergedCourseLibrary[0];
   const mastery = Math.round((completed.length / activeCourse.lessons.length) * 100);
+  // The teaching lesson is paged: one short idea per screen instead of one long
+  // scroll, so the learner always sees where they are and what is next.
+  const learnPages = [
+    { key: "idea", label: "The core idea" },
+    { key: "example", label: "Worked example" },
+    ...deepDive.map((item, index) => ({
+      key: `build-${index}`,
+      label: item.title,
+    })),
+    { key: "takeaways", label: "Key takeaways" },
+  ];
+  const learnPage = learnPages[Math.min(learnStep, learnPages.length - 1)];
+  const stageOrder = ["learn", "media", "tutor", "practice", "complete"];
+  const stageRank = stageOrder.indexOf(stage);
+  const journeyProgress =
+    stage === "complete"
+      ? 100
+      : stage === "practice"
+        ? 70 + ((questionIndex + 1) / questions.length) * 28
+        : stage === "tutor"
+          ? 52 + Math.min(tutorTurns.length, 3) * 5
+          : stage === "media"
+            ? 46
+            : ((learnStep + 1) / learnPages.length) * 44;
+  function goToLearnStep(index: number) {
+    setLearnStep(Math.max(0, Math.min(index, learnPages.length - 1)));
+    if (stage !== "learn") setStage("learn");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0 });
+  }
+  function advanceLearn() {
+    if (learnStep < learnPages.length - 1) {
+      goToLearnStep(learnStep + 1);
+      return;
+    }
+    startMedia();
+  }
   async function generateCustomLesson() {
     if (customText.trim().length < 200) {
       setCustomError("Paste at least a paragraph or two (about 200 characters) so the tutor has enough to work with.");
@@ -1715,6 +1911,7 @@ export default function Home() {
     setLibraryCourseId(courseId);
     setLessonIndex(0);
     setStage("learn");
+    setLearnStep(0);
     setQuestionIndex(0);
     setChoice(null);
     setFeedback("idle");
@@ -1727,6 +1924,7 @@ export default function Home() {
     if (index > unlocked) return;
     setLessonIndex(index);
     setStage("learn");
+    setLearnStep(0);
     setQuestionIndex(0);
     setChoice(null);
     setFeedback("idle");
@@ -1925,1111 +2123,1175 @@ export default function Home() {
       " This answer is supported by the information in the question; the other choices either assume more than the evidence shows or confuse the type, process, or summary being considered."
     );
   }
+  const lessonCount = activeCourse.lessons.length;
+  const stageSteps = [
+    {
+      id: "media" as const,
+      icon: "play" as const,
+      label: "Audio + visual briefing",
+      onOpen: startMedia,
+    },
+    {
+      id: "tutor" as const,
+      icon: "chat" as const,
+      label: "Socratic tutor session",
+      onOpen: startTutor,
+    },
+    {
+      id: "practice" as const,
+      icon: "target" as const,
+      label: `Mastery check · ${questions.length} questions`,
+      onOpen: startPractice,
+    },
+  ];
   return (
     <main className="course-app" data-theme={theme}>
       <header className="app-header">
-        <button className="app-brand" onClick={() => setScreen("home")}>
-          <span className="brand-orbit">
-            <i />
-          </span>
-          <span>
-            Socratic<span>AI</span>
-          </span>
-        </button>
-        <nav>
-          <button
-            className={screen === "library" ? "active" : ""}
-            onClick={() => setScreen("library")}
-          >
-            Library
+        <div className="app-header-inner">
+          <button className="app-brand" onClick={() => setScreen("home")}>
+            <span className="brand-mark">
+              <UIIcon name="compass" />
+            </span>
+            <span className="brand-name">
+              Socratic<em>AI</em>
+            </span>
           </button>
-          <button
-            className={screen === "course" ? "active" : ""}
-            onClick={() => setScreen("course")}
-          >
-            Course
-          </button>
-          <button
-            className={screen === "diagnostic" ? "active" : ""}
-            onClick={beginDiagnostic}
-          >
-            Diagnostic
-          </button>
-          <button onClick={() => setScreen("notes")}>Notebook</button>
-        </nav>
-        <div className="header-progress">
-          <span>
-            <b>{completed.length}</b> / {activeCourse.lessons.length} skills
-          </span>
-          <i>
-            <b style={{ width: `${mastery}%` }} />
-          </i>
-          <div className="theme-picker">
+          <nav className="app-nav">
             <button
-              className="theme-picker-trigger"
-              onClick={() => setThemePickerOpen((open) => !open)}
-              aria-label="Change color palette"
-              aria-expanded={themePickerOpen}
+              className={screen === "library" ? "active" : ""}
+              onClick={() => setScreen("library")}
             >
-              <span style={{ background: THEMES.find((t) => t.id === theme)?.swatch }} />
+              Library
             </button>
-            {themePickerOpen && (
-              <button
-                type="button"
-                className="theme-picker-backdrop"
-                aria-label="Close palette picker"
-                onClick={() => setThemePickerOpen(false)}
-              />
-            )}
-            {themePickerOpen && (
-              <div className="theme-picker-menu" role="menu">
-                <p>PALETTE</p>
-                {THEMES.map((t) => (
-                  <button
-                    key={t.id}
-                    role="menuitemradio"
-                    aria-checked={theme === t.id}
-                    className={theme === t.id ? "selected" : ""}
-                    onClick={() => chooseTheme(t.id)}
-                  >
-                    <span style={{ background: t.swatch }} />
-                    {t.label}
-                    {theme === t.id && <em>✓</em>}
-                  </button>
-                ))}
-              </div>
-            )}
+            <button
+              className={
+                screen === "course" || screen === "lesson" ? "active" : ""
+              }
+              onClick={() => setScreen("course")}
+            >
+              Course
+            </button>
+            <button
+              className={
+                screen === "diagnostic" || screen === "result" ? "active" : ""
+              }
+              onClick={beginDiagnostic}
+            >
+              Diagnostic
+            </button>
+            <button
+              className={screen === "notes" ? "active" : ""}
+              onClick={() => setScreen("notes")}
+            >
+              Notebook
+            </button>
+          </nav>
+          <div className="app-tools">
+            <div className="header-progress" title="Skills mastered">
+              <span>
+                <b>{completed.length}</b> / {lessonCount} skills
+              </span>
+              <i>
+                <b style={{ width: `${mastery}%` }} />
+              </i>
+            </div>
+            <button
+              className="icon-button"
+              onClick={toggleTheme}
+              aria-label={
+                theme === "light" ? "Switch to dark theme" : "Switch to light theme"
+              }
+              title={theme === "light" ? "Dark theme" : "Light theme"}
+            >
+              <UIIcon name={theme === "light" ? "moon" : "sun"} />
+            </button>
+            <span className="profile-dot" aria-hidden="true">
+              AK
+            </span>
           </div>
-          <button className="profile-dot">AK</button>
         </div>
       </header>
 
       {screen === "home" && (
-        <section className="home-screen">
-          <div className="home-copy">
-            <p className="eyebrow">
-              <i /> BASIC DATA LITERACY FOR CLINICIANS
-            </p>
-            <h1>
-              See the signal.
-              <br />
-              <em>Keep your judgment.</em>
-            </h1>
-            <p className="home-intro">
-              A clinical data literacy studio that brings together written
-              explanation, visual and audio briefings, Socratic reasoning, and
-              independent retrieval practice.
-            </p>
-            <div className="home-sequence">
-              <span>
-                <b>01</b> Brief
-              </span>
-              <i>→</i>
-              <span>
-                <b>02</b> Reason
-              </span>
-              <i>→</i>
-              <span>
-                <b>03</b> Retrieve
-              </span>
-            </div>
-            <div className="home-actions">
-              <button
-                className="primary-button"
-                onClick={() => setScreen("course")}
-              >
-                Enter Module 01 <span>&rarr;</span>
-              </button>
-              <button className="text-button" onClick={beginDiagnostic}>
-                Take the diagnostic <span>&rarr;</span>
-              </button>
-              <button
-                className="text-button"
-                onClick={() => setScreen("library")}
-              >
-                Browse course library <span>&rarr;</span>
-              </button>
-            </div>
-          </div>
-          <div className="home-orbit">
-            <p>
-              MODULE
-              <br />
-              01 / 04
-            </p>
-            <div className="orbit-outer">
-              <div className="orbit-middle">
-                <div className="orbit-inner">
-                  <strong>
-                    DATA
-                    <br />
-                    LITERACY
-                  </strong>
+        <section className="screen home-screen">
+          <div className="page">
+            <div className="home-grid">
+              <div className="home-copy">
+                <p className="eyebrow">
+                  <i /> THE SOCRATIC LEARNING STUDIO
+                </p>
+                <h1>
+                  Learn the concept.
+                  <br />
+                  <em>Defend the why.</em>
+                </h1>
+                <p className="lead">
+                  Every skill is taught one idea at a time, briefed in audio and
+                  visuals, argued through with a Socratic tutor, and then
+                  checked on your own.
+                </p>
+                <div className="button-row">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => setScreen("library")}
+                  >
+                    Browse the library
+                    <UIIcon name="arrow-right" />
+                  </button>
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => setScreen("course")}
+                  >
+                    Resume my course
+                    <UIIcon name="arrow-right" />
+                  </button>
                 </div>
+                <dl className="home-stats">
+                  <div>
+                    <dt>{mergedCourseLibrary.length}</dt>
+                    <dd>Course pathways</dd>
+                  </div>
+                  <div>
+                    <dt>4</dt>
+                    <dd>Steps in every skill</dd>
+                  </div>
+                  <div>
+                    <dt>100%</dt>
+                    <dd>Reasoning before grading</dd>
+                  </div>
+                </dl>
               </div>
+              <aside className="home-panel">
+                <div className="home-panel-head">
+                  <span className="icon-tile">
+                    <CourseIcon id={activeCourseMeta.id} />
+                  </span>
+                  <div>
+                    <small>{activeCourseMeta.subject}</small>
+                    <b>{activeCourseMeta.title}</b>
+                  </div>
+                </div>
+                <ol className="loop-list">
+                  {[
+                    {
+                      icon: "read" as const,
+                      title: "Learn",
+                      copy: "Short teaching pages, one idea per screen.",
+                    },
+                    {
+                      icon: "play" as const,
+                      title: "Brief",
+                      copy: "A spoken and visual recap of the same idea.",
+                    },
+                    {
+                      icon: "chat" as const,
+                      title: "Reason",
+                      copy: "Defend a position before you are graded.",
+                    },
+                    {
+                      icon: "target" as const,
+                      title: "Master",
+                      copy: "Retrieve the idea on your own to unlock the next skill.",
+                    },
+                  ].map((item) => (
+                    <li key={item.title}>
+                      <span className="loop-icon">
+                        <UIIcon name={item.icon} />
+                      </span>
+                      <div>
+                        <b>{item.title}</b>
+                        <p>{item.copy}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={() => setScreen("course")}
+                >
+                  Start learning
+                  <UIIcon name="arrow-right" />
+                </button>
+              </aside>
             </div>
-            <span className="orbit-pulse" />
-          </div>
-          <div className="home-footer">
-            <span>01 — PREPARE & EXPLORE</span>
-            <p>
-              Learn the concept, work through a clinical example, then earn
-              mastery through four questions.
-            </p>
-            <button onClick={() => setScreen("course")}>
-              Explore curriculum <span>↓</span>
-            </button>
           </div>
         </section>
       )}
 
       {screen === "library" && (
-        <section className="library-screen">
-          <section className="library-hero">
-            <div>
+        <section className="screen library-screen">
+          <div className="page">
+            <header className="section-head">
               <p className="eyebrow">
                 <i /> THE SOCRATIC COURSE LIBRARY
               </p>
               <h1>
-                Learn the concept.
+                {mergedCourseLibrary.length} pathways.
                 <br />
-                <em>Defend the why.</em>
+                <em>One learning loop.</em>
               </h1>
-              <p>
-                College-level courses built around a consistent learning loop:
-                clear teaching, visual and audio support, formative Socratic
-                reasoning, then an independent mastery check.
+              <p className="lead">
+                College-level courses built around the same sequence: clear
+                teaching, visual and audio support, required reasoning, then an
+                independent mastery check.
               </p>
-              <div className="library-hero-meta">
-                <span>{mergedCourseLibrary.length} course pathways</span>
-                <span>Visual + audio learning</span>
-                <span>Required reasoning before quizzes</span>
-              </div>
-            </div>
-            <div className="library-hero-stat">
-              <strong>{mergedCourseLibrary.length}</strong>
-              <span>COURSE PATHWAYS</span>
-              <div className="library-hero-stat-tags">
-                {mergedCourseLibrary.map((course) => (
-                  <em key={course.id}>{course.subject}</em>
-                ))}
-              </div>
-            </div>
-          </section>
+            </header>
 
-          <section className="library-import">
-            <div className="library-import-copy">
-              <p className="question-type">BRING YOUR OWN MATERIAL</p>
-              <h2>Paste a textbook chapter, or your own notes.</h2>
-              <p>
-                Drop in an assigned reading, a paper abstract, or your own
-                notes. The tutor builds a lesson from exactly that
-                material—same teaching, tutor dialogue, and quiz flow as
-                every other course.
-              </p>
-            </div>
-            <div className="library-import-form">
-              <label>
-                Give it a name <span>(optional)</span>
-                <input
-                  type="text"
-                  value={customTitle}
-                  onChange={(event) => setCustomTitle(event.target.value)}
-                  placeholder="e.g. Chapter 4: Cellular Respiration"
-                  maxLength={80}
-                />
-              </label>
-              <label>
-                Paste your material
-                <textarea
-                  value={customText}
-                  onChange={(event) => {
-                    setCustomText(event.target.value);
-                    if (customError) setCustomError(null);
-                  }}
-                  placeholder="Paste a textbook chapter, article, or your own notes here..."
-                  rows={7}
-                />
-              </label>
-              <div className="library-import-actions">
-                <span>
-                  {
-                    customText.trim().split(/\s+/).filter(Boolean).length
-                  }{" "}
-                  words
-                </span>
-                <button
-                  type="button"
-                  className="primary-button"
-                  disabled={customLoading || customText.trim().length < 200}
-                  onClick={generateCustomLesson}
-                >
-                  {customLoading ? "Building your lesson…" : "Generate my lesson"}{" "}
-                  <span>&rarr;</span>
-                </button>
-              </div>
-              {customError && <p className="library-import-error">{customError}</p>}
-              {customProgram && customMeta && (
-                <div className="library-import-ready">
-                  <p>
-                    ✦ &ldquo;{customMeta.title}&rdquo; is ready — {customProgram.lessons.length}{" "}
-                    lesson{customProgram.lessons.length === 1 ? "" : "s"} built from your
-                    material.
-                  </p>
-                  <button
-                    type="button"
-                    className="primary-button"
-                    onClick={() => openCourse("custom")}
-                  >
-                    Start your lesson <span>&rarr;</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section className="library-body">
-            <div className="library-heading">
-              <div>
-                <p className="question-type">EXPLORE BY DISCIPLINE</p>
-                <h2>Built for deeper learning.</h2>
-              </div>
-              <p>
-                Every pathway starts with an explanation and an example, then
-                asks the learner to reason before a quiz measures mastery.
-              </p>
-            </div>
             <div className="library-grid">
-              {mergedCourseLibrary.map((course, index) => (
+              {mergedCourseLibrary.map((course) => (
                 <article
                   key={course.id}
-                  className={`library-card ${libraryCourse.id === course.id ? "selected" : ""}`}
-                  onClick={() => setLibraryCourseId(course.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setLibraryCourseId(course.id);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
+                  className={`course-card ${libraryCourse.id === course.id ? "selected" : ""}`}
                 >
-                  <div className="library-card-image" aria-hidden="true">
-                    <span className="course-panel-letter">
-                      {course.title.replace(/[^A-Za-z]/g, "")[0]}
+                  <div className="course-card-top">
+                    <span className="icon-tile lg">
+                      <CourseIcon id={course.id} />
                     </span>
-                    <span className="library-card-icon-badge">
-                      <CourseIcon id={course.id} className="library-card-icon" />
-                    </span>
-                    <span className="course-panel-index">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="library-card-tag">OPEN NOW</span>
+                    <span className="tag">{course.level}</span>
                   </div>
-                  <div className="library-card-copy">
-                    <small>{course.subject}</small>
-                    <h3>{course.title}</h3>
-                    <p>{course.description}</p>
-                    <footer>
-                      <span>{course.level}</span>
-                      <button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          openCourse(course.id);
-                        }}
-                      >
-                        {course.available ? "Open course" : "View outline"}
-                        <span>&rarr;</span>
-                      </button>
-                    </footer>
+                  <small className="course-card-subject">{course.subject}</small>
+                  <h3>{course.title}</h3>
+                  <p className="course-card-copy">{course.description}</p>
+                  <div className="course-card-meta">
+                    <span>
+                      <UIIcon name="read" />
+                      {course.modules.length} lessons
+                    </span>
+                    <span>
+                      <UIIcon name="target" />
+                      {course.modules.length * 4} questions
+                    </span>
+                  </div>
+                  <div className="course-card-actions">
+                    <button
+                      className="btn btn-primary btn-block"
+                      onClick={() => openCourse(course.id)}
+                    >
+                      Open course
+                      <UIIcon name="arrow-right" />
+                    </button>
+                    <button
+                      className="btn btn-quiet btn-block"
+                      aria-pressed={libraryCourse.id === course.id}
+                      onClick={() => setLibraryCourseId(course.id)}
+                    >
+                      {libraryCourse.id === course.id
+                        ? "Outline shown below"
+                        : "Preview outline"}
+                    </button>
                   </div>
                 </article>
               ))}
             </div>
-          </section>
 
-          <section className="library-detail" aria-live="polite">
-            <div className="library-detail-visual" aria-hidden="true">
-              <span className="course-panel-letter">
-                {libraryCourse.title.replace(/[^A-Za-z]/g, "")[0]}
-              </span>
-              <span className="library-detail-icon-badge">
-                <CourseIcon id={libraryCourse.id} className="library-detail-icon" />
-              </span>
-              <span>{libraryCourse.subject}</span>
-            </div>
-            <div className="library-detail-copy">
-              <p className="question-type">COURSE BLUEPRINT</p>
-              <h2>{libraryCourse.title}</h2>
-              <p className="library-detail-lead">{libraryCourse.description}</p>
-              <div className="library-outcomes">
-                {libraryCourse.outcomes.map((outcome) => (
-                  <span key={outcome}>✦ {outcome}</span>
-                ))}
-              </div>
-              <ol>
-                {libraryCourse.modules.map((module, index) => (
-                  <li key={module}>
-                    <span>0{index + 1}</span>
-                    {module}
-                  </li>
-                ))}
-              </ol>
-              <div className="library-detail-footer">
-                <span>{libraryCourse.modules.length} lessons · audio, visual, tutor, quiz</span>
+            <section className="course-detail" aria-live="polite">
+              <div className="course-detail-side">
+                <span className="icon-tile xl">
+                  <CourseIcon id={libraryCourse.id} />
+                </span>
+                <small>{libraryCourse.subject}</small>
+                <h2>{libraryCourse.title}</h2>
+                <p>{libraryCourse.description}</p>
+                <ul className="outcome-list">
+                  {libraryCourse.outcomes.map((outcome) => (
+                    <li key={outcome}>
+                      <UIIcon name="check" />
+                      {outcome}
+                    </li>
+                  ))}
+                </ul>
                 <button
-                  className="primary-button"
+                  className="btn btn-primary btn-block"
                   onClick={() => openCourse(libraryCourse.id)}
                 >
-                  Open this course <span>&rarr;</span>
+                  Open this course
+                  <UIIcon name="arrow-right" />
                 </button>
               </div>
-            </div>
-          </section>
+              <div className="course-detail-main">
+                <p className="kicker">COURSE OUTLINE</p>
+                <ol className="module-list">
+                  {libraryCourse.modules.map((module, index) => (
+                    <li key={module}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <div>
+                        <b>{module}</b>
+                        <p>Teaching pages · briefing · tutor · 4 questions</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+
+            <section className="import-panel">
+              <div className="import-copy">
+                <p className="kicker">BRING YOUR OWN MATERIAL</p>
+                <h2>Paste a textbook chapter, or your own notes.</h2>
+                <p>
+                  Drop in an assigned reading, a paper abstract, or your own
+                  notes. The tutor builds a lesson from exactly that material —
+                  same teaching pages, tutor dialogue, and quiz as every other
+                  course.
+                </p>
+              </div>
+              <div className="import-form">
+                <label>
+                  <span>
+                    Give it a name <em>(optional)</em>
+                  </span>
+                  <input
+                    type="text"
+                    value={customTitle}
+                    onChange={(event) => setCustomTitle(event.target.value)}
+                    placeholder="e.g. Chapter 4: Cellular Respiration"
+                    maxLength={80}
+                  />
+                </label>
+                <label>
+                  <span>Paste your material</span>
+                  <textarea
+                    value={customText}
+                    onChange={(event) => {
+                      setCustomText(event.target.value);
+                      if (customError) setCustomError(null);
+                    }}
+                    placeholder="Paste a textbook chapter, article, or your own notes here..."
+                    rows={6}
+                  />
+                </label>
+                <div className="import-actions">
+                  <span>
+                    {customText.trim().split(/\s+/).filter(Boolean).length} words
+                    · 200 characters minimum
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={customLoading || customText.trim().length < 200}
+                    onClick={generateCustomLesson}
+                  >
+                    {customLoading ? "Building your lesson…" : "Generate my lesson"}
+                    <UIIcon name="arrow-right" />
+                  </button>
+                </div>
+                {customError && <p className="form-error">{customError}</p>}
+                {customProgram && customMeta && (
+                  <div className="form-success">
+                    <p>
+                      <UIIcon name="check" />
+                      &ldquo;{customMeta.title}&rdquo; is ready —{" "}
+                      {customProgram.lessons.length} lesson
+                      {customProgram.lessons.length === 1 ? "" : "s"} built from
+                      your material.
+                    </p>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => openCourse("custom")}
+                    >
+                      Start your lesson
+                      <UIIcon name="arrow-right" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
         </section>
       )}
 
       {screen === "diagnostic" && (
-        <section className="diagnostic-screen">
-          <div className="diagnostic-aside">
-            <p className="eyebrow">
-              <i /> SEPARATE PLACEMENT DIAGNOSTIC
-            </p>
-            <h1>
-              Find your
-              <br />
-              <em>starting point.</em>
-            </h1>
-            <p>
-              This five-question check only selects a starting level. It never
-              unlocks or completes a course skill.
-            </p>
-            <div className="diagnostic-meter">
-              <span>QUESTION {diagIndex + 1} OF 5</span>
-              <i>
-                <b style={{ width: `${(diagIndex + 1) * 20}%` }} />
-              </i>
-            </div>
-          </div>
-          <article className="diagnostic-card">
-            <p className="question-type">PLACEMENT CHECK</p>
-            <h2>{diagnostic[diagIndex].prompt}</h2>
-            <div className="answer-list diagnostic-options">
-              {diagnostic[diagIndex].options.map((x, i) => (
+        <section className="screen narrow-screen">
+          <div className="page">
+            <header className="section-head centered">
+              <p className="eyebrow">
+                <i /> PLACEMENT DIAGNOSTIC
+              </p>
+              <h1>Find your starting point.</h1>
+              <p className="lead">
+                Five questions. This only sets the difficulty of the wording —
+                it never unlocks or completes a skill.
+              </p>
+            </header>
+            <article className="panel-card">
+              <div className="quiz-meter">
+                <span>
+                  QUESTION {diagIndex + 1} OF {diagnostic.length}
+                </span>
+                <i>
+                  <b
+                    style={{
+                      width: `${((diagIndex + 1) / diagnostic.length) * 100}%`,
+                    }}
+                  />
+                </i>
+              </div>
+              <h2>{diagnostic[diagIndex].prompt}</h2>
+              <div className="choice-list">
+                {diagnostic[diagIndex].options.map((option, index) => (
+                  <button
+                    key={option}
+                    className={diagChoice === index ? "selected" : ""}
+                    onClick={() => setDiagChoice(index)}
+                  >
+                    <span>{String.fromCharCode(65 + index)}</span>
+                    <p>{option}</p>
+                  </button>
+                ))}
+              </div>
+              <div className="card-actions">
                 <button
-                  key={x}
-                  className={diagChoice === i ? "selected" : ""}
-                  onClick={() => setDiagChoice(i)}
+                  className="btn btn-primary"
+                  disabled={diagChoice === null}
+                  onClick={submitDiagnostic}
                 >
-                  <span>{String.fromCharCode(65 + i)}</span>
-                  <p>{x}</p>
+                  {diagIndex === diagnostic.length - 1 ? "See my level" : "Continue"}
+                  <UIIcon name="arrow-right" />
                 </button>
-              ))}
-            </div>
-            <button
-              className="check-button"
-              disabled={diagChoice === null}
-              onClick={submitDiagnostic}
-            >
-              Continue <span>&rarr;</span>
-            </button>
-          </article>
+              </div>
+            </article>
+          </div>
         </section>
       )}
 
       {screen === "result" && (
-        <section className="result-screen">
-          <p className="eyebrow">
-            <i /> DIAGNOSTIC COMPLETE
-          </p>
-          <h1>
-            Your starting level:
-            <br />
-            <em>{level}.</em>
-          </h1>
-          <p>
-            {level === "Accelerated"
-              ? "You demonstrated strong foundations. Where available, the course will use more demanding question wording."
-              : level === "Standard"
-                ? "You have useful foundations. The lessons will build fluency with clear explanations and applied checks."
-                : "You have a clear place to begin. Module 1 will teach each core idea before asking you to use it."}
-          </p>
-          <div>
-            <span>{diagScore} / 5 correct</span>
-            <button
-              className="primary-button"
-              onClick={() => setScreen("course")}
-            >
-              Start Module 01 <span>&rarr;</span>
-            </button>
+        <section className="screen narrow-screen">
+          <div className="page">
+            <article className="panel-card result-card">
+              <span className="icon-tile xl">
+                <UIIcon name="trophy" />
+              </span>
+              <p className="kicker">DIAGNOSTIC COMPLETE</p>
+              <h1>
+                Your starting level: <em>{level}</em>
+              </h1>
+              <p className="lead">
+                {level === "Accelerated"
+                  ? "You showed strong foundations, so questions will use more demanding wording."
+                  : level === "Standard"
+                    ? "You have useful foundations. Lessons will build fluency with clear explanations and applied checks."
+                    : "You have a clear place to begin. Each skill teaches the idea in full before asking you to use it."}
+              </p>
+              <p className="score">
+                {diagScore} of {diagnostic.length} correct
+              </p>
+              <button
+                className="btn btn-primary"
+                onClick={() => setScreen("course")}
+              >
+                Start the first skill
+                <UIIcon name="arrow-right" />
+              </button>
+            </article>
           </div>
         </section>
       )}
 
       {screen === "course" && (
-        <section className="course-screen">
-          <aside className="course-sidebar">
-            <span className="course-sidebar-icon">
-              <CourseIcon id={activeCourseMeta.id} />
-            </span>
-            <div className="course-kicker">
-              YOUR PATH <span>01 / {activeCourse.lessons.length.toString().padStart(2, "0")}</span>
+        <section className="screen course-screen">
+          <div className="page">
+            <div className="course-layout">
+              <aside className="course-sidebar">
+                <span className="icon-tile lg">
+                  <CourseIcon id={activeCourseMeta.id} />
+                </span>
+                <small>{activeCourseMeta.subject}</small>
+                <h2>{activeCourseMeta.title}</h2>
+                <p>{activeCourseMeta.description}</p>
+                <div className="meter">
+                  <div>
+                    <span>Module mastery</span>
+                    <b>{mastery}%</b>
+                  </div>
+                  <i>
+                    <b style={{ width: `${mastery}%` }} />
+                  </i>
+                  <small>
+                    {completed.length} of {lessonCount} skills complete
+                  </small>
+                </div>
+                <ul className="legend">
+                  <li>
+                    <span className="dot done" /> Mastered
+                  </li>
+                  <li>
+                    <span className="dot open" /> Ready to start
+                  </li>
+                  <li>
+                    <span className="dot locked" /> Locked until prior mastery
+                  </li>
+                </ul>
+                <p className="status-pill">
+                  <span className="dot open" />
+                  Diagnostic level <b>{level}</b>
+                </p>
+              </aside>
+
+              <section className="course-main">
+                <header className="section-head">
+                  <p className="eyebrow">
+                    <i /> MODULE 01 — FOUNDATIONS
+                  </p>
+                  <h1>
+                    Learn first.
+                    <br />
+                    <em>Then prove it.</em>
+                  </h1>
+                  <p className="lead">
+                    Each skill moves through short teaching pages, a briefing,
+                    a required Socratic case, and an independent mastery check.
+                  </p>
+                </header>
+                <div className="stat-row">
+                  <span>
+                    <UIIcon name="read" />
+                    {lessonCount} teaching lessons
+                  </span>
+                  <span>
+                    <UIIcon name="target" />
+                    {activeCourse.lessons.reduce(
+                      (sum, item) => sum + item.questions.length,
+                      0,
+                    )}{" "}
+                    mastery questions
+                  </span>
+                  <span>
+                    <UIIcon name="compass" />
+                    Adaptive level: {level}
+                  </span>
+                </div>
+                <ol className="skill-list">
+                  {activeCourse.lessons.map((item, index) => {
+                    const isDone = completed.includes(index);
+                    const locked = index > unlocked;
+                    return (
+                      <li key={item.id}>
+                        <button
+                          disabled={locked}
+                          className={
+                            isDone ? "done" : locked ? "locked" : "ready"
+                          }
+                          onClick={() => openLesson(index)}
+                        >
+                          <span className="skill-status">
+                            {isDone ? (
+                              <UIIcon name="check" />
+                            ) : locked ? (
+                              <UIIcon name="lock" />
+                            ) : (
+                              String(index + 1).padStart(2, "0")
+                            )}
+                          </span>
+                          <span className="skill-copy">
+                            <small>{item.unit}</small>
+                            <b>{item.title}</b>
+                            <p>{item.description}</p>
+                          </span>
+                          <span className="skill-action">
+                            {isDone ? "Review" : locked ? "Locked" : "Start"}
+                            <UIIcon name="arrow-right" />
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </section>
             </div>
-            <h2>{activeCourseMeta.title}</h2>
-            <p>{activeCourseMeta.description}</p>
-            <div className="mastery-block">
-              <div>
-                <span>MODULE MASTERY</span>
-                <b>{mastery}%</b>
-              </div>
-              <i>
-                <em style={{ width: `${mastery}%` }} />
-              </i>
-            </div>
-            <div className="path-legend">
-              <span>
-                <i /> Learned
-              </span>
-              <span>
-                <i /> Locked until prior mastery
-              </span>
-            </div>
-            <footer className="diagnostic-status">
-              <span className="status-dot" />
-              <span className="status-label">Diagnostic level</span>
-              <b>{level}</b>
-            </footer>
-          </aside>
-          <section className="course-main">
-            <p className="eyebrow">
-              <i /> MODULE 01 — FOUNDATIONS
-            </p>
-            <h1>
-              Learn first.
-              <br />
-              <em>Then prove it.</em>
-            </h1>
-            <p className="course-intro">
-              Each skill moves from a detailed teaching lesson and concrete
-              examples, through a visual + spoken briefing and required Socratic
-              case, then into an independent objective mastery check.
-            </p>
-            <div className="module-meta">
-              <span>{activeCourse.lessons.length} teaching lessons</span>
-              <span>
-                {activeCourse.lessons.reduce((sum, item) => sum + item.questions.length, 0)}{" "}
-                mastery questions
-              </span>
-              <span>Adaptive level: {level}</span>
-            </div>
-            <div className="skill-list">
-              {activeCourse.lessons.map((item, index) => {
-                const locked = index > unlocked;
-                return (
-                  <button
-                    key={item.id}
-                    disabled={locked}
-                    className={locked ? "locked" : ""}
-                    onClick={() => openLesson(index)}
-                  >
-                    <span
-                      className={`skill-number ${completed.includes(index) ? "complete" : ""}`}
-                    >
-                      {completed.includes(index) ? "✓" : locked ? "•" : item.id}
-                    </span>
-                    <div>
-                      <small>{item.unit}</small>
-                      <b>{item.title}</b>
-                      <p>
-                        {completed.includes(index)
-                          ? "Mastered — review lesson and questions"
-                          : locked
-                            ? "Complete the previous skill to unlock"
-                            : "Detailed lesson + briefing + tutor + quiz"}
-                      </p>
-                    </div>
-                    <em>
-                      {completed.includes(index)
-                        ? "Review"
-                        : locked
-                          ? "Locked"
-                          : "Begin"}{" "}
-                      <span>&rarr;</span>
-                    </em>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
+          </div>
         </section>
       )}
 
       {screen === "lesson" && (
         <section
-          className={
-            "lesson-screen " + (railOpen ? "rail-open" : "rail-closed")
-          }
+          className={`lesson-screen ${railOpen ? "rail-open" : "rail-closed"}`}
         >
           <aside className="lesson-rail">
             <button className="rail-back" onClick={() => setScreen("course")}>
-              ← <span>Back to module</span>
+              <UIIcon name="chevron-left" />
+              Back to course
             </button>
-            <div className="rail-mark">
-              <span className="brand-orbit">
-                <i />
+            <div className="rail-course">
+              <span className="icon-tile">
+                <CourseIcon id={activeCourseMeta.id} />
               </span>
-              <p>
-                SOCRATIC
-                <br />
-                TUTOR
-              </p>
+              <div>
+                <small>COURSE</small>
+                <b>{activeCourseMeta.title}</b>
+              </div>
             </div>
-            <div className="rail-title">
-              <span>MODULE 01</span>
-              <h2>{lesson.title}</h2>
-              <p>{lesson.description}</p>
+            <div className="rail-lesson">
+              <button
+                aria-label="Previous lesson"
+                disabled={lessonIndex === 0}
+                onClick={() => openLesson(lessonIndex - 1)}
+              >
+                <UIIcon name="chevron-left" />
+              </button>
+              <div>
+                <small>
+                  LESSON {lessonIndex + 1} OF {lessonCount}
+                </small>
+                <b>{lesson.title}</b>
+              </div>
+              <button
+                aria-label="Next lesson"
+                disabled={
+                  lessonIndex >= lessonCount - 1 || lessonIndex + 1 > unlocked
+                }
+                onClick={() => openLesson(lessonIndex + 1)}
+              >
+                <UIIcon name="chevron-right" />
+              </button>
             </div>
-            <div className="rail-progress">
-              <span>SKILL STATUS</span>
-              <b>
-                {stage === "learn"
-                  ? "Learn"
-                  : stage === "media"
-                    ? "Media"
-                    : stage === "tutor"
-                      ? "Tutor"
-                      : stage === "practice"
-                        ? `${questionIndex + 1}/4`
-                        : "Done"}
-              </b>
-              <i>
-                <strong
-                  style={{
-                    width: `${stage === "learn" ? 18 : stage === "media" ? 34 : stage === "tutor" ? 52 : stage === "practice" ? 62 + questionIndex * 9 : 100}%`,
-                  }}
-                />
-              </i>
-            </div>
-            <div className="rail-list">
-              {activeCourse.lessons.map((item, index) => (
+            <nav className="rail-steps" aria-label="Lesson steps">
+              <p className="rail-group">Teaching lesson</p>
+              {learnPages.map((page, index) => (
                 <button
-                  key={item.id}
-                  disabled={index > unlocked}
-                  className={lessonIndex === index ? "active" : ""}
-                  onClick={() => openLesson(index)}
+                  key={page.key}
+                  className={
+                    stage === "learn" && index === learnStep
+                      ? "active"
+                      : stage !== "learn" || index < learnStep
+                        ? "done"
+                        : ""
+                  }
+                  onClick={() => goToLearnStep(index)}
                 >
-                  <span>{completed.includes(index) ? "✓" : item.id}</span>
-                  {item.title}
+                  <span className="rail-step-icon">
+                    {stage !== "learn" || index < learnStep ? (
+                      <UIIcon name="check" />
+                    ) : (
+                      <UIIcon name="read" />
+                    )}
+                  </span>
+                  <span className="rail-step-label">{page.label}</span>
                 </button>
               ))}
+              <p className="rail-group">Then prove it</p>
+              {stageSteps.map((step) => {
+                const rank = stageOrder.indexOf(step.id);
+                const reached = stageRank >= rank;
+                return (
+                  <button
+                    key={step.id}
+                    disabled={!reached}
+                    className={
+                      stage === step.id
+                        ? "active"
+                        : stageRank > rank
+                          ? "done"
+                          : ""
+                    }
+                    onClick={step.onOpen}
+                  >
+                    <span className="rail-step-icon">
+                      {stageRank > rank ? (
+                        <UIIcon name="check" />
+                      ) : reached ? (
+                        <UIIcon name={step.icon} />
+                      ) : (
+                        <UIIcon name="lock" />
+                      )}
+                    </span>
+                    <span className="rail-step-label">{step.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+            <div className="rail-meter">
+              <div>
+                <span>Lesson progress</span>
+                <b>{Math.round(journeyProgress)}%</b>
+              </div>
+              <i>
+                <b style={{ width: `${journeyProgress}%` }} />
+              </i>
             </div>
           </aside>
+
           <button
             className="rail-toggle"
-            aria-label={
-              railOpen
-                ? "Minimize lesson navigation"
-                : "Expand lesson navigation"
-            }
+            aria-label={railOpen ? "Hide lesson steps" : "Show lesson steps"}
             onClick={() => setRailOpen(!railOpen)}
           >
-            {railOpen ? "‹" : "☰"}
-            <span>{railOpen ? "Minimize path" : "Course path"}</span>
+            <UIIcon name={railOpen ? "close" : "menu"} />
+            <span>{railOpen ? "Hide steps" : "Lesson steps"}</span>
           </button>
-          <section className="lesson-workspace">
-            <div className="lesson-layout">
-              <div className="lesson-content">
-                <div className="lesson-heading">
-                  <p className="eyebrow">
-                    <i /> {lesson.unit}
-                  </p>
-                  <span>
-                    {stage === "learn"
-                      ? "TEACHING LESSON"
-                      : stage === "media"
-                        ? "AUDIO + VISUAL BRIEFING"
-                        : stage === "tutor"
-                          ? "REQUIRED TUTOR SESSION"
-                          : stage === "practice"
-                            ? `MASTERY QUESTION ${questionIndex + 1} OF 4`
-                            : "SKILL COMPLETE"}
+
+          <div className="lesson-main">
+            {stage === "learn" && (
+              <article className="lesson-card">
+                <div className="lesson-card-head">
+                  <span className="pill">
+                    Teaching · step {learnStep + 1} of {learnPages.length}
                   </span>
+                  <span className="lesson-card-unit">{lesson.unit}</span>
                 </div>
-                {stage === "learn" && (
-                  <article className="teaching-card">
-                    <p className="question-type">THE CORE IDEA</p>
+
+                {learnPage.key === "idea" && (
+                  <>
                     <h1>{lesson.title}</h1>
-                    <p className="lesson-lead">{lesson.concept}</p>
-                    <p className="lesson-body">{lesson.teaching}</p>
-                    <figure className="lesson-visual">
-                      <div className="concept-panel" aria-hidden="true">
-                        <span className="concept-panel-icon">
-                          <CourseIcon id={activeCourseMeta.id} />
-                        </span>
-                        <div className="concept-panel-text">
-                          <span className="concept-panel-unit">{lesson.unit}</span>
-                          <strong className="concept-panel-number">{lesson.id}</strong>
-                        </div>
-                        <span className="concept-panel-mark">SOCRATIC TUTOR</span>
-                      </div>
-                      <figcaption>{visual.caption}</figcaption>
-                    </figure>
-                    <button
-                      className="lesson-audio"
-                      onClick={toggleLessonAudio}
-                    >
-                      <span>{isReading ? "■" : "▶"}</span>
-                      {isReading
-                        ? "Stop audio overview"
-                        : "Listen to this lesson"}
-                    </button>
-                    <section className="example-card">
-                      <span>CLINICAL EXAMPLE</span>
-                      <p>{lesson.example}</p>
-                      <strong>Why it matters</strong>
-                      <p>{lesson.why}</p>
-                    </section>
-                    <section className="deep-dive">
-                      <p className="question-type">BUILD THE IDEA</p>
-                      {deepDive.map((item, index) => (
-                        <article key={item.title}>
-                          <span>0{index + 1}</span>
-                          <div>
-                            <h2>{item.title}</h2>
-                            <p>{item.copy}</p>
-                            <aside>
-                              <b>Clinical example</b>
-                              {item.example}
-                            </aside>
-                          </div>
-                        </article>
-                      ))}
-                    </section>
-                    <section className="takeaways">
-                      <span>KEEP THESE IN MIND</span>
-                      {lesson.takeaways.map((x) => (
-                        <p key={x}>
-                          <i>+</i>
-                          {x}
-                        </p>
-                      ))}
-                    </section>
-                    <button className="primary-button" onClick={startMedia}>
-                      Start audio + visual briefing <span>&rarr;</span>
-                    </button>
-                  </article>
-                )}
-                {stage === "media" && (
-                  <article className="media-briefing">
-                    <div className="tutor-session-top">
-                      <p className="question-type">
-                        REQUIRED AUDIO + VISUAL BRIEFING
-                      </p>
-                      <span>UNGRADED · BEFORE TUTOR</span>
-                    </div>
-                    <h1>
-                      See the pattern.
-                      <br />
-                      <em>Hear the reasoning.</em>
-                    </h1>
-                    <p className="lesson-lead">
-                      Use this short briefing to connect the written idea, the
-                      image, and the clinical example before you enter the
-                      Socratic case.
-                    </p>
-                    <figure className="media-visual">
-                      <div className="concept-panel" aria-hidden="true">
-                        <span className="concept-panel-icon">
-                          <CourseIcon id={activeCourseMeta.id} />
-                        </span>
-                        <div className="concept-panel-text">
-                          <span className="concept-panel-unit">{lesson.unit}</span>
-                          <strong className="concept-panel-number">{lesson.id}</strong>
-                        </div>
-                        <span className="concept-panel-mark">SOCRATIC TUTOR</span>
-                      </div>
-                      <figcaption>{briefingVisual.caption}</figcaption>
-                    </figure>
-                    <section
-                      className="briefing-notes"
-                      aria-label="Briefing notes"
-                    >
-                      <p className="question-type">BRIEFING NOTES</p>
-                      <ol>
-                        {briefingScript.map((line, index) => (
-                          <li key={line}>
-                            <span>0{index + 1}</span>
-                            <p>{line}</p>
-                          </li>
-                        ))}
-                      </ol>
-                    </section>
-                    <button
-                      className="media-play"
-                      onClick={() => {
-                        toggleLessonAudio();
-                        setMediaPlayed(true);
-                      }}
-                    >
-                      <span>{isReading ? "■" : "▶"}</span>
-                      {isReading
-                        ? "Stop spoken briefing"
-                        : "Play spoken briefing"}
-                    </button>
-                    <p className="media-note">
-                      Use the image and briefing notes to anchor the case. The
-                      next step asks you to explain the idea in your own words
-                      before the mastery check.
-                    </p>
-                    {lessonIndex === 0 && (
-                      <a
-                        className="media-reference"
-                        href="https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data/more-mean-median/v/impact-on-median-and-mean-when-increasing-highest-value"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Watch the optional companion video <span>↗</span>
-                      </a>
-                    )}
-                    <button
-                      className="primary-button"
-                      disabled={!mediaPlayed}
-                      onClick={startTutor}
-                    >
-                      Continue to required tutor session <span>&rarr;</span>
-                    </button>
-                  </article>
-                )}
-                {stage === "tutor" && (
-                  <article className="guided-tutor">
-                    <div className="tutor-session-top">
-                      <p className="question-type">
-                        REQUIRED PRE-QUIZ DIALOGUE
-                      </p>
-                      <span>
-                        STEP {Math.min(tutorTurns.length + 1, 3)} OF 3
+                    <p className="lead">{lesson.concept}</p>
+                    <div className="concept-strip">
+                      <span className="icon-tile">
+                        <CourseIcon id={activeCourseMeta.id} />
                       </span>
-                    </div>
-                    <h1>
-                      Commit, then
-                      <br />
-                      <em>test your thinking.</em>
-                    </h1>
-                    <p className="lesson-lead">
-                      This is formative and ungraded. First make a claim, then
-                      examine the evidence, then transfer the idea to a new
-                      case. The quiz will ask you to retrieve it independently.
-                    </p>
-                    <section className="tutor-case">
-                      <span>CLINICAL CASE</span>
-                      <p>{tutorScenario.case}</p>
-                    </section>
-                    <section className="tutor-quiz-bridge">
-                      <span>WHAT THIS PREPARES YOU TO DO</span>
-                      <p>{tutorScenario.quizFocus}</p>
-                    </section>
-                    {tutorTurns.length < 3 && (
-                      <>
-                        <p className="tutor-prompt">
-                          {tutorTurns.length === 0
-                            ? tutorScenario.prompt
-                            : tutorTurns.length === 1
-                              ? tutorScenario.probe
-                              : tutorScenario.transfer}
-                        </p>
-                        <textarea
-                          aria-label="Your tutor response"
-                          value={tutorInput}
-                          onChange={(event) =>
-                            setTutorInput(event.target.value)
-                          }
-                          placeholder="State your position and the evidence behind it..."
-                        />
-                        <button
-                          className="primary-button"
-                          disabled={!tutorInput.trim() || tutorLoading}
-                          onClick={submitTutorTurn}
-                        >
-                          {tutorLoading
-                            ? "Tutor is considering your reasoning..."
-                            : tutorTurns.length === 0
-                              ? "Submit my position"
-                              : tutorTurns.length === 1
-                                ? "Examine the evidence"
-                                : "Apply the idea"}{" "}
-                          <span>&rarr;</span>
-                        </button>
-                      </>
-                    )}
-                    {tutorReply && (
-                      <section className="tutor-response">
-                        <span>SOCRATIC TUTOR</span>
-                        <p>{tutorReply}</p>
-                      </section>
-                    )}
-                    {tutorTurns.length >= 3 && (
-                      <section className="tutor-complete">
-                        <b>Pre-quiz reasoning complete</b>
-                        <p>
-                          You have made a claim, examined evidence, and applied
-                          the idea in a new setting. The mastery check now asks
-                          you to retrieve that reasoning on your own.
-                        </p>
-                        <button
-                          className="primary-button"
-                          onClick={startPractice}
-                        >
-                          Begin independent mastery check <span>&rarr;</span>
-                        </button>
-                      </section>
-                    )}
-                  </article>
-                )}
-                {stage === "practice" && (
-                  <article className="question-card">
-                    <p className="question-type">APPLY THE IDEA</p>
-                    <h1>Check your reasoning.</h1>
-                    <section className="quiz-brief">
-                      <span>INDEPENDENT MASTERY CHECK</span>
-                      <p>
-                        The tutor prepared your reasoning. Now choose the best
-                        answer independently, check your explanation, and use a
-                        nudge only if you need one.
-                      </p>
-                    </section>
-                    <p className="lesson-prompt">{question.prompt}</p>
-                    <div className="answer-list">
-                      {question.options.map((x, i) => (
-                        <button
-                          key={x}
-                          disabled={feedback === "correct"}
-                          className={`${choice === i ? "selected" : ""} ${feedback === "correct" && i === question.correct ? "correct" : ""} ${feedback === "incorrect" && choice === i ? "incorrect" : ""}`}
-                          onClick={() => feedback === "idle" && setChoice(i)}
-                        >
-                          <span>{String.fromCharCode(65 + i)}</span>
-                          <p>{x}</p>
-                        </button>
-                      ))}
-                    </div>
-                    {hint && feedback !== "correct" && (
-                      <div className="hint-box">
-                        <b>A nudge, not the answer</b>
-                        <p>{question.hint}</p>
-                      </div>
-                    )}
-                    {feedback !== "idle" && (
-                      <div className={`answer-feedback ${feedback}`}>
+                      <div>
+                        <small>{lesson.unit}</small>
                         <b>
-                          {feedback === "correct"
-                            ? "Correct answer: " +
-                              String.fromCharCode(65 + question.correct)
-                            : "Try again."}
+                          Skill {lessonIndex + 1} of {lessonCount}
                         </b>
-                        <p>
-                          {feedback === "correct"
-                            ? detailedExplanation()
-                            : "Use the hint, revisit the teaching card if needed, and make another choice. Mastery requires the correct answer."}
-                        </p>
                       </div>
-                    )}
-                    <div className="question-actions">
-                      <button
-                        className="hint-link"
-                        onClick={() => setHint(true)}
-                      >
-                        Need a nudge? <span>+</span>
-                      </button>
-                      {feedback === "incorrect" && (
-                        <button className="retry-button" onClick={retry}>
-                          Try another answer
-                        </button>
-                      )}
-                      <button
-                        className="check-button"
-                        disabled={choice === null}
-                        onClick={
-                          feedback === "correct" ? nextQuestion : checkAnswer
-                        }
-                      >
-                        {feedback === "correct"
-                          ? questionIndex === 3
-                            ? "Complete skill"
-                            : "Next question"
-                          : "Check answer"}{" "}
-                        <span>&rarr;</span>
+                      <button className="btn btn-quiet" onClick={toggleLessonAudio}>
+                        <UIIcon name="play" />
+                        {isReading ? "Stop audio" : "Listen"}
                       </button>
                     </div>
-                  </article>
+                    <p className="body">{lesson.teaching}</p>
+                    <p className="figure-note">{visual.caption}</p>
+                  </>
                 )}
-                {stage === "complete" && (
-                  <article className="complete-card">
-                    <p className="question-type">MASTERY EARNED</p>
-                    <h1>
-                      You made the
-                      <br />
-                      <em>reasoning yours.</em>
-                    </h1>
-                    <p>
-                      You answered all four questions correctly. The next skill
-                      is now unlocked.
+
+                {learnPage.key === "example" && (
+                  <>
+                    <h1>See it in context</h1>
+                    <p className="lead">
+                      One concrete case, then the reason it changes what you
+                      report.
                     </p>
-                    <button
-                      className="primary-button"
-                      onClick={() =>
-                        lessonIndex < 3
-                          ? openLesson(lessonIndex + 1)
-                          : setScreen("course")
-                      }
-                    >
-                      {lessonIndex < 3
-                        ? "Open next skill"
-                        : "Return to Module 01"}{" "}
-                      <span>&rarr;</span>
-                    </button>
-                  </article>
+                    <div className="callout">
+                      <span className="callout-label">
+                        <UIIcon name="spark" />
+                        Worked example
+                      </span>
+                      <p>{lesson.example}</p>
+                    </div>
+                    <h2>Why it matters</h2>
+                    <p className="body">{lesson.why}</p>
+                  </>
                 )}
-              </div>
-              <aside className="tutor-card">
-                <div className="tutor-badge">
-                  <span>✦</span>
-                  <p>SOCRATIC TUTOR</p>
-                </div>
-                <h2>
-                  {stage === "tutor" ? (
-                    <>
-                      Reason it
-                      <br />
-                      <em>out.</em>
-                    </>
-                  ) : (
-                    <>
-                      Tutor first.
-                      <br />
-                      <em>Quiz second.</em>
-                    </>
-                  )}
-                </h2>
-                <p>
-                  {stage === "learn"
-                    ? "First take the short audio and visual briefing. Then use the required Socratic dialogue to consolidate the idea before the objective quiz."
-                    : stage === "media"
-                      ? "Use the visual and spoken overview to prepare your reasoning. This comes before the tutor, not instead of it."
-                      : stage === "tutor"
-                        ? "Commit to a position. I will probe the evidence without handing you the answer."
-                        : stage === "practice"
-                          ? "Media briefing and tutor dialogue complete. Now retrieve and apply the idea on your own."
-                          : "You completed the full learning sequence."}
-                </p>
-                {stage === "learn" && (
-                  <button className="tutor-ask" onClick={startMedia}>
-                    Start media briefing <span>&rarr;</span>
+
+                {learnPage.key.startsWith("build-") &&
+                  (() => {
+                    const buildIndex = Number(learnPage.key.split("-")[1]);
+                    const item = deepDive[buildIndex];
+                    return (
+                      <>
+                        <p className="kicker">
+                          Build the idea · {buildIndex + 1} of {deepDive.length}
+                        </p>
+                        <h1>{item.title}</h1>
+                        <p className="body">{item.copy}</p>
+                        <div className="callout">
+                          <span className="callout-label">
+                            <UIIcon name="spark" />
+                            Example
+                          </span>
+                          <p>{item.example}</p>
+                        </div>
+                      </>
+                    );
+                  })()}
+
+                {learnPage.key === "takeaways" && (
+                  <>
+                    <h1>Keep these in mind</h1>
+                    <ul className="takeaway-list">
+                      {lesson.takeaways.map((takeaway) => (
+                        <li key={takeaway}>
+                          <UIIcon name="check" />
+                          {takeaway}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="split-panels">
+                      <div className="panel">
+                        <span className="panel-label">Use this in practice</span>
+                        <ol>
+                          {extra.steps.map((step) => (
+                            <li key={step}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                      <div className="panel">
+                        <span className="panel-label">Go deeper</span>
+                        {extra.sources.map((source) => (
+                          <a
+                            key={source.href}
+                            href={source.href}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {source.label}
+                            <UIIcon name="external" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <footer className="lesson-nav">
+                  <button
+                    className="btn btn-ghost"
+                    disabled={learnStep === 0}
+                    onClick={() => goToLearnStep(learnStep - 1)}
+                  >
+                    <UIIcon name="arrow-left" />
+                    Back
                   </button>
-                )}
-                {stage === "media" && (
-                  <p className="tutor-status">
-                    Required media briefing · play narration to continue
-                  </p>
-                )}
-                {stage === "tutor" && (
-                  <p className="tutor-status">
-                    Required dialogue in progress · {tutorTurns.length}/2
-                    responses
-                  </p>
-                )}
-                <div className="tutor-loop">
-                  <span>LEARNING LOOP</span>
-                  <p>
-                    Learn <b>→</b> Practice <b>→</b> Master <b>→</b> Apply
-                  </p>
+                  <span className="lesson-dots" aria-hidden="true">
+                    {learnPages.map((page, index) => (
+                      <i key={page.key} className={index === learnStep ? "on" : ""} />
+                    ))}
+                  </span>
+                  <button className="btn btn-primary" onClick={advanceLearn}>
+                    {learnStep === learnPages.length - 1
+                      ? "Start the briefing"
+                      : "Continue"}
+                    <UIIcon name="arrow-right" />
+                  </button>
+                </footer>
+              </article>
+            )}
+
+            {stage === "media" && (
+              <article className="lesson-card">
+                <div className="lesson-card-head">
+                  <span className="pill">Audio + visual briefing</span>
+                  <span className="lesson-card-unit">Ungraded</span>
                 </div>
-              </aside>
-            </div>
-          </section>
+                <h1>See the pattern. Hear the reasoning.</h1>
+                <p className="lead">
+                  A short recap that connects the written idea, the visual, and
+                  the example before you enter the Socratic case.
+                </p>
+                <div className="concept-strip">
+                  <span className="icon-tile">
+                    <CourseIcon id={activeCourseMeta.id} />
+                  </span>
+                  <div>
+                    <small>{lesson.unit}</small>
+                    <b>{lesson.title}</b>
+                  </div>
+                  <button
+                    className="btn btn-quiet"
+                    onClick={() => {
+                      toggleLessonAudio();
+                      setMediaPlayed(true);
+                    }}
+                  >
+                    <UIIcon name="play" />
+                    {isReading ? "Stop briefing" : "Play briefing"}
+                  </button>
+                </div>
+                <p className="figure-note">{briefingVisual.caption}</p>
+                <ol className="numbered-list">
+                  {briefingScript.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ol>
+                {lessonIndex === 0 && (
+                  <a
+                    className="inline-link"
+                    href="https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data/more-mean-median/v/impact-on-median-and-mean-when-increasing-highest-value"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Watch the optional companion video
+                    <UIIcon name="external" />
+                  </a>
+                )}
+                <footer className="lesson-nav">
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => goToLearnStep(learnPages.length - 1)}
+                  >
+                    <UIIcon name="arrow-left" />
+                    Back
+                  </button>
+                  <span className="nav-note">
+                    {mediaPlayed
+                      ? "Briefing played"
+                      : "Play the briefing to continue"}
+                  </span>
+                  <button
+                    className="btn btn-primary"
+                    disabled={!mediaPlayed}
+                    onClick={startTutor}
+                  >
+                    Continue to the tutor
+                    <UIIcon name="arrow-right" />
+                  </button>
+                </footer>
+              </article>
+            )}
+
+            {stage === "tutor" && (
+              <article className="lesson-card">
+                <div className="lesson-card-head">
+                  <span className="pill">
+                    Socratic tutor · step {Math.min(tutorTurns.length + 1, 3)} of 3
+                  </span>
+                  <span className="lesson-card-unit">Ungraded</span>
+                </div>
+                <h1>Commit, then test your thinking.</h1>
+                <p className="lead">
+                  First make a claim, then examine the evidence, then transfer
+                  the idea to a new case.
+                </p>
+                <div className="callout">
+                  <span className="callout-label">
+                    <UIIcon name="spark" />
+                    The case
+                  </span>
+                  <p>{tutorScenario.case}</p>
+                </div>
+                {tutorTurns.length < 3 && (
+                  <div className="tutor-turn">
+                    <p className="tutor-prompt">
+                      {tutorTurns.length === 0
+                        ? tutorScenario.prompt
+                        : tutorTurns.length === 1
+                          ? tutorScenario.probe
+                          : tutorScenario.transfer}
+                    </p>
+                    <textarea
+                      aria-label="Your tutor response"
+                      value={tutorInput}
+                      onChange={(event) => setTutorInput(event.target.value)}
+                      placeholder="State your position and the evidence behind it..."
+                    />
+                    <button
+                      className="btn btn-primary"
+                      disabled={!tutorInput.trim() || tutorLoading}
+                      onClick={submitTutorTurn}
+                    >
+                      {tutorLoading
+                        ? "Tutor is reading your reasoning…"
+                        : tutorTurns.length === 0
+                          ? "Submit my position"
+                          : tutorTurns.length === 1
+                            ? "Examine the evidence"
+                            : "Apply the idea"}
+                      <UIIcon name="arrow-right" />
+                    </button>
+                  </div>
+                )}
+                {tutorReply && (
+                  <div className="tutor-reply">
+                    <span className="callout-label">
+                      <UIIcon name="chat" />
+                      Socratic tutor
+                    </span>
+                    <p>{tutorReply}</p>
+                  </div>
+                )}
+                {tutorTurns.length >= 3 && (
+                  <footer className="lesson-nav">
+                    <span className="nav-note">Reasoning complete</span>
+                    <button className="btn btn-primary" onClick={startPractice}>
+                      Begin the mastery check
+                      <UIIcon name="arrow-right" />
+                    </button>
+                  </footer>
+                )}
+              </article>
+            )}
+
+            {stage === "practice" && (
+              <article className="lesson-card">
+                <div className="lesson-card-head">
+                  <span className="pill">
+                    Mastery check · question {questionIndex + 1} of{" "}
+                    {questions.length}
+                  </span>
+                  <span className="lesson-card-unit">Graded</span>
+                </div>
+                <div className="quiz-meter">
+                  <span>Independent retrieval</span>
+                  <i>
+                    <b
+                      style={{
+                        width: `${((questionIndex + 1) / questions.length) * 100}%`,
+                      }}
+                    />
+                  </i>
+                </div>
+                <h2 className="question-prompt">{question.prompt}</h2>
+                <div className="choice-list">
+                  {question.options.map((option, index) => (
+                    <button
+                      key={option}
+                      disabled={feedback === "correct"}
+                      className={`${choice === index ? "selected" : ""} ${
+                        feedback === "correct" && index === question.correct
+                          ? "correct"
+                          : ""
+                      } ${
+                        feedback === "incorrect" && choice === index
+                          ? "incorrect"
+                          : ""
+                      }`}
+                      onClick={() => feedback === "idle" && setChoice(index)}
+                    >
+                      <span>{String.fromCharCode(65 + index)}</span>
+                      <p>{option}</p>
+                    </button>
+                  ))}
+                </div>
+                {hint && feedback !== "correct" && (
+                  <div className="callout">
+                    <span className="callout-label">
+                      <UIIcon name="spark" />
+                      A nudge, not the answer
+                    </span>
+                    <p>{question.hint}</p>
+                  </div>
+                )}
+                {feedback !== "idle" && (
+                  <div className={`verdict ${feedback}`}>
+                    <b>
+                      <UIIcon name={feedback === "correct" ? "check" : "close"} />
+                      {feedback === "correct"
+                        ? `Correct — ${String.fromCharCode(65 + question.correct)}`
+                        : "Not quite."}
+                    </b>
+                    <p>
+                      {feedback === "correct"
+                        ? detailedExplanation()
+                        : "Use the nudge, revisit the teaching pages if you need them, and choose again. Mastery requires the correct answer."}
+                    </p>
+                  </div>
+                )}
+                <footer className="lesson-nav">
+                  <button className="btn btn-quiet" onClick={() => setHint(true)}>
+                    Need a nudge?
+                  </button>
+                  {feedback === "incorrect" && (
+                    <button className="btn btn-ghost" onClick={retry}>
+                      Try another answer
+                    </button>
+                  )}
+                  <button
+                    className="btn btn-primary"
+                    disabled={choice === null}
+                    onClick={feedback === "correct" ? nextQuestion : checkAnswer}
+                  >
+                    {feedback === "correct"
+                      ? questionIndex === questions.length - 1
+                        ? "Complete this skill"
+                        : "Next question"
+                      : "Check answer"}
+                    <UIIcon name="arrow-right" />
+                  </button>
+                </footer>
+              </article>
+            )}
+
+            {stage === "complete" && (
+              <article className="lesson-card complete-card">
+                <span className="icon-tile xl">
+                  <UIIcon name="trophy" />
+                </span>
+                <p className="kicker">Mastery earned</p>
+                <h1>You made the reasoning yours.</h1>
+                <p className="lead">
+                  You answered every question correctly.{" "}
+                  {lessonIndex < lessonCount - 1
+                    ? "The next skill is now unlocked."
+                    : "That completes this course module."}
+                </p>
+                <div className="button-row">
+                  <button
+                    className="btn btn-primary"
+                    onClick={() =>
+                      lessonIndex < lessonCount - 1
+                        ? openLesson(lessonIndex + 1)
+                        : setScreen("course")
+                    }
+                  >
+                    {lessonIndex < lessonCount - 1
+                      ? "Open the next skill"
+                      : "Back to the course"}
+                    <UIIcon name="arrow-right" />
+                  </button>
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => setScreen("course")}
+                  >
+                    See all skills
+                  </button>
+                </div>
+              </article>
+            )}
+          </div>
         </section>
       )}
 
       {screen === "notes" && (
-        <section className="notes-screen">
-          <p className="eyebrow">
-            <i /> YOUR WORKING NOTEBOOK
-          </p>
-          <h1>
-            Make the ideas
-            <br />
-            <em>your own.</em>
-          </h1>
-          <p>
-            Capture questions, clinical examples, and patterns you want to
-            remember.
-          </p>
-          <textarea placeholder="Write the thought you want to keep..." />
-          <span className="notes-tip">
-            TIP — Write one thing you noticed before one thing you learned.
-          </span>
-        </section>
-      )}
-      {screen === "lesson" && stage === "learn" && (
-        <section className="learning-depth-dock">
-          <div>
-            <span>USE THIS IN PRACTICE</span>
-            {extra.steps.map((step, index) => (
-              <p key={step}>
-                <b>0{index + 1}</b>
-                {step}
+        <section className="screen narrow-screen">
+          <div className="page">
+            <header className="section-head">
+              <p className="eyebrow">
+                <i /> YOUR WORKING NOTEBOOK
               </p>
-            ))}
-          </div>
-          <div>
-            <span>GO DEEPER</span>
-            {extra.sources.map((source) => (
-              <a
-                key={source.href}
-                href={source.href}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {source.label}
-                <b>↗</b>
-              </a>
-            ))}
+              <h1>Make the ideas your own.</h1>
+              <p className="lead">
+                Capture questions, examples, and patterns you want to remember.
+              </p>
+            </header>
+            <article className="panel-card">
+              <textarea
+                aria-label="Notebook"
+                className="notes-textarea"
+                placeholder="Write the thought you want to keep..."
+              />
+              <p className="figure-note">
+                Tip — write one thing you noticed before one thing you learned.
+              </p>
+            </article>
+            {savedNotes.length > 0 && (
+              <section className="saved-notes">
+                <p className="kicker">Captured from your lessons</p>
+                <ul>
+                  {savedNotes.map((note, index) => (
+                    <li key={`${note}-${index}`}>{note}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
         </section>
       )}
-      {screen === "notes" && savedNotes.length > 0 && (
-        <section className="saved-notes">
-          <span>CAPTURED FROM YOUR LESSONS</span>
-          {savedNotes.map((note, index) => (
-            <p key={`${note}-${index}`}>{note}</p>
-          ))}
-        </section>
-      )}
+
       {screen !== "notes" && (
-        <aside className={`notebook-capture ${notebookOpen ? "open" : ""}`}>
+        <div className="notebook-dock">
           {notebookOpen && (
             <div className="notebook-popover">
-              <div>
-                <p>QUICK CAPTURE</p>
+              <div className="notebook-popover-head">
+                <p>Quick capture</p>
                 <button
-                  aria-label="Close notebook capture"
+                  aria-label="Close quick capture"
                   onClick={() => setNotebookOpen(false)}
                 >
-                  ×
+                  <UIIcon name="close" />
                 </button>
               </div>
-              <h2>Keep the thought.</h2>
-              <p>
-                Save a question, observation, or clinical connection for your
-                notebook.
-              </p>
               <textarea
                 value={quickNote}
                 onChange={(event) => setQuickNote(event.target.value)}
                 placeholder="What do you want to remember?"
               />
               <button
-                className="capture-save"
+                className="btn btn-primary btn-block"
                 disabled={!quickNote.trim()}
                 onClick={saveQuickNote}
               >
-                Save to notebook <span>&rarr;</span>
+                Save to notebook
+                <UIIcon name="arrow-right" />
               </button>
             </div>
           )}
@@ -3038,10 +3300,10 @@ export default function Home() {
             aria-expanded={notebookOpen}
             onClick={() => setNotebookOpen(!notebookOpen)}
           >
-            <span>✦</span>
+            <UIIcon name={notebookOpen ? "close" : "note"} />
             {notebookOpen ? "Close" : "Quick note"}
           </button>
-        </aside>
+        </div>
       )}
     </main>
   );
