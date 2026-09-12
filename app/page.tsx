@@ -4,6 +4,8 @@ import { LessonDiagram } from "./diagrams";
 import { fallbackDiagram, lessonDiagrams } from "./lesson-diagrams";
 import { lessonDepth } from "./lesson-depth";
 import { Narrator, splitSentences } from "./narration";
+import { CodeBlock } from "./code";
+import { homeSnippets } from "./home-snippets";
 
 type ThemeId = "light" | "dark";
 type Question = {
@@ -1826,6 +1828,7 @@ export default function Home() {
     "learn" | "media" | "tutor" | "practice" | "complete"
   >("learn");
   const [learnStep, setLearnStep] = useState(0);
+  const [snippetId, setSnippetId] = useState(homeSnippets[0].id);
   const [recallText, setRecallText] = useState("");
   const [recallShown, setRecallShown] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -2193,6 +2196,12 @@ export default function Home() {
     );
   }
   const lessonCount = activeCourse.lessons.length;
+  const snippet =
+    homeSnippets.find((item) => item.id === snippetId) ?? homeSnippets[0];
+  const libraryLessons = mergedCourseLibrary.reduce(
+    (sum, course) => sum + course.modules.length,
+    0,
+  );
   const stageSteps = [
     {
       id: "media" as const,
@@ -2280,105 +2289,155 @@ export default function Home() {
       {screen === "home" && (
         <section className="screen home-screen">
           <div className="page">
-            <div className="home-grid">
-              <div className="home-copy">
-                <p className="eyebrow">
-                  <i /> THE SOCRATIC LEARNING STUDIO
-                </p>
-                <h1>
-                  Learn the concept.
-                  <br />
-                  <em>Defend the why.</em>
-                </h1>
-                <p className="lead">
-                  Every skill is taught one idea at a time, briefed in audio and
-                  visuals, argued through with a Socratic tutor, and then
-                  checked on your own.
-                </p>
-                <div className="button-row">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setScreen("library")}
-                  >
-                    Browse the library
-                    <UIIcon name="arrow-right" />
-                  </button>
-                  <button
-                    className="btn btn-ghost"
-                    onClick={() => setScreen("course")}
-                  >
-                    Resume my course
-                    <UIIcon name="arrow-right" />
-                  </button>
-                </div>
-                <dl className="home-stats">
-                  <div>
-                    <dt>{mergedCourseLibrary.length}</dt>
-                    <dd>Course pathways</dd>
-                  </div>
-                  <div>
-                    <dt>4</dt>
-                    <dd>Steps in every skill</dd>
-                  </div>
-                  <div>
-                    <dt>100%</dt>
-                    <dd>Reasoning before grading</dd>
-                  </div>
-                </dl>
-              </div>
-              <aside className="home-panel">
-                <div className="home-panel-head">
-                  <span className="icon-tile">
-                    <CourseIcon id={activeCourseMeta.id} />
-                  </span>
-                  <div>
-                    <small>{activeCourseMeta.subject}</small>
-                    <b>{activeCourseMeta.title}</b>
-                  </div>
-                </div>
-                <ol className="loop-list">
-                  {[
-                    {
-                      icon: "read" as const,
-                      title: "Learn",
-                      copy: "Short teaching pages, one idea per screen.",
-                    },
-                    {
-                      icon: "play" as const,
-                      title: "Brief",
-                      copy: "A spoken and visual recap of the same idea.",
-                    },
-                    {
-                      icon: "chat" as const,
-                      title: "Reason",
-                      copy: "Defend a position before you are graded.",
-                    },
-                    {
-                      icon: "target" as const,
-                      title: "Master",
-                      copy: "Retrieve the idea on your own to unlock the next skill.",
-                    },
-                  ].map((item) => (
-                    <li key={item.title}>
-                      <span className="loop-icon">
-                        <UIIcon name={item.icon} />
-                      </span>
-                      <div>
-                        <b>{item.title}</b>
-                        <p>{item.copy}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
+            <header className="hero">
+              <p className="eyebrow">
+                <i /> The Socratic learning studio
+              </p>
+              <h1>
+                Learn the concept.
+                <br />
+                <em>Defend the why.</em>
+              </h1>
+              <p className="hero-lead">
+                Courses that teach one idea per screen, show you the working,
+                make you argue for an answer, and only then ask you to prove it
+                on your own.
+              </p>
+              <div className="button-row">
                 <button
-                  className="btn btn-primary btn-block"
-                  onClick={() => setScreen("course")}
+                  className="btn btn-primary"
+                  onClick={() => setScreen("library")}
                 >
-                  Start learning
+                  Browse the library
                   <UIIcon name="arrow-right" />
                 </button>
-              </aside>
-            </div>
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => setScreen("course")}
+                >
+                  Resume my course
+                  <UIIcon name="arrow-right" />
+                </button>
+              </div>
+            </header>
+
+            <dl className="stat-rail">
+              <div>
+                <dt>{mergedCourseLibrary.length}</dt>
+                <dd>Course pathways</dd>
+              </div>
+              <div>
+                <dt>{libraryLessons}</dt>
+                <dd>Teaching lessons</dd>
+              </div>
+              <div>
+                <dt>{libraryLessons * 4}</dt>
+                <dd>Mastery questions</dd>
+              </div>
+              <div>
+                <dt>0</dt>
+                <dd>Quizzes before you reason</dd>
+              </div>
+            </dl>
+
+            <section className="home-section">
+              <div className="section-rule">
+                <span>01 — What a lesson actually contains</span>
+              </div>
+              <div className="code-feature">
+                <div className="code-feature-copy">
+                  <h2>Every idea arrives as something you can run.</h2>
+                  <p className="lead">
+                    Not a definition to memorise. A short piece of real work,
+                    the numbers it produces, and the question those numbers
+                    force you to answer.
+                  </p>
+                  <div className="code-tabs" role="tablist">
+                    {homeSnippets.map((item) => (
+                      <button
+                        key={item.id}
+                        role="tab"
+                        aria-selected={item.id === snippet.id}
+                        className={item.id === snippet.id ? "selected" : ""}
+                        onClick={() => setSnippetId(item.id)}
+                      >
+                        {item.tab}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="code-feature-panel" key={snippet.id}>
+                  <CodeBlock snippet={snippet} />
+                  <p className="code-note">{snippet.note}</p>
+                </div>
+              </div>
+            </section>
+
+            <section className="home-section">
+              <div className="section-rule">
+                <span>02 — The sequence, every time</span>
+              </div>
+              <ol className="method">
+                {[
+                  {
+                    title: "Learn",
+                    copy: "Short teaching pages with a figure that draws the actual idea, one screen at a time.",
+                  },
+                  {
+                    title: "Brief",
+                    copy: "The same idea spoken aloud, with a transcript that follows the narration line by line.",
+                  },
+                  {
+                    title: "Reason",
+                    copy: "A Socratic tutor takes your position apart before any grade is involved.",
+                  },
+                  {
+                    title: "Prove",
+                    copy: "Four questions you answer alone. Getting them right is what unlocks the next skill.",
+                  },
+                ].map((step, index) => (
+                  <li key={step.title}>
+                    <span className="method-no">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3>{step.title}</h3>
+                    <p>{step.copy}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            <section className="home-section">
+              <div className="section-rule">
+                <span>03 — Where to start</span>
+                <button
+                  className="rule-action"
+                  onClick={() => setScreen("library")}
+                >
+                  All {mergedCourseLibrary.length} courses
+                  <UIIcon name="arrow-right" />
+                </button>
+              </div>
+              <ul className="course-rail">
+                {mergedCourseLibrary.slice(0, 5).map((course) => (
+                  <li key={course.id}>
+                    <button onClick={() => openCourse(course.id)}>
+                      <span className="icon-tile">
+                        <CourseIcon id={course.id} />
+                      </span>
+                      <span className="course-rail-copy">
+                        <small>{course.subject}</small>
+                        <b>{course.title}</b>
+                      </span>
+                      <span className="course-rail-meta">
+                        {course.modules.length} lessons
+                      </span>
+                      <UIIcon name="arrow-right" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
         </section>
       )}
@@ -2386,21 +2445,28 @@ export default function Home() {
       {screen === "library" && (
         <section className="screen library-screen">
           <div className="page">
-            <header className="section-head">
+            <header className="hero hero-compact">
               <p className="eyebrow">
-                <i /> THE SOCRATIC COURSE LIBRARY
+                <i /> The Socratic course library
               </p>
               <h1>
                 {mergedCourseLibrary.length} pathways.
                 <br />
                 <em>One learning loop.</em>
               </h1>
-              <p className="lead">
+              <p className="hero-lead">
                 College-level courses built around the same sequence: clear
                 teaching, visual and audio support, required reasoning, then an
                 independent mastery check.
               </p>
             </header>
+
+            <div className="section-rule">
+              <span>01 — Every course</span>
+              <span className="rule-meta">
+                {libraryLessons} lessons · {libraryLessons * 4} questions
+              </span>
+            </div>
 
             <div className="library-grid">
               {mergedCourseLibrary.map((course) => (
@@ -2436,17 +2502,23 @@ export default function Home() {
                       <UIIcon name="arrow-right" />
                     </button>
                     <button
-                      className="btn btn-quiet btn-block"
+                      className="btn-link"
                       aria-pressed={libraryCourse.id === course.id}
                       onClick={() => setLibraryCourseId(course.id)}
                     >
                       {libraryCourse.id === course.id
                         ? "Outline shown below"
-                        : "Preview outline"}
+                        : "Preview the outline"}
+                      <UIIcon name="arrow-right" />
                     </button>
                   </div>
                 </article>
               ))}
+            </div>
+
+            <div className="section-rule">
+              <span>02 — Course blueprint</span>
+              <span className="rule-meta">{libraryCourse.title}</span>
             </div>
 
             <section className="course-detail" aria-live="polite">
@@ -2489,9 +2561,12 @@ export default function Home() {
               </div>
             </section>
 
+            <div className="section-rule">
+              <span>03 — Bring your own material</span>
+            </div>
+
             <section className="import-panel">
               <div className="import-copy">
-                <p className="kicker">BRING YOUR OWN MATERIAL</p>
                 <h2>Paste a textbook chapter, or your own notes.</h2>
                 <p>
                   Drop in an assigned reading, a paper abstract, or your own
@@ -2724,6 +2799,12 @@ export default function Home() {
                   <span>
                     <UIIcon name="compass" />
                     Adaptive level: {level}
+                  </span>
+                </div>
+                <div className="section-rule">
+                  <span>The skills in this module</span>
+                  <span className="rule-meta">
+                    {completed.length} of {lessonCount} mastered
                   </span>
                 </div>
                 <ol className="skill-list">

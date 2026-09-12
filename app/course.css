@@ -43,6 +43,17 @@
   --dg-line: #c9c9c1;
   --dg-node: #ffffff;
 
+  --code-bg: #14161a;
+  --code-line: rgba(255, 255, 255, 0.07);
+  --code-text: #d7dbe2;
+  --code-dim: #8a919c;
+  --code-key: #c99bf0;
+  --code-str: #8fd39a;
+  --code-num: #f0b37a;
+  --code-fn: #7fb6f5;
+  --code-builtin: #6fd6d0;
+  --code-op: #9aa2ae;
+
   --r-sm: 8px;
   --r: 12px;
   --r-lg: 16px;
@@ -99,6 +110,17 @@
   --dg-alert: #ff9086;
   --dg-line: #414855;
   --dg-node: #1b1e24;
+
+  --code-bg: #101319;
+  --code-line: rgba(255, 255, 255, 0.06);
+  --code-text: #dde2ea;
+  --code-dim: #8a919c;
+  --code-key: #cfa4f5;
+  --code-str: #93da9e;
+  --code-num: #f2b880;
+  --code-fn: #86b9f7;
+  --code-builtin: #74dad4;
+  --code-op: #9ba3af;
 }
 
 .course-app *,
@@ -164,7 +186,7 @@
 .course-app h3 {
   font-family: var(--display);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.028em;
   line-height: 1.1;
   margin: 0;
   color: var(--text);
@@ -533,111 +555,6 @@
   width: 32px;
 }
 
-/* ============================ Home ============================ */
-.course-app .home-screen {
-  padding: 0 0 48px;
-}
-.course-app .home-grid {
-  align-items: center;
-  min-height: calc(100vh - var(--header-h) - 60px);
-  display: grid;
-  gap: 56px;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-}
-.course-app .home-copy {
-  display: grid;
-  gap: 22px;
-}
-.course-app .home-copy h1 {
-  font-size: clamp(38px, 4.6vw, 58px);
-  line-height: 1.03;
-}
-.course-app .home-stats {
-  border-top: 1px solid var(--border);
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 8px 0 0;
-  padding-top: 24px;
-}
-.course-app .home-stats dt {
-  font-family: var(--display);
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-.course-app .home-stats dd {
-  color: var(--text-3);
-  font-size: 13px;
-  margin: 4px 0 0;
-}
-.course-app .home-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-md);
-  display: grid;
-  gap: 22px;
-  padding: 26px;
-}
-.course-app .home-panel-head {
-  align-items: center;
-  display: flex;
-  gap: 14px;
-}
-.course-app .home-panel-head small {
-  color: var(--text-3);
-  display: block;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.course-app .home-panel-head b {
-  display: block;
-  font-size: 16px;
-  margin-top: 3px;
-}
-.course-app .loop-list {
-  display: grid;
-  gap: 4px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.course-app .loop-list li {
-  align-items: flex-start;
-  border-radius: var(--r);
-  display: flex;
-  gap: 14px;
-  padding: 12px;
-  transition: background 0.18s ease;
-}
-.course-app .loop-list li:hover {
-  background: var(--surface-2);
-}
-.course-app .loop-icon {
-  align-items: center;
-  background: var(--accent-soft);
-  border-radius: var(--r-sm);
-  color: var(--accent);
-  display: inline-flex;
-  flex: none;
-  height: 34px;
-  justify-content: center;
-  width: 34px;
-}
-.course-app .loop-list b {
-  display: block;
-  font-size: 14.5px;
-}
-.course-app .loop-list p {
-  color: var(--text-3);
-  font-size: 13.5px;
-  line-height: 1.55;
-  margin-top: 2px;
-}
-
 /* ============================ Library ============================ */
 .course-app .library-grid {
   display: grid;
@@ -719,7 +636,35 @@
 }
 .course-app .course-card-actions {
   display: grid;
-  gap: 8px;
+  gap: 12px;
+  justify-items: center;
+}
+.course-app .btn-link {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 500;
+  gap: 7px;
+  padding: 0;
+  transition: color 0.18s ease;
+}
+.course-app .btn-link .ui-icon {
+  height: 14px;
+  transition: transform 0.18s ease;
+  width: 14px;
+}
+.course-app .btn-link:hover {
+  color: var(--accent);
+}
+.course-app .btn-link:hover .ui-icon {
+  transform: translateX(3px);
+}
+.course-app .btn-link[aria-pressed="true"] {
+  color: var(--accent);
 }
 
 .course-app .course-detail {
@@ -2491,4 +2436,436 @@
 .course-app .skill-list li:nth-child(n + 5) { animation-delay: 0.2s; }
 .course-app .verdict {
   animation: rise 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ============================ Editorial section rules ==================== */
+.course-app .section-rule {
+  align-items: center;
+  border-top: 1px solid var(--text);
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 34px;
+  padding-top: 12px;
+}
+.course-app .section-rule > span {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.course-app .section-rule .rule-meta {
+  color: var(--text-4);
+  text-align: right;
+  text-transform: none;
+}
+/* Sections stack on the library, so each rule needs air above it. */
+.course-app .library-screen .section-rule,
+.course-app .course-main .section-rule {
+  margin-top: 64px;
+}
+.course-app .library-screen .hero + .section-rule,
+.course-app .course-main .section-head + .stat-row + .section-rule {
+  margin-top: 0;
+}
+.course-app .rule-action {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 8px;
+  padding: 0;
+}
+.course-app .rule-action .ui-icon {
+  height: 15px;
+  transition: transform 0.18s ease;
+  width: 15px;
+}
+.course-app .rule-action:hover .ui-icon {
+  transform: translateX(3px);
+}
+
+/* ============================ Home ============================ */
+.course-app .home-screen {
+  padding: 0 0 110px;
+}
+.course-app .hero {
+  display: grid;
+  gap: 22px;
+  justify-items: start;
+  max-width: 780px;
+  padding: clamp(56px, 9vh, 104px) 0 46px;
+}
+.course-app .hero-compact {
+  padding: clamp(40px, 6vh, 66px) 0 40px;
+}
+.course-app .hero-compact h1 {
+  font-size: clamp(36px, 4.8vw, 58px);
+}
+.course-app .hero h1 {
+  font-size: clamp(42px, 6.2vw, 76px);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+.course-app .hero-lead {
+  color: var(--text-2);
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.65;
+  max-width: 56ch;
+}
+.course-app .stat-rail {
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 92px;
+}
+.course-app .stat-rail > div {
+  border-right: 1px solid var(--border);
+  padding: 22px 24px 22px 0;
+}
+.course-app .stat-rail > div:last-child {
+  border-right: 0;
+}
+.course-app .stat-rail > div + div {
+  padding-left: 24px;
+}
+.course-app .stat-rail dt {
+  font-family: var(--display);
+  font-size: clamp(30px, 3.4vw, 42px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.course-app .stat-rail dd {
+  color: var(--text-3);
+  font-size: 12.5px;
+  line-height: 1.4;
+  margin: 10px 0 0;
+  max-width: 18ch;
+}
+.course-app .home-section {
+  margin-bottom: 92px;
+}
+.course-app .home-section:last-child {
+  margin-bottom: 0;
+}
+
+.course-app .code-feature {
+  align-items: start;
+  display: grid;
+  gap: 48px;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+}
+.course-app .code-feature-copy h2 {
+  font-size: clamp(24px, 2.6vw, 33px);
+  letter-spacing: -0.028em;
+  line-height: 1.12;
+  margin-bottom: 16px;
+}
+.course-app .code-tabs {
+  display: grid;
+  gap: 1px;
+  margin: 28px 0 0;
+}
+.course-app .code-tabs button {
+  background: none;
+  border: 0;
+  border-left: 2px solid var(--border);
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 0 11px 16px;
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    padding-left 0.2s ease;
+}
+.course-app .code-tabs button:hover {
+  border-left-color: var(--border-strong);
+  color: var(--text);
+  padding-left: 20px;
+}
+.course-app .code-tabs button.selected {
+  border-left-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+.course-app .code-feature-panel {
+  animation: rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  display: grid;
+  gap: 22px;
+}
+.course-app .code-note {
+  border-left: 2px solid var(--accent);
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.72;
+  padding-left: 18px;
+}
+
+.course-app .method {
+  counter-reset: none;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.course-app .method li {
+  border-top: 1px solid var(--border);
+  padding: 20px 26px 0 0;
+  position: relative;
+}
+.course-app .method li::before {
+  background: var(--accent);
+  content: "";
+  height: 1px;
+  left: 0;
+  position: absolute;
+  top: -1px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0;
+}
+.course-app .method li:hover::before {
+  width: 100%;
+}
+.course-app .method-no {
+  color: var(--text-4);
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.course-app .method h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.course-app .method p {
+  color: var(--text-3);
+  font-size: 13.5px;
+  line-height: 1.62;
+  max-width: 30ch;
+}
+
+.course-app .course-rail {
+  border-top: 1px solid var(--border);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.course-app .course-rail li {
+  border-bottom: 1px solid var(--border);
+}
+.course-app .course-rail button {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 40px minmax(0, 1fr) auto 18px;
+  padding: 18px 0;
+  text-align: left;
+  transition: padding-left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+.course-app .course-rail button:hover {
+  padding-left: 12px;
+}
+.course-app .course-rail-copy small {
+  color: var(--text-4);
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.course-app .course-rail-copy b {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.course-app .course-rail-meta {
+  color: var(--text-4);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.course-app .course-rail .ui-icon {
+  color: var(--text-4);
+  transition: transform 0.24s ease, color 0.24s ease;
+}
+.course-app .course-rail button:hover .ui-icon {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+/* ============================ Code block ============================ */
+.course-app .code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.course-app .code-head {
+  align-items: center;
+  border-bottom: 1px solid var(--code-line);
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.course-app .code-file {
+  color: var(--code-text);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.course-app .code-lang {
+  border: 1px solid var(--code-line);
+  border-radius: var(--r-pill);
+  color: var(--code-dim);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+.course-app .code-body {
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px 0;
+}
+.course-app .code-body code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.85;
+  min-width: max-content;
+}
+.course-app .code-line {
+  display: flex;
+  gap: 18px;
+  padding: 0 18px;
+  position: relative;
+}
+.course-app .code-line.marked {
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.course-app .code-no {
+  color: var(--code-dim);
+  flex: none;
+  user-select: none;
+}
+.course-app .code-text {
+  color: var(--code-text);
+  white-space: pre;
+}
+.course-app .t-comment {
+  color: var(--code-dim);
+  font-style: italic;
+}
+.course-app .t-string { color: var(--code-str); }
+.course-app .t-number { color: var(--code-num); }
+.course-app .t-keyword { color: var(--code-key); }
+.course-app .t-builtin { color: var(--code-builtin); }
+.course-app .t-fn { color: var(--code-fn); }
+.course-app .t-op,
+.course-app .t-punct { color: var(--code-op); }
+
+.course-app .code-output {
+  align-items: baseline;
+  border-top: 1px solid var(--code-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  padding: 14px 18px 16px;
+}
+.course-app .code-output-label {
+  color: var(--code-dim);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.course-app .code-output dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin: 0;
+}
+.course-app .code-output dl > div {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+}
+.course-app .code-output dt {
+  color: var(--code-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.course-app .code-output dd {
+  color: var(--code-text);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 500;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  .course-app .code-feature {
+    gap: 32px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .course-app .method {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .course-app .method li {
+    padding-right: 20px;
+  }
+  .course-app .stat-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .course-app .stat-rail > div:nth-child(2) {
+    border-right: 0;
+  }
+  .course-app .stat-rail > div:nth-child(3),
+  .course-app .stat-rail > div:nth-child(4) {
+    border-top: 1px solid var(--border);
+  }
+  .course-app .stat-rail > div:nth-child(odd) {
+    padding-left: 0;
+  }
+}
+@media (max-width: 620px) {
+  .course-app .method,
+  .course-app .stat-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .course-app .method li,
+  .course-app .stat-rail > div {
+    border-right: 0;
+    padding-left: 0 !important;
+  }
+  .course-app .stat-rail > div + div {
+    border-top: 1px solid var(--border);
+  }
+  .course-app .course-rail button {
+    gap: 14px;
+    grid-template-columns: 36px minmax(0, 1fr) 18px;
+  }
+  .course-app .course-rail-meta {
+    display: none;
+  }
 }
