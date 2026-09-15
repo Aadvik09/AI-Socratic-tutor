@@ -6,6 +6,9 @@ import { lessonDepth } from "./lesson-depth";
 import { Narrator, splitSentences } from "./narration";
 import { CodeBlock } from "./code";
 import { homeSnippets } from "./home-snippets";
+import { BuildScreen } from "./build-screen";
+import { BuiltCourseView } from "./built-course";
+import type { BuiltCourse } from "./build-schema";
 
 type ThemeId = "light" | "dark";
 type Question = {
@@ -1819,8 +1822,17 @@ const coursePrograms: Record<string, CourseProgram> = {
 };
 export default function Home() {
   const [screen, setScreen] = useState<
-    "home" | "library" | "course" | "lesson" | "diagnostic" | "result" | "notes"
+    | "home"
+    | "build"
+    | "built"
+    | "library"
+    | "course"
+    | "lesson"
+    | "diagnostic"
+    | "result"
+    | "notes"
   >("home");
+  const [builtCourse, setBuiltCourse] = useState<BuiltCourse | null>(null);
   const [libraryCourseId, setLibraryCourseId] = useState("data-literacy");
   const [activeCourseId, setActiveCourseId] = useState("data-literacy");
   const [lessonIndex, setLessonIndex] = useState(0);
@@ -2233,6 +2245,12 @@ export default function Home() {
           </button>
           <nav className="app-nav">
             <button
+              className={`nav-build${screen === "build" || screen === "built" ? " active" : ""}`}
+              onClick={() => setScreen("build")}
+            >
+              Build a course
+            </button>
+            <button
               className={screen === "library" ? "active" : ""}
               onClick={() => setScreen("library")}
             >
@@ -2294,28 +2312,29 @@ export default function Home() {
                 <i /> The Socratic learning studio
               </p>
               <h1>
-                Learn the concept.
+                Name any topic.
                 <br />
-                <em>Defend the why.</em>
+                <em>Then defend what you think.</em>
               </h1>
               <p className="hero-lead">
-                Courses that teach one idea per screen, show you the working,
-                make you argue for an answer, and only then ask you to prove it
-                on your own.
+                The agent builds the course — what has to be understood, in what
+                order, why each thing happens — and then argues with you about
+                it. It asks; it does not tell. You leave able to explain the
+                mechanism, not recognise the answer.
               </p>
               <div className="button-row">
                 <button
                   className="btn btn-primary"
-                  onClick={() => setScreen("library")}
+                  onClick={() => setScreen("build")}
                 >
-                  Browse the library
+                  Build a course on anything
                   <UIIcon name="arrow-right" />
                 </button>
                 <button
                   className="btn btn-ghost"
-                  onClick={() => setScreen("course")}
+                  onClick={() => setScreen("library")}
                 >
-                  Resume my course
+                  Browse prebuilt courses
                   <UIIcon name="arrow-right" />
                 </button>
               </div>
@@ -2335,14 +2354,58 @@ export default function Home() {
                 <dd>Mastery questions</dd>
               </div>
               <div>
-                <dt>0</dt>
-                <dd>Quizzes before you reason</dd>
+                <dt>∞</dt>
+                <dd>Topics it will build for you</dd>
               </div>
             </dl>
 
             <section className="home-section">
               <div className="section-rule">
-                <span>01 — What a lesson actually contains</span>
+                <span>01 — What the back-and-forth is like</span>
+                <button className="rule-action" onClick={() => setScreen("build")}>
+                  Try it on your own topic
+                  <UIIcon name="arrow-right" />
+                </button>
+              </div>
+              <div className="exchange-feature">
+                <div className="exchange-copy">
+                  <h2>It asks. It does not tell.</h2>
+                  <p className="lead">
+                    A worked exchange on anemia. Notice that the tutor never
+                    supplies the mechanism — every reply is a question built out
+                    of what the learner just said, including when the learner is
+                    wrong.
+                  </p>
+                  <ul className="exchange-rules">
+                    <li>One question per turn, never an explanation</li>
+                    <li>Wrong answers get a question, not a correction</li>
+                    <li>Why it happens, then what you would see, then what you would do</li>
+                  </ul>
+                </div>
+                <ol className="exchange">
+                  {[
+                    { who: "tutor", text: "A patient's red cells are smaller than usual. Before naming a cause — what does a cell being small tell you about how it was made?" },
+                    { who: "learner", text: "That something ran out while it was being built?" },
+                    { who: "tutor", text: "Good instinct to reach for a shortage. If a factory keeps dividing on schedule but is short of one raw material, what happens to the size of what comes off the line?" },
+                    { who: "learner", text: "It'd be smaller because there's less material per unit." },
+                    { who: "tutor", text: "So which raw material, specifically, would a red cell run short of — and what job does it do that would limit the finished cell?" },
+                    { who: "learner", text: "Iron, for haemoglobin." },
+                    { who: "tutor", text: "Then predict something for me: if iron is the limit, what would you expect the body's iron stores to look like before the cell size ever changes?" },
+                  ].map((turn, i) => (
+                    <li key={i} className={`turn turn-${turn.who}`}>
+                      <span className="turn-who">
+                        {turn.who === "tutor" ? "Tutor" : "You"}
+                      </span>
+                      <p>{turn.text}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+
+            <section className="home-section">
+              <div className="section-rule">
+                <span>02 — What a lesson actually contains</span>
               </div>
               <div className="code-feature">
                 <div className="code-feature-copy">
@@ -2375,25 +2438,25 @@ export default function Home() {
 
             <section className="home-section">
               <div className="section-rule">
-                <span>02 — The sequence, every time</span>
+                <span>03 — The sequence, every time</span>
               </div>
               <ol className="method">
                 {[
                   {
-                    title: "Learn",
-                    copy: "Short teaching pages with a figure that draws the actual idea, one screen at a time.",
+                    title: "Build",
+                    copy: "Name a topic. The agent plans the curriculum, writes the mechanism, and draws the visuals.",
                   },
                   {
-                    title: "Brief",
-                    copy: "The same idea spoken aloud, with a transcript that follows the narration line by line.",
+                    title: "Ask",
+                    copy: "It opens with a question you can reason about, not a definition you have to accept.",
                   },
                   {
-                    title: "Reason",
-                    copy: "A Socratic tutor takes your position apart before any grade is involved.",
+                    title: "Defend",
+                    copy: "Every reply is another question built from your words — including when you are wrong.",
                   },
                   {
-                    title: "Prove",
-                    copy: "Four questions you answer alone. Getting them right is what unlocks the next skill.",
+                    title: "Apply",
+                    copy: "If you see this, what follows — and what would you actually do from there?",
                   },
                 ].map((step, index) => (
                   <li key={step.title}>
@@ -2409,7 +2472,7 @@ export default function Home() {
 
             <section className="home-section">
               <div className="section-rule">
-                <span>03 — Where to start</span>
+                <span>04 — Where to start</span>
                 <button
                   className="rule-action"
                   onClick={() => setScreen("library")}
@@ -2440,6 +2503,19 @@ export default function Home() {
             </section>
           </div>
         </section>
+      )}
+
+      {screen === "build" && (
+        <BuildScreen
+          onOpenCourse={(course) => {
+            setBuiltCourse(course);
+            setScreen("built");
+          }}
+        />
+      )}
+
+      {screen === "built" && builtCourse && (
+        <BuiltCourseView course={builtCourse} onExit={() => setScreen("build")} />
       )}
 
       {screen === "library" && (
